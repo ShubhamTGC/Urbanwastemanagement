@@ -1,0 +1,49 @@
+Hospital
+	
+	Patient Room(Nikita)
+			Reduce
+				TV	
+			Reuse	
+				Handgloves
+				Crape Bangage
+				
+			Recycle	
+				Emply Glucose Drip (Partial)
+				Canula
+				wall mounted tissue box holder
+				Broken Syringe bottle
+				used Syringe
+				Cotton
+
+
+	Hallway/Waiting Room(Manoj)		
+
+			Reduce
+				Water Dispenser
+				Tube Light
+			Reuse	
+				Sanitizer wall mounted
+				Weight Scale
+				Medicinal Logistic Pack
+			Recycle	
+				Paper
+				Tissue Box w/ paper
+
+
+	Pharmacy Room		
+
+			Reduce	
+	Manoj			Broken Monitor
+				Half Broken LED ad Board
+				
+				
+	Nikita		Reuse	Carton Box
+				Poly-Bags
+				NewsPaper/Paper Stack (Partial)
+				Medicinal Logistic Pack				
+				
+	Manoj		Recycle	
+				Pull out Gloves
+				Medicine Wrappers
+				Printed Receipt
+				
