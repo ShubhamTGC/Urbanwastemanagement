@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class Generationlevel : MonoBehaviour
 {
 
-    public List<GameObject> home_kitchen,home_bedroom,home_living, industry_waste,school_waste,forest_waste,park_waste,hospital_waste;
+    //public List<GameObject> home_kitchen,home_bedroom,home_living, industry_waste,school_waste,forest_waste,park_waste,hospital_waste;
     public List<GameObject> levels;
     //[HideInInspector]
     public int waste_count = 0;
@@ -54,11 +54,11 @@ public class Generationlevel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(waste_count == home_kitchen.Count && is_check)
-        {
-            is_check = false;
-            StartCoroutine(showstatus());
-        }
+        //if(waste_count == home_kitchen.Count && is_check)
+        //{
+        //    is_check = false;
+        //    StartCoroutine(showstatus());
+        //}
         score1.text = level1score.ToString(); ;
     }
 

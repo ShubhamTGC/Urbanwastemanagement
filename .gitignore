@@ -3,7 +3,7 @@
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
 TestWasteManagement/[Ll]ibrary/
-TestWasteManagement/[Pp]rojectSettings/
+TestWasteManagement/ProjectSettings/
 TestWasteManagement/[Tt]emp/
 TestWasteManagement/[Oo]bj/
 TestWasteManagement/[Bb]uild/
@@ -13,6 +13,7 @@ TestWasteManagement/[Mm]emoryCaptures/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !TestWasteManagement/[Aa]ssets/**/*.meta
+!TestWasteManagement/[Pp]rojectSettings
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # TestWasteManagement/[Aa]ssets/AssetStoreTools*
