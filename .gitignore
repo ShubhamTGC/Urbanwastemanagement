@@ -3,7 +3,7 @@
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
 TestWasteManagement/[Ll]ibrary/
-TestWasteManagement/[Pp]rojectSettings
+TestWasteManagement/[Pp]rojectSettings/
 TestWasteManagement/[Tt]emp/
 TestWasteManagement/[Oo]bj/
 TestWasteManagement/[Bb]uild/
