@@ -9,6 +9,7 @@ TagManager:
   - animatorobj
   - Dustbin
   - Waste
+  - Groud
   layers:
   - Default
   - TransparentFX

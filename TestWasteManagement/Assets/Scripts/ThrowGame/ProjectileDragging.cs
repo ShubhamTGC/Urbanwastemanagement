@@ -22,19 +22,39 @@ public class ProjectileDragging : MonoBehaviour
 
     void Awake()
     {
-        spring = GetComponent<SpringJoint2D>();
-        rigidbody2d = GetComponent<Rigidbody2D>();
-        circle = GetComponent<CircleCollider2D>();
-        catapult = spring.connectedBody.transform;
+       
     }
 
     void Start()
     {
-        LineRendererSetup();
+       
+    }
+
+    private void OnEnable()
+    {
+      
+        StartCoroutine(initailsetup());
+       
+       
+    }
+
+    IEnumerator initailsetup()
+    {
+      
+        yield return new WaitForSeconds(0.2f);
+        catapultLineFront.enabled = true;
+        catapultLineBack.enabled = true;
+        spring = GetComponent<SpringJoint2D>();
+        rigidbody2d = GetComponent<Rigidbody2D>();
+        circle = GetComponent<CircleCollider2D>();
+        catapult = spring.connectedBody.transform;
+
         rayToMouse = new Ray(catapult.position, Vector3.zero);
         leftCatapultToProjectile = new Ray(catapultLineFront.transform.position, Vector3.zero);
         maxStretchSqr = maxStretch * maxStretch;
         circleRadius = circle.radius;
+        LineRendererSetup();
+
     }
     void Update()
     {
@@ -105,5 +125,13 @@ public class ProjectileDragging : MonoBehaviour
         Vector3 holdPoint = leftCatapultToProjectile.GetPoint(catapultToProjectile.magnitude + circleRadius);
         catapultLineFront.SetPosition(1, holdPoint);
         catapultLineBack.SetPosition(1, holdPoint);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+         if(collision.gameObject.tag == "Groud")
+        {
+            this.gameObject.SetActive(false);
+        }
     }
 }
