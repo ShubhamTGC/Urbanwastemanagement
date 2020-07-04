@@ -1,0 +1,119 @@
+from login page:
+
+registernation page : 
+3 radio button for parent,student, teacher
+
+===========student
+student id *: user input,
+name*
+grade*
+school id*
+teacher id*
+
+==========teacher page:
+
+teacher id*
+teacher name*
+email id :
+school*
+
+==========parent page 
+parent id*
+parent name*
+student id*
+parenr email id
+
+
+===============================================================================
+student flow:
+
+1, intro
+2 avatar : face and body ===api 
+3 stage introduction
+4. 3r introduction
+
+overarching frame wrok:
+1. leadreboard api = reveived and done
+2. Green journal :
+		-action plan
+		-game feed
+		- diy
+3. stage leaderboard - my stage leaderboard
+
+=========================stage 1 games
+Zone game: we need one api for locking the stages with respect to scoring 650 point to clear stage) ( common for all stage)
+		- bonus points for each zone 30 point if you completed game within 1 mint
+		- bonus score show in dashboard
+		- edit my dashboard page text = "My dashboard"
+Bonus game ( game missions) 
+		-stage 1 , the anngram game : word jumble (wait for completing the timer)
+		-score data is coming from backend ( now 20 per annagram)
+		
+====================== stage dashboard ======================
+after each stage we need to show stage dashbaord
+
+
+=======================stage 2=================================
+on boarding video
+
+In stage 2 there will be 2 zone:
+hospital office factoy =zone b
+school park home =zone a
+
+
+throw wasste game:
+    correct hit 10 point
+	wrong 0
+	total item 18 ( 6 waste from each zone)
+	complete game in 30 points; if all waste get correctly then only
+	
+	my dashbaord for zone b
+	
+Bonus game : match the tile
+        -timer
+		- correct guess 10 point  wrong 0
+		
+======stage dashboard=======
+
+
+===========================stage 3===============================
+image shows about cleanness of area
+intro game
+no bonus game
+
+7 differenr trucks;
+50 points for correct truck;
+8 waste item for each truck
+10 point for correct, 0  wrong
+total score 560 score
+
+stage leaderboard
+
+=============== final assessment========================
+question and ans coming from backend
+more than 75% pop up that you are chapion
+
+
+===========================================================
+
+Green journal
+diy
+game feed
+
+image and description make diy page.
+share button, will share diy and action plan, any text and image to game feed:
+in game feed 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+ 
