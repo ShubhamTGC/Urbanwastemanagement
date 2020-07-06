@@ -11,8 +11,12 @@ public class ThrowWasteHandler : MonoBehaviour
     public LineRenderer ForntLine, BackLine;
     public Rigidbody2D catapultback;
     private List<GameObject> GeneratedObj = new List<GameObject>();
-    public Image Previewimage1, Previewimage2, Previewimage3;
+    public Image Previewimage1, Previewimage2, Previewimage3, Previewimage4;
     private int Objectlive = 0;
+
+    [Header("Time portion")]
+    [Space(10)]
+    public int minut, second;
     private void Awake()
     {
         initialsetup();
@@ -40,6 +44,8 @@ public class ThrowWasteHandler : MonoBehaviour
         Previewimage1.sprite = GeneratedObj[a].GetComponent<SpriteRenderer>().sprite;
         Previewimage2.sprite = GeneratedObj[a + 1].GetComponent<SpriteRenderer>().sprite;
         Previewimage3.sprite = GeneratedObj[a + 2].GetComponent<SpriteRenderer>().sprite;
+        Previewimage4.sprite = GeneratedObj[a + 3].GetComponent<SpriteRenderer>().sprite;
+
     }
     void Start()
     {
@@ -48,27 +54,57 @@ public class ThrowWasteHandler : MonoBehaviour
     
     void Update()
     {
-        if(Objectlive < GeneratedObj.Count-1)
+
+        //if (sec >= 0 && minute >= 0 && helpingbool)
+        //{
+        //    sec = sec - Time.deltaTime;
+        //    RunningTimer = RunningTimer - Time.deltaTime;
+        //    Timerbar.fillAmount = RunningTimer / Totaltimer;
+        //    if (sec.ToString("0").Length > 1)
+        //    {
+        //        Timer.text = "0" + minute.ToString("0") + ":" + sec.ToString("0");
+        //    }
+        //    else
+        //    {
+        //        Timer.text = "0" + minute.ToString("0") + ":" + "0" + sec.ToString("0");
+        //    }
+
+        //    if (sec.ToString("0") == "0" && minute >= 0)
+        //    {
+        //        sec = 60;
+        //        minute = minute - 1;
+        //    }
+        //}
+        //else if (helpingbool)
+        //{
+        //    helpingbool = false;
+
+        //}
+
+        ThrowWasteObjectactiveStatus();
+      
+
+
+    }
+
+    void ThrowWasteObjectactiveStatus()
+    {
+        if (Objectlive < GeneratedObj.Count - 1)
         {
-            if (Objectlive == GeneratedObj.Count-1)
-            {
-                Previewimage3.gameObject.SetActive(false);
-                Previewimage2.gameObject.SetActive(false);
-                Previewimage1.gameObject.SetActive(false);
-            }
+
             if (!GeneratedObj[Objectlive].activeInHierarchy)
             {
                 Objectlive++;
                 GeneratedObj[Objectlive].SetActive(true);
 
-                if(Objectlive < GeneratedObj.Count)
+                if (Objectlive < GeneratedObj.Count)
                 {
                     Previewimage1.sprite = GeneratedObj[Objectlive].GetComponent<SpriteRenderer>().sprite;
                     if (Objectlive < GeneratedObj.Count - 2)
                     {
                         Previewimage2.sprite = GeneratedObj[Objectlive + 1].GetComponent<SpriteRenderer>().sprite;
                         Previewimage3.sprite = GeneratedObj[Objectlive + 2].GetComponent<SpriteRenderer>().sprite;
-         
+
                     }
                     else
                     {
@@ -78,23 +114,33 @@ public class ThrowWasteHandler : MonoBehaviour
                     if (Objectlive < GeneratedObj.Count - 3)
                     {
                         Previewimage3.sprite = GeneratedObj[Objectlive + 2].GetComponent<SpriteRenderer>().sprite;
-                       
+
                     }
                     else
                     {
                         Previewimage3.gameObject.SetActive(false);
                     }
+                    if (Objectlive < GeneratedObj.Count - 4)
+                    {
+                        Previewimage4.sprite = GeneratedObj[Objectlive + 3].GetComponent<SpriteRenderer>().sprite;
 
-                   
-                   
-                    
+                    }
+                    else
+                    {
+                        Previewimage4.gameObject.SetActive(false);
+                    }
                 }
-               
-              
-               
+
+
+
             }
         }
-       
-        
+        if (Objectlive == GeneratedObj.Count - 1)
+        {
+            Previewimage3.gameObject.SetActive(false);
+            Previewimage2.gameObject.SetActive(false);
+            Previewimage1.gameObject.SetActive(false);
+            Previewimage4.gameObject.SetActive(false);
+        }
     }
 }
