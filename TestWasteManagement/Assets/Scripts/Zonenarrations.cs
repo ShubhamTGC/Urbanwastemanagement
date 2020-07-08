@@ -322,12 +322,13 @@ public class Zonenarrations : MonoBehaviour
             }
             if (totalscoreOfUser >= Stage2UnlockScore)
             {
-                Debug.Log("Cleared level");
+            Stage2unlocked = true;
+            Debug.Log("Cleared level");
                 
             }
             else
             {
-            Stage2unlocked = true;
+          
             Debug.Log("User score is less");
             }
         }

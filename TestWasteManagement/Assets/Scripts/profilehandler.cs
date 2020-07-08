@@ -18,6 +18,7 @@ public class profilehandler : MonoBehaviour
     private int character_data;
     public GameObject boy_btn_1, girlbtn_1;
     public StartpageController startpage;
+    public GameObject startpageObj;
     public Sprite bagde_sprite,hero_intro;
     public GameObject intro_panel;
     private string grade_value;
@@ -254,10 +255,11 @@ public class profilehandler : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(startpage.scenechanges(startpage.gameObject, hero_intro));
+        StartCoroutine(startpage.scenechanges(startpageObj, hero_intro));
         yield return new WaitForSeconds(1.2f);
-        this.gameObject.SetActive(false);
         intro_panel.SetActive(true);
+        this.gameObject.SetActive(false);
+        
     }
 
     IEnumerator ok_task()

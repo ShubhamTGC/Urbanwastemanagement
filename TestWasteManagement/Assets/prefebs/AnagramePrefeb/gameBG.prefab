@@ -968,11 +968,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 61e8ea9db144a3644ab0bab668443401, type: 3}
-    m_FontSize: 35
+    m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 3
-    m_MaxSize: 40
+    m_MaxSize: 60
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1035,15 +1035,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Answordlist:
-  - shubham
-  - pradeep
-  - sandeep
-  - pranav
-  - mukta
-  - arun
-  - sonal
-  - rajib
-  - carl
+  - manure
+  - polythenes
+  - E-waste
+  - decompost
+  - airpollution
+  - Landfill
+  - plastic
+  - methane
+  - bio-degrade
+  Questionlist:
+  - Biodegradable wastes mix with the soil and produce
+  - Use jute and cloth bag instead of
+  - Obsolete electronic waste means
+  - 'Burning of Garbage '
+  - Pollution caused by the burning of waste
+  - Waste that cannot be recycled or reused is sent to a site
+  - Most packaging materials consist of
+  - Landfills release the greenhouse gas
+  - Which waste can be broken down by living things
+  Currentquestion: {fileID: 5032911112129589078}
   WordPrefebs: {fileID: 4093310882063540217, guid: 3dd49c48c4ccdf947927e3dd16f33d79,
     type: 3}
   DashPrefeb: {fileID: 817157267870208375, guid: edd3c14ca09f35b43967c39f87b8e28d,
@@ -1056,6 +1067,7 @@ MonoBehaviour:
   second: 15
   GameoverObj: {fileID: 5032911112039965345}
   ScoreText: {fileID: 5032911111447818318}
+  randomindex: 
 --- !u!1 &5032911112172238926
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,7 +1102,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: -87}
+  m_AnchoredPosition: {x: -530, y: -87}
   m_SizeDelta: {x: 400, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5032911112172238925
@@ -1166,7 +1178,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 300, y: -480}
+  m_AnchoredPosition: {x: 98.999985, y: -480}
   m_SizeDelta: {x: 900, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5032911112247352670
@@ -1239,8 +1251,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 387.48334, y: -844}
-  m_SizeDelta: {x: -755.0333, y: 150}
+  m_AnchoredPosition: {x: 287.5, y: -844}
+  m_SizeDelta: {x: -325, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5032911112594508572
 MonoBehaviour:
@@ -1743,8 +1755,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 387.80048, y: -690.8}
-  m_SizeDelta: {x: -754.81964, y: 150}
+  m_AnchoredPosition: {x: 287.5, y: -690.8}
+  m_SizeDelta: {x: -325, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5032911113309201054
 MonoBehaviour:

@@ -11,11 +11,11 @@ public class SaveImageToServer : MonoBehaviour
     string URL;
     public string Mainurl, upload_image_API;
     public GameObject closebtn, capturebtn, camera_preview;
-    public GameObject capturebtn1, capturebtn2, capturebtn3;
+    public GameObject capturebtn1;
     public Sprite default_sprite;
     public CameraManager cameraController;
     public Sprite image_sprite;
-    public InputField user_text, plan_title, reduce_plan, reduce_text, recycle_plan, recycle_text;
+    public InputField user_text, plan_title;
     public Text respose_text;
     private byte[] bytes;
     private byte[] imageBytes;
@@ -92,14 +92,8 @@ public class SaveImageToServer : MonoBehaviour
         posting_msg.SetActive(false);
         camera_preview.SetActive(false);
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn2.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn3.gameObject.GetComponent<Image>().sprite = default_sprite;
         user_text.text = "";
         plan_title.text = "";
-        reduce_plan.text = "";
-        reduce_text.text = "";
-        recycle_plan.text = "";
-        recycle_text.text = "";
         level_zone = 0;
         zone = "";
         zone_data = null;
@@ -177,8 +171,6 @@ public class SaveImageToServer : MonoBehaviour
     {
 
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn2.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn3.gameObject.GetComponent<Image>().sprite = default_sprite;
     }
 
     /// <summary>
@@ -187,8 +179,7 @@ public class SaveImageToServer : MonoBehaviour
     public void Capture_data_post()
     {
 
-        if (user_text.text == "" && plan_title.text == "" && reduce_text.text == "" && reduce_plan.text == "" && recycle_text.text == "" &&
-           recycle_plan.text == "" && post_image_byte.Count == 0)
+        if (user_text.text == "" && plan_title.text == "" && post_image_byte.Count == 0)
         {
             string msg = "Please make your plan!";
             StartCoroutine(statusmsgshow(msg));
@@ -199,16 +190,6 @@ public class SaveImageToServer : MonoBehaviour
             {
                 User_text.Add(user_text.text);
                 User_plan.Add(plan_title.text);
-            }
-            if (reduce_text.text != "" || reduce_plan.text != "")
-            {
-                User_text.Add(reduce_text.text);
-                User_plan.Add(reduce_plan.text);
-            }
-            if (recycle_text.text != "" || recycle_plan.text != "")
-            {
-                User_text.Add(recycle_text.text);
-                User_plan.Add(recycle_plan.text);
             }
 
             int text_count = User_text.Count;
@@ -266,24 +247,24 @@ public class SaveImageToServer : MonoBehaviour
 
 
 
-        if (selected_btn.name == "reduce")
+        if (selected_btn.name == "Pic")
         {
             post_image_byte.Add(bytes);
             Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             selected_btn.GetComponent<Image>().sprite = btn_sprite;
         }
-        if (selected_btn.name == "reuse")
-        {
-            post_image_byte.Add(bytes);
-            Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-            selected_btn.GetComponent<Image>().sprite = btn_sprite;
-        }
-        if (selected_btn.name == "recycle")
-        {
-            post_image_byte.Add(bytes);
-            Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-            selected_btn.GetComponent<Image>().sprite = btn_sprite;
-        }
+        //if (selected_btn.name == "reuse")
+        //{
+        //    post_image_byte.Add(bytes);
+        //    Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        //    selected_btn.GetComponent<Image>().sprite = btn_sprite;
+        //}
+        //if (selected_btn.name == "recycle")
+        //{
+        //    post_image_byte.Add(bytes);
+        //    Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        //    selected_btn.GetComponent<Image>().sprite = btn_sprite;
+        //}
     }
 
 
@@ -325,8 +306,8 @@ public class SaveImageToServer : MonoBehaviour
             formData.Add(new MultipartFormDataSection("Level", level_zone.ToString()));
             formData.Add(new MultipartFormDataSection("LATI", lati));
             formData.Add(new MultipartFormDataSection("LONGI", longi));
-            formData.Add(new MultipartFormDataSection("DETAIL", User_text[a]));
-            formData.Add(new MultipartFormDataSection("KEYINFO", User_plan[a]));
+            formData.Add(new MultipartFormDataSection("DETAIL", user_text.text));
+            formData.Add(new MultipartFormDataSection("KEYINFO", plan_title.text));
 
 
             UnityWebRequest www = UnityWebRequest.Post(post_url, formData);
@@ -361,17 +342,9 @@ public class SaveImageToServer : MonoBehaviour
         statusmsg.gameObject.SetActive(false);
         user_text.text = "";
         plan_title.text = "";
-        reduce_plan.text = "";
-        reduce_text.text = "";
-        recycle_plan.text = "";
-        recycle_text.text = "";
-        User_text.Clear();
-        User_plan.Clear();
         Bigger_count = 0;
         post_image_byte.Clear();
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn2.gameObject.GetComponent<Image>().sprite = default_sprite;
-        capturebtn3.gameObject.GetComponent<Image>().sprite = default_sprite;
     }
 
 }

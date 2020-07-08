@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
 
 public class AnagrameController : MonoBehaviour
 {
     public string[] Answordlist;
+    public string[] Questionlist;
+    public Text Currentquestion;
     private int CurrentWordCount =0;
     private string AnswerWord;
     private string[] WordSplits;
@@ -37,16 +40,43 @@ public class AnagrameController : MonoBehaviour
     public Text ScoreText;
     private int score;
 
+    //============ TEMP WORKING VARIABLES===========================//
+    [SerializeField]
+    private List<int> randomindex;
+
     void Start()
     {
 
         Timer.text = "0" + minute + ":" + second;
-        Totaltimer = (minute * 60) + second;
+        Totaltimer = (minute * 60) + second;     
         sec = second;
         RunningTimer = Totaltimer;
-        Debug.Log("total timer: " + Totaltimer.ToString());
+        int maxLength = 0;
+        while (maxLength < Answordlist.Length)
+        {
+            int num = UnityEngine.Random.Range(1, Answordlist.Length + 1);
+            if (!randomindex.Contains(num))
+            {
+                randomindex.Add(num);
+                maxLength++;
+            }
+        }
+        Debug.Log("total length " + randomindex.Count);
+        for(int a = 0; a < randomindex.Count; a++)
+        {
+           
+            int num = randomindex[a];
+            Debug.Log(num);
+            string temp = Answordlist[a];
+            string temp2 = Questionlist[a];
+            Questionlist[a] = Questionlist[num-1];
+            Answordlist[a] = Answordlist[num-1];
+            Answordlist[num-1] = temp;
+            Questionlist[num-1] = temp2;
+        }
         GameSetup(CurrentWordCount);
     }
+
 
     // Update is called once per frame
     void Update()
@@ -98,6 +128,8 @@ public class AnagrameController : MonoBehaviour
     {
         //this will split the word into letters
         AnswerWord = Answordlist[WordNumber];
+        Currentquestion.text = "";
+        Currentquestion.text = Questionlist[WordNumber];
         WordSplits = new string[AnswerWord.Length];
         CorrectAns = new string[AnswerWord.Length];
         SelectedWord = new string[AnswerWord.Length];

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using LitJson;
-using UnityEditor.Build.Content;
 using UnityEngine.SceneManagement;
 
 public class StartpageController : MonoBehaviour 
@@ -108,7 +107,7 @@ public class StartpageController : MonoBehaviour
 
     void ComeFromStages()
     {
-        UpdatedHomePage.SetActive(true);
+        //UpdatedHomePage.SetActive(true);
         superhero.SetActive(true);
         superhero.GetComponent<CompleteIntroPage>().after_badge();
     }
@@ -547,51 +546,18 @@ public class StartpageController : MonoBehaviour
         //"time", 0.5f));
         iTween.ScaleTo(UpdatedLoginPage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
-        UpdatedLoginPage.SetActive(false);
+        //UpdatedLoginPage.SetActive(false);
         var username = username_input.text;
         var password = password_input.text;
         var encryptedpassword = asealgorithm.getEncryptedString(password);
+        Debug.Log("regular password " + password + " encrypted passwoed " + encryptedpassword.ToString());
+        UpdatedLoginPage.SetActive(false);
         if (username != "" && password != "")
         {
             loadinganim.SetActive(true);
             username_input.text = "";
             password_input.text = "";
-            ////-------offline test------------------------//
-            //if (username == "shubham" && password == "12345")
-            //{
-            //    username_input.text = "";
-            //    password_input.text = "";
-            //    username_input.GetComponent<InputField>().enabled = false;
-            //    password_input.GetComponent<InputField>().enabled = false;
-            //    loginbutton.GetComponent<Button>().enabled = false;
-            //    homebutton.SetActive(false);
-            //    string msg = "Login Successfully!";
-            //    StartCoroutine(Messagedisplay(msg));
-            //    yield return new WaitForSeconds(3.5f);
-            //    firstscreen.SetActive(false);
-            //    loginpage.SetActive(false);
-            //    StartCoroutine(scenechanges(this.gameObject, toplayer_sprite));
-            //    yield return new WaitForSeconds(1.2f);
-            //    string profile_data = PlayerPrefs.GetString("profile_done");
-            //    if (profile_data != "done")
-            //    {
-            //        superhero.SetActive(true);
-            //    }
-            //    else
-            //    {
-            //        toplayer.SetActive(true);
-            //    }
-
-            //    // StartCoroutine(Enablepage(profilesetup_page, loginpage, 4f));
-            //}
-            //else
-            //{
-            //    username_input.text = "";
-            //    password_input.text = "";
-            //    string msg = "Login Failed";
-            //    homebutton.SetActive(true);
-            //    StartCoroutine(Messagedisplay(msg));
-            //}
+           
 
             //----------------------api integration -------------//
             string loginlink = Mainurl + login_API;
@@ -706,7 +672,7 @@ public class StartpageController : MonoBehaviour
                     string msg = "Login In Failed!!";
                     StartCoroutine(Messagedisplay(msg));
                     yield return new WaitForSeconds(3.5f);
-                    loginpage.SetActive(true);
+                    UpdatedLoginPage.SetActive(true);
                 }
             }
 
