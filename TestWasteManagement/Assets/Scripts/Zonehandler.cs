@@ -28,7 +28,7 @@ public class Zonehandler : MonoBehaviour
     public bool room1_check = false,room2_check = false,room3_check= false;
     public bool room1_clear = false, room2_clear = false, room3_clear = false;
     public int waste_count = 0;
-    public GameObject Done_msg_panel,exit_panel;
+    public GameObject Done_msg_panel,exit_panel;                               
     private GameObject gb;
    // private List<Vector2> objectpos;
     [Header("====extra elements====")]
@@ -108,6 +108,11 @@ public class Zonehandler : MonoBehaviour
     [Space(10)]
     public string RoomData_api;
     private List<int> RoomIds = new List<int>();
+    public int Bonus_Score;
+    private float Bonusscore_room1, Bonusscore_room2, Bonusscore_room3;
+    public Image BonusScoreFiller;
+    public float TotalBonusGameScore;
+    public Text CollectedBonusScore;
    // private int Room_oneId,Room_twoId,Room_thirdId;
 
     //================================================start scripting=============================================//
@@ -267,6 +272,7 @@ public class Zonehandler : MonoBehaviour
                     timerstart = false;
                     room1_clear = true;
                     room1_score = level1score - (room2_score +room3_score);
+                    //Bonusscore_room1 = 0;
                     timer.GetComponent<AudioSource>().enabled = false;
                     if (!room2_clear)
                     {
@@ -330,6 +336,7 @@ public class Zonehandler : MonoBehaviour
                     room2_clear = true;
                     timer.GetComponent<AudioSource>().enabled = false;
                     room2_score = level1score - (room1_score + room3_score);
+                   // Bonusscore_room2 = 0;
                     if (!room3_clear)
                     {
                         nextroombtn.onClick.RemoveAllListeners();
@@ -372,6 +379,7 @@ public class Zonehandler : MonoBehaviour
                     timerstart = false;
                     room3_clear = true;
                     timer.GetComponent<AudioSource>().enabled = false;
+                    //Bonusscore_room3 = 0;
                     room3_score = level1score - (room1_score + room2_score);
                     if (!room1_clear)
                     {
@@ -426,7 +434,7 @@ public class Zonehandler : MonoBehaviour
             room1_score = level1score - (room2_score + room3_score);
             if (room1_clear && room2_clear && room3_clear)
             {
-                
+               // Bonusscore_room1 = Bonus_Score;
                 StartCoroutine(zone_completiontask(0));
             }
             else
@@ -464,6 +472,7 @@ public class Zonehandler : MonoBehaviour
             room2_score = level1score - (room1_score + room3_score);
             if (room1_clear && room2_clear && room3_clear)
             {
+               // Bonusscore_room2 = Bonus_Score;
                 StartCoroutine(zone_completiontask(1));
             }
             else
@@ -501,6 +510,7 @@ public class Zonehandler : MonoBehaviour
             room3_score = level1score - (room2_score + room1_score);
             if (room1_clear && room2_clear && room3_clear)
             {
+               // Bonusscore_room3 = Bonus_Score; 
                StartCoroutine(zone_completiontask(2));
             }
             else
@@ -927,6 +937,9 @@ public class Zonehandler : MonoBehaviour
         int charater_type = PlayerPrefs.GetInt("characterType");
         //List<string> room1_misssed = new List<string>();
         int r1 = 0, r2=0, r3=0;
+        int correctansroom1 = 0;
+        int correctansroom2 = 0;
+        int correctansroom3 = 0;
         if(charater_type == 1)
         {
             player_image.sprite = boy_image;
@@ -943,9 +956,11 @@ public class Zonehandler : MonoBehaviour
             item_name_list1.Add(room1_item_name[0]);
             dropped_bin1.Add(room1_item_name[1]);
             score_room1.Add(room1_item_name[2]);
+
            // Debug.Log("here is the data " + item_name_list1[a] + " " + dropped_bin1[a] + " " + score_room1[a]);
             Array.Clear(room1_item_name, 0, room1_item_name.Length);
         }
+
         for (int a = 0; a < room2_data_collected.Count; a++)
         {
             string get_data = room2_data_collected[a];
@@ -965,6 +980,43 @@ public class Zonehandler : MonoBehaviour
             score_room3.Add(room3_item_name[2]);
            // Debug.Log("here is the data " + item_name_list3[a] + " " + dropped_bin3[a] + " " + score_room3[a]);
             Array.Clear(room3_item_name, 0, room1_item_name.Length);
+        }
+
+
+        for (int a = 0; a < score_room1.Count; a++)
+        {
+            if (score_room1[a] == "10")
+            {
+                correctansroom1++;
+            }
+        }
+        if (correctansroom1 == room1.Count)
+        {
+            Bonusscore_room1 = Bonus_Score;
+        }
+        for (int a = 0; a < score_room2.Count; a++)
+        {
+            if (score_room2[a] == "10")
+            {
+                correctansroom2++;
+            }
+           
+        }
+        if (correctansroom2 == room2.Count)
+        {
+            Bonusscore_room2 = Bonus_Score;
+        }
+        for (int a = 0; a < score_room3.Count; a++)
+        {
+            if (score_room3[a] == "10")
+            {
+                correctansroom3++;
+            }
+           
+        }
+        if (correctansroom3 == room3.Count)
+        {
+            Bonusscore_room3 = Bonus_Score;
         }
 
         for (int i = 0; i < subzones.Count; i++)
@@ -991,9 +1043,12 @@ public class Zonehandler : MonoBehaviour
         total_score_img.fillAmount = total_scored / total_score_game;
         level_score = level1score;
         scored_image.fillAmount = level_score / total_score_game;
+
+        BonusScoreFiller.fillAmount = (Bonusscore_room1 + Bonusscore_room2 + Bonusscore_room3) / TotalBonusGameScore;
+        CollectedBonusScore.text = (Bonusscore_room1 + Bonusscore_room2 + Bonusscore_room3).ToString();
         //====================================tab 1 data filling====================================================//
-       // room1_misssed = new List<string>(new string[room1.Count - item_name_list1.Count]);
-       // Debug.Log("lenght of missing items:  "+room1_misssed.Count);
+        // room1_misssed = new List<string>(new string[room1.Count - item_name_list1.Count]);
+        // Debug.Log("lenght of missing items:  "+room1_misssed.Count);
         int counter1 = 0;
 
         var distinctElements_room1 = item_name_list1 != null && item_name_list1.Count > 0 ? room1.Where(x => !item_name_list1.Contains(x.name)).Select(x => x.name).ToList() : new List<string>();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using LitJson;
 
 public class Zonenarrations : MonoBehaviour
 {
@@ -20,9 +21,25 @@ public class Zonenarrations : MonoBehaviour
     public Zonehandler hoomzone, schoolzone,Hospitalzone,officezone,industryzone;
     public GameObject last_msg;
     public GameObject YoutubePlayer,skipbutton,videomsg;
+
+
+    [Header("Stage 2 unlock Portion")]
+    [Space(10)]
+    public string MainUrl;
+    public string DashbaordApi;
+    [SerializeField]
+    private int Stage2UnlockScore;
+    private int totalscoreOfUser;
+    public GameObject Stage2popup;
+    private bool Stage2unlocked = false;
+
+    public GameObject startpageobj;
+    private Generationlevel Mainpage;
+    public Sprite greenBackground;
+    public GameObject Bonusgamepage;
     void Start()
     {
-
+        Mainpage = FindObjectOfType<Generationlevel>();
         //onetime_narration = PlayerPrefs.GetString("zone_guide");
         //if (onetime_narration != "done")
         //{
@@ -85,6 +102,7 @@ public class Zonenarrations : MonoBehaviour
         //    }
         //}
 
+        StartCoroutine(CheckForStage2());
         if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed || industryzone.zone_completed)
         {
             if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed && industryzone.final_completed)
@@ -233,6 +251,11 @@ public class Zonenarrations : MonoBehaviour
         {
             zones[a].gameObject.SetActive(true);
         }
+        if (Stage2unlocked)
+        {
+            Stage2popup.SetActive(true);
+        }
+        
     }
 
 
@@ -280,6 +303,71 @@ public class Zonenarrations : MonoBehaviour
         video_msg_panel.SetActive(true);
 
     }
+
+    IEnumerator CheckForStage2()
+        {
+            string Response_url = MainUrl + DashbaordApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
+           "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
+
+            WWW dashboard_res = new WWW(Response_url);
+            yield return dashboard_res;
+            if (dashboard_res.text != null)
+            {
+                JsonData response_data = JsonMapper.ToObject(dashboard_res.text);
+                int loopcount = int.Parse(response_data[0]["ContentList"].Count.ToString());
+                for (int a = 0; a < loopcount; a++)
+                {
+                    totalscoreOfUser += int.Parse(response_data[0]["ContentList"][a]["totalscore"].ToString());
+                }
+            }
+            if (totalscoreOfUser >= Stage2UnlockScore)
+            {
+                Debug.Log("Cleared level");
+                
+            }
+            else
+            {
+            Stage2unlocked = true;
+            Debug.Log("User score is less");
+            }
+        }
+
+    public void ClosePopup()
+    {
+        iTween.ScaleTo(Stage2popup, Vector3.zero, 0.5f);
+        startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+        foreach (GameObject e in zones)
+        {
+            e.transform.GetChild(0).gameObject.SetActive(false);
+            e.GetComponent<BoxCollider2D>().enabled = true;
+            e.SetActive(false);
+        }
+        for (int a = 0; a < zones.Count; a++)
+        {
+            zones[a].gameObject.SetActive(true);
+        }
+    
+    }
+    
+    public void PlayBonusGame()
+    {
+        StartCoroutine(BonusgameTask());
+    }
+
+    IEnumerator BonusgameTask()
+    {
+        startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+        for (int a = 0; a < zones.Count; a++)
+        {
+            zones[a].gameObject.SetActive(false);
+        }
+        iTween.ScaleTo(Stage2popup, Vector3.zero, 0.5f);
+        StartCoroutine(Mainpage.scenechanges(startpage, greenBackground));
+        yield return new WaitForSeconds(1.2f);
+        Bonusgamepage.SetActive(true);
+
+    }
+
 
 
 }

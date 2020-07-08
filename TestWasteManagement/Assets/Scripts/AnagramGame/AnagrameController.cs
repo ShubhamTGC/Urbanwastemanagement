@@ -22,7 +22,7 @@ public class AnagrameController : MonoBehaviour
     private string[] SelectedWord;
     private int SelectionCounter = 0;
     private int CorrectAnsCounter;
-
+    private int RunningWordCount;
     [Header("timer section")]
     [Space(10)]
     public Text Timer;
@@ -32,7 +32,10 @@ public class AnagrameController : MonoBehaviour
     private bool helpingbool = true;
     private bool WrongGuess = true;
     private float wrongGuessTimer;
-
+    private bool Timepaused = true;
+    public GameObject GameoverObj;
+    public Text ScoreText;
+    private int score;
 
     void Start()
     {
@@ -48,31 +51,36 @@ public class AnagrameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (sec >= 0 && minute >= 0 && helpingbool)
+        if (Timepaused)
         {
-            sec = sec - Time.deltaTime;
-            RunningTimer = RunningTimer - Time.deltaTime;
-            Timerbar.fillAmount = RunningTimer / Totaltimer;
-            if (sec.ToString("0").Length > 1)
+            if (sec >= 0 && minute >= 0 && helpingbool)
             {
-                Timer.text = "0" + minute.ToString("0") + ":" + sec.ToString("0");
-            }
-            else
-            {
-                Timer.text = "0" + minute.ToString("0") + ":" + "0" + sec.ToString("0");
-            }
+                sec = sec - Time.deltaTime;
+                RunningTimer = RunningTimer - Time.deltaTime;
+                Timerbar.fillAmount = RunningTimer / Totaltimer;
+                if (sec.ToString("0").Length > 1)
+                {
+                    Timer.text = "0" + minute.ToString("0") + ":" + sec.ToString("0");
+                }
+                else
+                {
+                    Timer.text = "0" + minute.ToString("0") + ":" + "0" + sec.ToString("0");
+                }
 
-            if (sec.ToString("0") == "0" && minute >= 0)
+                if (sec.ToString("0") == "0" && minute >= 0)
+                {
+                    sec = 60;
+                    minute = minute - 1;
+                }
+            }
+            else if (helpingbool)
             {
-                sec = 60;
-                minute = minute - 1;
+                helpingbool = false;
+
             }
         }
-        else if (helpingbool)
-        {
-            helpingbool = false;
-
-        }
+      
+       
         if (WrongGuess)
         {
             wrongGuessTimer = wrongGuessTimer + Time.deltaTime;
@@ -80,6 +88,7 @@ public class AnagrameController : MonoBehaviour
             {
                 WrongGuess = false;
                 wrongGuessTimer = 0f;
+                score += 0;
                 StartCoroutine(ResetAnagramFields());
             }
         }
@@ -149,11 +158,15 @@ public class AnagrameController : MonoBehaviour
         }
         if(CorrectAnsCounter == CorrectAns.Length)
         {
+            wrongGuessTimer = 0;
+            score += 10;
             StartCoroutine(ResetAnagramFields());
         }
         else
         {
             // WrongGuess = true;
+            wrongGuessTimer = 0;
+            score += 0;
             StartCoroutine(ResetAnagramFields());
         }
      
@@ -175,6 +188,25 @@ public class AnagrameController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         CurrentWordCount++;
         WrongGuess = true;
-        GameSetup(CurrentWordCount);
+        if(CurrentWordCount < Answordlist.Length)
+        {
+            GameSetup(CurrentWordCount);
+        }
+        else
+        {
+          StartCoroutine(GameoverPage());
+        }
+        
+        
     }
+    IEnumerator GameoverPage()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Timepaused = false;
+        ScoreText.text = "You got total bonus score : " + score;
+        GameoverObj.SetActive(true);
+
+    }
+
+
 }

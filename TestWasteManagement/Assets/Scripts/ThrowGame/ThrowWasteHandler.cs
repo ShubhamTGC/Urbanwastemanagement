@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ThrowWasteHandler : MonoBehaviour
 {
     public int Objectcount;
+    public List<Sprite> WasteObejctSprites;
     public GameObject WastePrefeb;
     public Transform WastePerent;
     public LineRenderer ForntLine, BackLine;
@@ -16,7 +17,16 @@ public class ThrowWasteHandler : MonoBehaviour
 
     [Header("Time portion")]
     [Space(10)]
-    public int minut, second;
+    public float minut;
+    public float second;
+    private float Totaltimer, RunningTimer;
+    private float sec;
+    private bool helpingbool = true;
+    public Image Timerbar;
+    public Text Timer;
+    public Text CorrectGuesscount,Totalwaste;
+    [SerializeField]
+    private int totalwasteCount;
     private void Awake()
     {
         initialsetup();
@@ -24,6 +34,10 @@ public class ThrowWasteHandler : MonoBehaviour
 
     void initialsetup()
     {
+        sec = second;
+        Totaltimer = (minut * 60) + second;
+        RunningTimer = Totaltimer;
+        Totalwaste.text = totalwasteCount.ToString();
         for (int a = 0; a < Objectcount; a++)
         {
             GameObject gb = Instantiate(WastePrefeb, WastePerent, false);
@@ -35,7 +49,7 @@ public class ThrowWasteHandler : MonoBehaviour
         }
 
          SpriteUpdator(0);
-          GeneratedObj[Objectlive].SetActive(true);
+         GeneratedObj[Objectlive].SetActive(true);
 
     }
 
@@ -55,31 +69,31 @@ public class ThrowWasteHandler : MonoBehaviour
     void Update()
     {
 
-        //if (sec >= 0 && minute >= 0 && helpingbool)
-        //{
-        //    sec = sec - Time.deltaTime;
-        //    RunningTimer = RunningTimer - Time.deltaTime;
-        //    Timerbar.fillAmount = RunningTimer / Totaltimer;
-        //    if (sec.ToString("0").Length > 1)
-        //    {
-        //        Timer.text = "0" + minute.ToString("0") + ":" + sec.ToString("0");
-        //    }
-        //    else
-        //    {
-        //        Timer.text = "0" + minute.ToString("0") + ":" + "0" + sec.ToString("0");
-        //    }
+        if (sec >= 0 && minut >= 0 && helpingbool)
+        {
+            sec = sec - Time.deltaTime;
+            RunningTimer = RunningTimer - Time.deltaTime;
+            Timerbar.fillAmount = RunningTimer / Totaltimer;
+            if (sec.ToString("0").Length > 1)
+            {
+                Timer.text = "0" + minut.ToString("0") + ":" + sec.ToString("0");
+            }
+            else
+            {
+                Timer.text = "0" + minut.ToString("0") + ":" + "0" + sec.ToString("0");
+            }
 
-        //    if (sec.ToString("0") == "0" && minute >= 0)
-        //    {
-        //        sec = 60;
-        //        minute = minute - 1;
-        //    }
-        //}
-        //else if (helpingbool)
-        //{
-        //    helpingbool = false;
+            if (sec.ToString("0") == "0" && minut >= 0)
+            {
+                sec = 60;
+                minut = minut - 1;
+            }
+        }
+        else if (helpingbool)
+        {
+            helpingbool = false;
 
-        //}
+        }
 
         ThrowWasteObjectactiveStatus();
       
