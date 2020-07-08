@@ -10,6 +10,7 @@ TagManager:
   - Dustbin
   - Waste
   - Groud
+  - Border
   layers:
   - Default
   - TransparentFX

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProjectileDragging : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class ProjectileDragging : MonoBehaviour
     private Vector2 prevVelocity;
     private Rigidbody2D rigidbody2d;
     private CircleCollider2D circle;
-
+    private ThrowWasteHandler throwwaste;
     void Awake()
     {
        
@@ -27,7 +28,7 @@ public class ProjectileDragging : MonoBehaviour
 
     void Start()
     {
-       
+        throwwaste = FindObjectOfType<ThrowWasteHandler>();
     }
 
     private void OnEnable()
@@ -129,9 +130,20 @@ public class ProjectileDragging : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-         if(collision.gameObject.tag == "Groud")
+         if (collision.gameObject.tag == "Groud")
+            {
+                string collidername = collision.collider.gameObject.name;
+                string objectname = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
+                throwwaste.checkCollidedAns(collidername, objectname,collision.gameObject);
+                this.gameObject.SetActive(false);
+
+        }
+        else
         {
             this.gameObject.SetActive(false);
         }
+
+
+
     }
 }
