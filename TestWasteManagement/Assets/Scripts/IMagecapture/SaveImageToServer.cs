@@ -89,7 +89,7 @@ public class SaveImageToServer : MonoBehaviour
     }
     void OnDisable()
     {
-        posting_msg.SetActive(false);
+        //posting_msg.SetActive(false);
         camera_preview.SetActive(false);
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
         user_text.text = "";
@@ -282,7 +282,7 @@ public class SaveImageToServer : MonoBehaviour
     public IEnumerator Upload()
     {
         //loadingAnim.SetActive(true);
-        posting_msg.SetActive(true);
+        //posting_msg.SetActive(true);
         //string post_url = Mainurl + upload_image_API;
         string post_url = "https://www.skillmuni.in/wsmapi/api/PostPhotoUpload/TagPhotoUpload";
         //Debug.Log(BitConverter.ToString(imageBytes));
@@ -316,7 +316,7 @@ public class SaveImageToServer : MonoBehaviour
             {
                 Debug.Log(www.error);
                 respose_text.text = www.downloadHandler.text;
-                posting_msg.SetActive(false);
+                //posting_msg.SetActive(false);
                 statusmsg.text = "PLEASE TRY LATER!";
                 yield return new WaitForSeconds(3f);
                 statusmsg.text = "";
@@ -333,7 +333,7 @@ public class SaveImageToServer : MonoBehaviour
                
             }
         }
-        posting_msg.SetActive(false);
+        //posting_msg.SetActive(false);
         //loadingAnim.SetActive(false);
         statusmsg.gameObject.SetActive(true);
         statusmsg.text = "PLAN SUCCESSFULLY GENERATED!";

@@ -86,7 +86,7 @@ public static class Vibration
 #else
         if (Application.platform == RuntimePlatform.Android)
         {
-            //Handheld.Vibrate();
+            Handheld.Vibrate();
         }
 
 #endif
@@ -107,7 +107,7 @@ public static class Vibration
 #else
         if (Application.platform == RuntimePlatform.Android)
         {
-            //Handheld.Vibrate();
+            Handheld.Vibrate();
         }
 #endif
 #endif
@@ -149,7 +149,7 @@ public static class Vibration
 #if !UNITY_WEBGL
         if (Application.platform == RuntimePlatform.Android)
         {
-           // Handheld.Vibrate();
+           Handheld.Vibrate();
         }
 #endif
     }

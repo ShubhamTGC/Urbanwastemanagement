@@ -21,7 +21,9 @@ public class AnagrameController : MonoBehaviour
     public Transform WordPrenet, DashPrenet;
     private List<GameObject> Words = new List<GameObject>();
     private List<GameObject> Dashs = new List<GameObject>();
+    [SerializeField]
     private string[] CorrectAns;
+    [SerializeField]
     private string[] SelectedWord;
     private int SelectionCounter = 0;
     private int CorrectAnsCounter;
@@ -39,7 +41,7 @@ public class AnagrameController : MonoBehaviour
     public GameObject GameoverObj;
     public Text ScoreText;
     private int score;
-
+    public GameObject BlastEffect;
     //============ TEMP WORKING VARIABLES===========================//
     [SerializeField]
     private List<int> randomindex;
@@ -106,6 +108,7 @@ public class AnagrameController : MonoBehaviour
             else if (helpingbool)
             {
                 helpingbool = false;
+                StartCoroutine(GameoverPage());
 
             }
         }
@@ -190,13 +193,17 @@ public class AnagrameController : MonoBehaviour
         }
         if(CorrectAnsCounter == CorrectAns.Length)
         {
+     
             wrongGuessTimer = 0;
             score += 10;
             StartCoroutine(ResetAnagramFields());
         }
         else
         {
+            Debug.Log("wrong ans");
             // WrongGuess = true;
+
+            BlastEffect.SetActive(true);
             wrongGuessTimer = 0;
             score += 0;
             StartCoroutine(ResetAnagramFields());
@@ -217,7 +224,10 @@ public class AnagrameController : MonoBehaviour
         Array.Clear(WordSplits, 0, WordSplits.Length);
         Array.Clear(SelectedWord, 0, SelectedWord.Length);
         CorrectAnsCounter = 0;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.6f);
+        iTween.ScaleTo(BlastEffect, Vector3.zero, 0.2f);
+        yield return new WaitForSeconds(0.4f);
+        BlastEffect.SetActive(false);
         CurrentWordCount++;
         WrongGuess = true;
         if(CurrentWordCount < Answordlist.Length)
@@ -233,7 +243,18 @@ public class AnagrameController : MonoBehaviour
     }
     IEnumerator GameoverPage()
     {
+
         yield return new WaitForSeconds(0.5f);
+        for (int a = 0; a < Words.Count; a++)
+        {
+            DestroyImmediate(Words[a].gameObject);
+            DestroyImmediate(Dashs[a].gameObject);
+        }
+        SelectionCounter = 0;
+        CorrectAnsCounter = 0;
+        score = 0;
+        Words.Clear();
+        Dashs.Clear();
         Timepaused = false;
         ScoreText.text = "You got total bonus score : " + score;
         GameoverObj.SetActive(true);

@@ -30,21 +30,27 @@ public class GetLocation : MonoBehaviour
 
     void CheckLocationPermission()
     {
-#if PLATFORM_ANDROID
-        if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
+
+        if(UnityEngine.Application.platform == RuntimePlatform.Android)
         {
-            statusTxt.text = "No Permission please allow to access the location";
-            Permission.RequestUserPermission(Permission.FineLocation);
+            if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
+            {
+                statusTxt.text = "No Permission please allow to access the location";
+                Permission.RequestUserPermission(Permission.FineLocation);
+            }
+            Permission.RequestUserPermission(Permission.Camera);
         }
-        Permission.RequestUserPermission(Permission.Camera);
-#endif
+
     }
 
     public void GetUserLocation()
     {
-        CheckLocationPermission();
-        statusTxt.text = "Ok Permission";
-        StartCoroutine("GetLatLonUsingGPS");
+        if (UnityEngine.Application.platform == RuntimePlatform.Android)
+        {
+            CheckLocationPermission();
+            statusTxt.text = "Ok Permission";
+            StartCoroutine("GetLatLonUsingGPS");
+        }
 
     }
 

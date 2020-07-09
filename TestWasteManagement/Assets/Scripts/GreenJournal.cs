@@ -13,14 +13,23 @@ public class GreenJournal : MonoBehaviour
     public GameObject GalleryPage,JournalPage;
     void Start()
     {
-        TabsButtons[0].gameObject.GetComponent<Image>().sprite = PressedSprite;
-        ActionPlanPage.SetActive(true);
+      
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnEnable()
+    {
+        TabsButtons[0].gameObject.GetComponent<Image>().sprite = PressedSprite;
+        TabsButtons[1].gameObject.GetComponent<Image>().sprite = Relasedsprite;
+        TabsButtons[2].gameObject.GetComponent<Image>().sprite = Relasedsprite;
+        ActionPlanPage.SetActive(true);
+        GameFeedPage.SetActive(false);
+        DiyPage.SetActive(false);
     }
 
 

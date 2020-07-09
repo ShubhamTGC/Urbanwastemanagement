@@ -35,7 +35,7 @@ public class Zonenarrations : MonoBehaviour
 
     public GameObject startpageobj;
     private Generationlevel Mainpage;
-    public Sprite greenBackground;
+    public Sprite greenBackground,CityPage;
     public GameObject Bonusgamepage;
     void Start()
     {
@@ -305,33 +305,32 @@ public class Zonenarrations : MonoBehaviour
     }
 
     IEnumerator CheckForStage2()
-        {
-            string Response_url = MainUrl + DashbaordApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
-           "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
+    {
+        string Response_url = MainUrl + DashbaordApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
+        "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
 
-            WWW dashboard_res = new WWW(Response_url);
-            yield return dashboard_res;
-            if (dashboard_res.text != null)
+        WWW dashboard_res = new WWW(Response_url);
+        yield return dashboard_res;
+        if (dashboard_res.text != null)
+        {
+            JsonData response_data = JsonMapper.ToObject(dashboard_res.text);
+            int loopcount = int.Parse(response_data[0]["ContentList"].Count.ToString());
+            for (int a = 0; a < loopcount; a++)
             {
-                JsonData response_data = JsonMapper.ToObject(dashboard_res.text);
-                int loopcount = int.Parse(response_data[0]["ContentList"].Count.ToString());
-                for (int a = 0; a < loopcount; a++)
-                {
-                    totalscoreOfUser += int.Parse(response_data[0]["ContentList"][a]["totalscore"].ToString());
-                }
+                totalscoreOfUser += int.Parse(response_data[0]["ContentList"][a]["totalscore"].ToString());
             }
-            if (totalscoreOfUser >= Stage2UnlockScore)
-            {
+        }
+        if (totalscoreOfUser >= Stage2UnlockScore)
+        {
             Stage2unlocked = true;
             Debug.Log("Cleared level");
                 
-            }
-            else
-            {
-          
-            Debug.Log("User score is less");
-            }
         }
+        else
+        {
+            Debug.Log("User score is less");
+        }
+    }
 
     public void ClosePopup()
     {
@@ -367,6 +366,27 @@ public class Zonenarrations : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         Bonusgamepage.SetActive(true);
 
+    }
+
+    public void CloseBonusGame()
+    {
+        StartCoroutine(ClosingTask());
+    }
+    IEnumerator ClosingTask()
+    {
+        Bonusgamepage.SetActive(false);
+        iTween.ScaleTo(Stage2popup, Vector3.zero, 0.5f);
+        yield return new WaitForSeconds(0.6f);
+        Stage2popup.SetActive(false);
+        StartCoroutine(Mainpage.scenechanges(startpage, CityPage));
+        yield return new WaitForSeconds(1.2f);
+        startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+        for (int a = 0; a < zones.Count; a++)
+        {
+            zones[a].gameObject.SetActive(true);
+        }
+        
+      
     }
 
 

@@ -549,8 +549,10 @@ public class StartpageController : MonoBehaviour
         //UpdatedLoginPage.SetActive(false);
         var username = username_input.text;
         var password = password_input.text;
-        var encryptedpassword = asealgorithm.getEncryptedString(password);
-        Debug.Log("regular password " + password + " encrypted passwoed " + encryptedpassword.ToString());
+        string encryptedpassword1 = asealgorithm.getEncryptedString(password);
+        //string encryptedpassword = "OCuU2qF/DMRcrDqvEWur6w==";
+        //Debug.Log("regular password " + password + " encrypted passwoed " + encryptedpassword1.ToString() + " encrypted 1 passwoed " + encryptedpassword);
+
         UpdatedLoginPage.SetActive(false);
         if (username != "" && password != "")
         {
@@ -565,7 +567,7 @@ public class StartpageController : MonoBehaviour
             WWWForm loginForm = new WWWForm();
             loginForm.AddField("IMEI", "");
             loginForm.AddField("USERID", username);
-            loginForm.AddField("PASSWORD", encryptedpassword);
+            loginForm.AddField("PASSWORD", encryptedpassword1);
             loginForm.AddField("OS", "");
             loginForm.AddField("Network", "");
             loginForm.AddField("OSVersion", "");

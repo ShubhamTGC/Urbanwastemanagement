@@ -9,49 +9,90 @@ public class profilehandler : MonoBehaviour
     public GameObject boyinput_page, girlinput_page;
     private int boybtn_click = 1, girlbtn_click = 1;
     public InputField boy_name_field, boy_grade_field, girl_name_field, girl_grade_field;
-    public Button boy_btn,girl_btn;
+    public Button boy_btn, girl_btn;
     public Image profileimage;
     public Sprite girlface, boyface;
     public Narrationmanagement narration_activity;
-    public InputField boy_username,girl_username;
+    public InputField boy_username, girl_username;
     public string Mainurl, AvatarAPI, Userdata_API;
     private int character_data;
     public GameObject boy_btn_1, girlbtn_1;
     public StartpageController startpage;
     public GameObject startpageObj;
-    public Sprite bagde_sprite,hero_intro;
+    public Sprite bagde_sprite, hero_intro;
     public GameObject intro_panel;
     private string grade_value;
     private string playername;
 
-    [Header("User Updated Avatar SelectionPage")]
+    [Header("Boy Updated Avatar SelectionPage")]
     [Space(10)]
     public List<GameObject> Faces;
     public List<GameObject> Body;
-    public List<Sprite> FaceSprite,BodySprites;
+    public List<Sprite> FaceSprite, BodySprites;
     public Image PlayerFace, PlayerBody;
+
+    [Header("Female update avatar")]
+    [Space(10)]
+    public List<GameObject> GirlFaces;
+    public List<GameObject> GirlBody;
+    public List<Sprite> GirlFaceSprite, GirlBodySprite;
+    public Image GirlFaceIMage, GirlBodyImage;
+    public string FaceType, BodyType;
+
     void Start()
     {
-        for(int a = 0; a < Faces.Count; a++)
+
+    }
+
+    private void OnEnable()
+    {
+        for (int a = 0; a < Faces.Count; a++)
         {
-            if(PlayerFace.sprite.name == Faces[a].name)
+            if (PlayerFace.sprite.name == Faces[a].name)
             {
                 Faces[a].gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                FaceType = a.ToString();
             }
             else
             {
                 Faces[a].gameObject.transform.GetChild(0).gameObject.SetActive(false);
             }
         }
-        for(int b =0;b < Body.Count; b++)
+        for (int b = 0; b < Body.Count; b++)
         {
-            if(PlayerBody.sprite.name == Body[b].name)
+            if (PlayerBody.sprite.name == Body[b].name)
             {
                 Body[b].transform.GetChild(0).gameObject.SetActive(true);
+                BodyType = b.ToString();
             }
             else
             {
                 Body[b].transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+
+        for (int a = 0; a < GirlFaces.Count; a++)
+        {
+            if (GirlFaceIMage.sprite.name == GirlFaces[a].name)
+            {
+                GirlFaces[a].gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                FaceType = a.ToString();
+            }
+            else
+            {
+                GirlFaces[a].gameObject.transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+        for (int b = 0; b < GirlBody.Count; b++)
+        {
+            if (GirlBodyImage.sprite.name == GirlBody[b].name)
+            {
+                GirlBody[b].transform.GetChild(0).gameObject.SetActive(true);
+                BodyType = b.ToString();
+            }
+            else
+            {
+                GirlBody[b].transform.GetChild(0).gameObject.SetActive(false);
             }
         }
     }
@@ -59,25 +100,8 @@ public class profilehandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(boy_name_field.text !="" && boy_grade_field.text != "")
-        {
-            boy_btn.interactable = true;
-            
-        }
-        else
-        {
-            boy_btn.interactable = false;
-        }
-
-        if (girl_name_field.text != "" && girl_grade_field.text != "")
-        {
-            girl_btn.interactable = true;
-        }
-        else
-        {
-            girl_btn.interactable = false;
-        }
-
+        boy_btn.interactable = !string.IsNullOrEmpty(boy_name_field.text);
+        girl_btn.interactable = !string.IsNullOrEmpty(girl_name_field.text);
     }
 
     //---------------------------------boy button selection------------------//
@@ -85,7 +109,7 @@ public class profilehandler : MonoBehaviour
     {
         boyinput_page.SetActive(true);
         StartCoroutine(boy_action());
-        
+
     }
 
     public void girlselection()
@@ -93,7 +117,7 @@ public class profilehandler : MonoBehaviour
         girlinput_page.SetActive(true);
         StartCoroutine(girl_action());
     }
-    
+
     IEnumerator boy_action()
     {
         yield return new WaitForSeconds(0f);
@@ -209,7 +233,7 @@ public class profilehandler : MonoBehaviour
 
     //IEnumerator ok_task()
     //{
-       
+
     //    yield return new WaitForSeconds(0.5f);
     //    iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
     //    yield return new WaitForSeconds(0.5f);
@@ -259,7 +283,7 @@ public class profilehandler : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         intro_panel.SetActive(true);
         this.gameObject.SetActive(false);
-        
+
     }
 
     IEnumerator ok_task()
@@ -268,6 +292,85 @@ public class profilehandler : MonoBehaviour
         StartCoroutine(postAvatarData());
 
     }
+  
+
+
+    //========================== PLAYER UPDATE AVATAR SELECTION METHODS ===============================
+    public void selectdFace(string facename)
+    {
+        for (int a = 0; a < Faces.Count; a++)
+        {
+            if (Faces[a].name == facename)
+            {
+                PlayerFace.sprite = FaceSprite[a];
+                Faces[a].transform.GetChild(0).gameObject.SetActive(true);
+                FaceType = a.ToString();
+            }
+            else
+            {
+                Faces[a].transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void selectdFaceGirl(string facename)
+    {
+        for (int a = 0; a < GirlFaces.Count; a++)
+        {
+            if (GirlFaces[a].name == facename)
+            {
+                GirlFaceIMage.sprite = GirlFaceSprite[a];
+                GirlFaces[a].transform.GetChild(0).gameObject.SetActive(true);
+                FaceType = a.ToString();
+            }
+            else
+            {
+                GirlFaces[a].transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void SelectBody(string bodyname)
+    {
+        for (int a = 0; a < Body.Count; a++)
+        {
+            if (Body[a].name == bodyname)
+            {
+                PlayerBody.sprite = BodySprites[a];
+                Body[a].transform.GetChild(0).gameObject.SetActive(true);
+                BodyType = a.ToString();
+            }
+            else
+            {
+                Body[a].transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void SelectBodyGirl(string bodyname)
+    {
+        for (int a = 0; a < GirlBody.Count; a++)
+        {
+            if (GirlBody[a].name == bodyname)
+            {
+                GirlBodyImage.sprite = GirlBodySprite[a];
+                GirlBody[a].transform.GetChild(0).gameObject.SetActive(true);
+                BodyType = a.ToString();
+            }
+            else
+            {
+                GirlBody[a].transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+    public void AvatarFinalUpdate(InputField inputField)
+    {
+        playername = inputField.text;
+        StartCoroutine(postAvatarData());
+    }
+
     IEnumerator postAvatarData()
     {
         yield return new WaitForSeconds(0.1f);
@@ -276,7 +379,7 @@ public class profilehandler : MonoBehaviour
         int uid = PlayerPrefs.GetInt("UID");
         avatar_form.AddField("UID", uid);
         avatar_form.AddField("UserName", playername);
-        avatar_form.AddField("UserGrade", grade_value);
+        avatar_form.AddField("UserGrade", "");
         WWW avatar_www = new WWW(avatar_url, avatar_form);
         yield return avatar_www;
         if (avatar_www.text != null)
@@ -295,7 +398,8 @@ public class profilehandler : MonoBehaviour
         WWWForm userdata_form = new WWWForm();
         userdata_form.AddField("UID", PlayerPrefs.GetInt("UID"));
         userdata_form.AddField("OID", PlayerPrefs.GetInt("OID"));
-        userdata_form.AddField("avatar_type", character_data);
+        userdata_form.AddField("avatar_type", FaceType);
+        userdata_form.AddField("body_type", BodyType);
 
         WWW avatar_www = new WWW(avatar_url, userdata_form);
         yield return avatar_www;
@@ -305,50 +409,18 @@ public class profilehandler : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
             yield return new WaitForSeconds(0.5f);
-            StartCoroutine(startpage.scenechanges(startpage.gameObject, bagde_sprite));
+            StartCoroutine(startpage.scenechanges(startpageObj, bagde_sprite));
             yield return new WaitForSeconds(1.2f);
-            this.gameObject.SetActive(false);
             intro_panel.GetComponent<CompleteIntroPage>().After_profile();
             intro_panel.SetActive(true);
             PlayerPrefs.SetString("User_grade", grade_value);
-            PlayerPrefs.SetInt("characterType", character_data);
+            PlayerPrefs.SetString("avatar_type", FaceType);
+            PlayerPrefs.SetString("body_type", BodyType);
+            this.gameObject.SetActive(false);
+            
             //this.gameObject.SetActive(false);
             //narration_activity.AfterAvatar_task();
         }
 
-    }
-
-
-    //========================== PLAYER UPDATE AVATAR SELECTION METHODS ===============================
-    public void selectdFace(string facename)
-    {
-        for(int a = 0; a < Faces.Count; a++)
-        {
-            if(Faces[a].name == facename)
-            {
-                PlayerFace.sprite = FaceSprite[a];
-                Faces[a].transform.GetChild(0).gameObject.SetActive(true);
-            }
-            else
-            {
-                Faces[a].transform.GetChild(0).gameObject.SetActive(false);
-            }
-        }
-    }
-
-    public void SelectBody(string bodyname)
-    {
-        for (int a = 0; a < Body.Count; a++)
-        {
-            if (Body[a].name == bodyname)
-            {
-                PlayerBody.sprite = BodySprites[a];
-                Body[a].transform.GetChild(0).gameObject.SetActive(true);
-            }
-            else
-            {
-                Body[a].transform.GetChild(0).gameObject.SetActive(false);
-            }
-        }
     }
 }
