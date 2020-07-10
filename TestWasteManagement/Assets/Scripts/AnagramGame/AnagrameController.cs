@@ -50,7 +50,7 @@ public class AnagrameController : MonoBehaviour
 
     void Start()
     {
-
+        score = 0;
         Timer.text = "0" + minute + ":" + second;
         Totaltimer = (minute * 60) + second;     
         sec = second;
@@ -258,7 +258,6 @@ public class AnagrameController : MonoBehaviour
         }
         SelectionCounter = 0;
         CorrectAnsCounter = 0;
-        score = 0;
         Words.Clear();
         Dashs.Clear();
         Timepaused = false;

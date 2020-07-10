@@ -241,10 +241,12 @@ public class Zonenarrations : MonoBehaviour
         {
             zones[a].gameObject.SetActive(true);
         }
-        if (Stage2unlocked)
-        {
-            Stage2popup.SetActive(true);
-        }
+
+        Stage2popup.SetActive(Stage2unlocked);
+        //if (Stage2unlocked)
+        //{
+        //    Stage2popup.SetActive(true);
+        //}
         
     }
 
@@ -310,16 +312,19 @@ public class Zonenarrations : MonoBehaviour
                 totalscoreOfUser += int.Parse(response_data[0]["ContentList"][a]["totalscore"].ToString());
             }
         }
-        if (totalscoreOfUser >= Stage2UnlockScore)
-        {
-            Stage2unlocked = true;
-            Debug.Log("Cleared level");
+
+        Stage2unlocked = totalscoreOfUser >= Stage2UnlockScore;
+        //if (totalscoreOfUser >= Stage2UnlockScore)
+        //{
+            
+        //    Debug.Log("Cleared level");
                 
-        }
-        else
-        {
-            Debug.Log("User score is less");
-        }
+        //}
+        //else
+        //{
+        //    Stage2unlocked = true;
+        //    Debug.Log("User score is less");
+        //}
     }
 
     public void ClosePopup()
@@ -371,12 +376,17 @@ public class Zonenarrations : MonoBehaviour
         StartCoroutine(Mainpage.scenechanges(startpage, CityPage));
         yield return new WaitForSeconds(1.2f);
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+        foreach (GameObject e in zones)
+        {
+            e.transform.GetChild(0).gameObject.SetActive(false);
+            e.GetComponent<BoxCollider2D>().enabled = true;
+            e.SetActive(false);
+        }
         for (int a = 0; a < zones.Count; a++)
         {
             zones[a].gameObject.SetActive(true);
         }
         
-      
     }
 
 

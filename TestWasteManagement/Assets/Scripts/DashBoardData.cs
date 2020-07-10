@@ -232,7 +232,7 @@ public class DashBoardData : MonoBehaviour
 
     void Room1_sorting()
     {
-        Debug.Log("started room1");
+        
         for (int a = 0; a < room1_obj.Count; a++)
         {
             GameObject  gb = Instantiate(Dashboard_row, tabs[0].gameObject.transform, false);

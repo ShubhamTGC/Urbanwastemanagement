@@ -2149,7 +2149,7 @@ public class Zonehandler : MonoBehaviour
        
 
         string data = JsonMapper.ToJson(logs);
-        //StartCoroutine(Post_data(data));
+        StartCoroutine(Post_data(data));
 
         if (Application.platform == RuntimePlatform.Android)
         {
