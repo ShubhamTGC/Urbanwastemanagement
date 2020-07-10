@@ -367,6 +367,7 @@ public class profilehandler : MonoBehaviour
 
     public void AvatarFinalUpdate(InputField inputField)
     {
+        //StartCoroutine(testcorotine());
         playername = inputField.text;
         StartCoroutine(postAvatarData());
     }
@@ -422,5 +423,21 @@ public class profilehandler : MonoBehaviour
             //narration_activity.AfterAvatar_task();
         }
 
+    }
+
+    IEnumerator testcorotine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(startpage.scenechanges(startpageObj, bagde_sprite));
+        yield return new WaitForSeconds(1.2f);
+        intro_panel.SetActive(true);
+        intro_panel.GetComponent<CompleteIntroPage>().After_profile();
+        PlayerPrefs.SetString("User_grade", grade_value);
+        PlayerPrefs.SetString("avatar_type", FaceType);
+        PlayerPrefs.SetString("body_type", BodyType);
+        yield return new WaitForSeconds(0.5f);
+        this.gameObject.SetActive(false);
     }
 }

@@ -87,14 +87,18 @@ public class BrightnessControl : MonoBehaviour
             //SoundStatus = "false";
             MusicBtn.GetComponent<Image>().sprite = OffSprite;
             //Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
-            MusicSlider.value = 0;
+            PlayerPrefs.SetFloat("volume", MusicSlider.value);
+            Debug.Log("val;ue " + MusicSlider.value);
+             MusicSlider.value = 0;
         }
         else
         {
             //VibrationStatus = "true";
             MusicBtn.GetComponent<Image>().sprite = OnSprite;
+            MusicSlider.value = 1;
             // Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
-            MusicSlider.value = PlayerPrefs.GetFloat("volume");
+            //Camera.main.gameObject.GetComponent<VolumevalueChange>().SetVolume(PlayerPrefs.GetFloat("volume"));// = PlayerPrefs.GetFloat("volume");
+
         }
     }
 

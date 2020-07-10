@@ -13,7 +13,9 @@ public class AnagrameController : MonoBehaviour
 {
     public string[] Answordlist;
     public string[] Questionlist;
+    public Sprite[] AnswerSprite;
     public Text Currentquestion;
+    public Image HintImage;
     private int CurrentWordCount =0;
     private string AnswerWord;
     private string[] WordSplits;
@@ -71,8 +73,11 @@ public class AnagrameController : MonoBehaviour
             Debug.Log(num);
             string temp = Answordlist[a];
             string temp2 = Questionlist[a];
+            Sprite tempsprite = AnswerSprite[a];
             Questionlist[a] = Questionlist[num-1];
             Answordlist[a] = Answordlist[num-1];
+            AnswerSprite[a] = AnswerSprite[num - 1];
+            AnswerSprite[num - 1] = tempsprite;
             Answordlist[num-1] = temp;
             Questionlist[num-1] = temp2;
         }
@@ -133,6 +138,7 @@ public class AnagrameController : MonoBehaviour
         AnswerWord = Answordlist[WordNumber];
         Currentquestion.text = "";
         Currentquestion.text = Questionlist[WordNumber];
+        HintImage.sprite = AnswerSprite[WordNumber];
         WordSplits = new string[AnswerWord.Length];
         CorrectAns = new string[AnswerWord.Length];
         SelectedWord = new string[AnswerWord.Length];

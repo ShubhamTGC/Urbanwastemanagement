@@ -18,7 +18,7 @@ public class Zonenarrations : MonoBehaviour
     public GameObject zone_text,video_msg_panel;
     private bool isskipped = false;
     public GameObject startpage;
-    public Zonehandler hoomzone, schoolzone,Hospitalzone,officezone,industryzone;
+    public Zonehandler hoomzone, schoolzone,Hospitalzone,officezone,industryzone,parkzone;
     public GameObject last_msg;
     public GameObject YoutubePlayer,skipbutton,videomsg;
 
@@ -54,9 +54,11 @@ public class Zonenarrations : MonoBehaviour
         //        zones[a].gameObject.SetActive(true);
         //    }
         //}
-        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed || industryzone.zone_completed)
+        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
+            || industryzone.zone_completed || parkzone.zone_completed)
         {
-            if(hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed && industryzone.final_completed)
+            if(hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed 
+                && industryzone.final_completed && parkzone.final_completed)
             {
                 for (int a = 0; a < zones.Count; a++)
                 {
@@ -86,26 +88,14 @@ public class Zonenarrations : MonoBehaviour
 
      void OnEnable()
     {
-        // onetime_narration = PlayerPrefs.GetString("zone_guide");
-        //if (onetime_narration != "done")
-        //{
-        //    StartCoroutine(startguide());
-        //}
-        //else
-        //{
-        //    touchinfo.SetActive(false);
-        //    skipbtn.SetActive(false);
-        //    superhero.SetActive(false);
-        //    for (int a = 0; a < zones.Count; a++)
-        //    {
-        //        zones[a].gameObject.SetActive(true);
-        //    }
-        //}
+      
 
         StartCoroutine(CheckForStage2());
-        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed || industryzone.zone_completed)
+        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed 
+            || industryzone.zone_completed || parkzone.zone_completed)
         {
-            if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed && industryzone.final_completed)
+            if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed
+                && industryzone.final_completed && parkzone.final_completed)
             {
                 for (int a = 0; a < zones.Count; a++)
                 {

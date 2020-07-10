@@ -51,7 +51,7 @@ public class StartpageController : MonoBehaviour
 
     [Header("=====generation level sprites=====")]
     public Sprite toplayer_sprite;
-    public Sprite midlayer_sprite,home_sprite,industry_sprite,hospital_sprite,forest_sprite,school_sprite,park_sprite;
+    public Sprite midlayer_sprite,home_sprite,industry_sprite,hospital_sprite,forest_sprite,school_sprite,park_sprite, Dirty_Sky;
     public Button Back,dashboardbtn,settingpanelbtn;
 
 
@@ -283,7 +283,7 @@ public class StartpageController : MonoBehaviour
             case "Generation":
                 //StartCoroutine(levelanim(selectedobj));
                 StartCoroutine(ZoneGameActive());
-                StartCoroutine(scenechanges(HomepageObject, midlayer_sprite));
+                StartCoroutine(scenechanges(HomepageObject, Dirty_Sky));
                // Invoke("midlayerenable", 0.5f);
                 break;
             case "seperation":
@@ -305,6 +305,9 @@ public class StartpageController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         toplayer.SetActive(false);
+        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.5f);
+        StartCoroutine(scenechanges(HomepageObject, midlayer_sprite));
         yield return new WaitForSeconds(1.2f);
         SceneManager.LoadScene(1);
     }

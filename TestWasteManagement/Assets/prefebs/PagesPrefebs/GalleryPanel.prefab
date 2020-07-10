@@ -1540,7 +1540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.103773594, g: 0.10034711, b: 0.10034711, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2446,7 +2446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.084905684, g: 0.084505185, b: 0.084505185, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3283,7 +3283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.103773594, g: 0.10034711, b: 0.10034711, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3777,7 +3777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.084905684, g: 0.084505185, b: 0.084505185, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3933,7 +3933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.084905684, g: 0.084505185, b: 0.084505185, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4089,7 +4089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4489,7 +4489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4764,7 +4764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.103773594, g: 0.10034711, b: 0.10034711, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4978,7 +4978,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -11, y: -58.8}
+  m_AnchoredPosition: {x: -11, y: -58.800003}
   m_SizeDelta: {x: 462.05402, y: 47.63273}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6341272079191746695
@@ -6275,7 +6275,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 200, y: 335}
-  m_SizeDelta: {x: 250, y: 400}
+  m_SizeDelta: {x: 200, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6341272079510618709
 CanvasRenderer:
@@ -6304,7 +6304,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3ee29c6a65734d644b2141f27bdb2079, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7337,7 +7337,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -358.4, y: -42}
+  m_AnchoredPosition: {x: -358.4004, y: -42}
   m_SizeDelta: {x: 216.83936, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6341272079784409739
@@ -7489,7 +7489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.084905684, g: 0.084505185, b: 0.084505185, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8096,7 +8096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -8260,11 +8260,11 @@ MonoBehaviour:
   - {fileID: 6341272078881925678}
   Mainurl: https://drive.google.com/file/d/1blTKaIVwJO1L33a3kwZWrWlKvE4t70u3/view?usp=sharing
   DiyUrls:
-  - https://drive.google.com/file/d/1MHIYcAF-__DN2jPJtMOep7gjEf4wxbx7/view?usp=sharing
-  - https://drive.google.com/file/d/1fY4DsQOiDUk0OfX0_D4o1789m2WavLpJ/view?usp=sharing
-  - https://drive.google.com/file/d/1BFxIti0UF-n8M76F49FjxHj4gbDQJaID/view?usp=sharing
-  - https://drive.google.com/file/d/1UeLnfSX-o2Lzm2P7lqUzi_TmMCK-NGKW/view?usp=sharing
-  - https://drive.google.com/file/d/1QgSXdJRQAc3_Fex3f1gJJk0_aNdEojYp/view?usp=sharing
+  - https://drive.google.com/file/d/1LqLeakd2pDCRqocPDdv4SJGQgTpgHIEp/view?usp=sharing
+  - https://drive.google.com/file/d/1OkZixJiNrj4dajLRYSMswg2BNDb1OCwb/view?usp=sharing
+  - https://drive.google.com/file/d/16Nx43g4EYqu7wMyRcL18TG5UOJ6d5pfc/view?usp=sharing
+  - https://drive.google.com/file/d/1pB4GDU4dVxXFjONwE_YigVMmVpFShXGY/view?usp=sharing
+  - https://drive.google.com/file/d/1I55JrUets4aYBMNB4y-UTbiSgpA30KIr/view?usp=sharing
   PopUpmsgPage: {fileID: 6341272079145882811}
 --- !u!1 &6341272080086821042
 GameObject:
@@ -8566,7 +8566,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6341272080118786996
 RectTransform:
   m_ObjectHideFlags: 0

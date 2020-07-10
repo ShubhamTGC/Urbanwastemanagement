@@ -1235,7 +1235,18 @@ MonoBehaviour:
   - Recycling, composting and source reduction are designed to_______the amount of
     waste entering landfills
   - The least preferable waste management method is
+  AnswerSprite:
+  - {fileID: 21300000, guid: bd4028e7028b53942b563d30fefc1e23, type: 3}
+  - {fileID: 21300000, guid: e9b418468e3ae1745bc8f393068376cd, type: 3}
+  - {fileID: 21300000, guid: 3b22fde7ec15d6e469b510a1ca839486, type: 3}
+  - {fileID: 21300000, guid: e57cfb2b4983f6340a3aba5b9ce392b6, type: 3}
+  - {fileID: 21300000, guid: 28de710f57df11e4ba709e535c3462da, type: 3}
+  - {fileID: 21300000, guid: f171f1320f836c749a18b60b4b03a9a2, type: 3}
+  - {fileID: 21300000, guid: 90ba12170b886e24d9fdee308a8db0e0, type: 3}
+  - {fileID: 21300000, guid: 94d765cee2a5e0d41a81265808295496, type: 3}
+  - {fileID: 21300000, guid: d3904af4a4957e845bab46afb53770ac, type: 3}
   Currentquestion: {fileID: 5032911112129589078}
+  HintImage: {fileID: 5032911112172238924}
   WordPrefebs: {fileID: 4093310882063540217, guid: 3dd49c48c4ccdf947927e3dd16f33d79,
     type: 3}
   DashPrefeb: {fileID: 817157267870208375, guid: edd3c14ca09f35b43967c39f87b8e28d,
@@ -1435,8 +1446,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 287.5, y: -844}
-  m_SizeDelta: {x: -325, y: 150}
+  m_AnchoredPosition: {x: 334.3, y: -844}
+  m_SizeDelta: {x: -381.48584, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5032911112594508572
 MonoBehaviour:
@@ -1479,7 +1490,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5032911112726823887
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1939,8 +1950,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 287.5, y: -690.8}
-  m_SizeDelta: {x: -325, y: 150}
+  m_AnchoredPosition: {x: 334.3, y: -690.8}
+  m_SizeDelta: {x: -381.48584, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5032911113309201054
 MonoBehaviour:

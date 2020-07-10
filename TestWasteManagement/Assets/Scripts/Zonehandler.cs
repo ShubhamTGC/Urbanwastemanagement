@@ -60,7 +60,7 @@ public class Zonehandler : MonoBehaviour
     public Dictionary<string, string> room3_data = new Dictionary<string, string>();
     [Header("-====for dashbaord====")]
     public Sprite right_ans;
-    public Sprite wrong_ans;
+    public Sprite wrong_ans,Correctoption,Partiallycorrect;
     public Text overall_score_r1,overall_score_r2,overall_score_r3;
     public Image player_image;
     public Sprite boy_image, girl_image;
@@ -94,6 +94,7 @@ public class Zonehandler : MonoBehaviour
     public GameObject bonus_page;
 
 
+
     [Header("home_page")]
     public GameObject Home_page_dashboard;
     public string Zone_name;
@@ -113,10 +114,22 @@ public class Zonehandler : MonoBehaviour
     public Image BonusScoreFiller;
     public float TotalBonusGameScore;
     public Text CollectedBonusScore;
-   // private int Room_oneId,Room_twoId,Room_thirdId;
+    private List<float> RoomsScores = new List<float>();
+    // private int Room_oneId,Room_twoId,Room_thirdId;
 
     //================================================start scripting=============================================//
 
+    //================= Updated dashboard varaiables ===========================
+    [Header("Updated Dashboard bar")]
+    [Space(10)]
+    public Transform RoomsParents;
+    public GameObject UpdatedTabHolder, UpdatedTabDataBar;
+    public int TabHolderCount;
+    public Text RoomName;
+    public List<string> RoomNames;
+    private int RoomPageCounter = 0,CurrentPagecounter;
+    public Button LeftPage, RightPage;
+    public Text UpdatedOverallscore;
 
 
     void Start()
@@ -576,6 +589,21 @@ public class Zonehandler : MonoBehaviour
                 actionplan_text.text = actionplan_score.ToString();
             }
         }
+
+        if (RoomPageCounter == 0)
+        {
+            LeftPage.gameObject.SetActive(false);
+            RightPage.gameObject.SetActive(true);
+
+        }
+        else if (RoomPageCounter > 0 && RoomPageCounter < RoomNames.Count - 1)
+        {
+            LeftPage.gameObject.SetActive(true);
+            RightPage.gameObject.SetActive(true);
+        }else if(RoomPageCounter < RoomNames.Count)
+        {
+            RightPage.gameObject.SetActive(false);
+        }
     }
 
     void Timer_functionlity(bool nextroom1,bool nextroom2)
@@ -1019,9 +1047,9 @@ public class Zonehandler : MonoBehaviour
             Bonusscore_room3 = Bonus_Score;
         }
 
-        for (int i = 0; i < subzones.Count; i++)
+        for (int i = 0; i < TabHolderCount; i++)
         {
-            GameObject gb = Instantiate(tab_prefeb, rowhandler_parent[i].transform, false);
+            GameObject gb = Instantiate(UpdatedTabHolder, RoomsParents, false);
             gb.name = "Tab" + i;
             tabs[i] = gb;
             gb.SetActive(false);
@@ -1035,6 +1063,9 @@ public class Zonehandler : MonoBehaviour
         overall_score_r1.text = room1_score.ToString();
         overall_score_r2.text = room2_score.ToString();
         overall_score_r3.text = room3_score.ToString();
+        RoomsScores.Add(room1_score);
+        RoomsScores.Add(room2_score);
+        RoomsScores.Add(room3_score);
         float total_scored;
         float level_score;
         score_text.text = level1score.ToString();
@@ -1059,7 +1090,7 @@ public class Zonehandler : MonoBehaviour
        
         for (int i = 0; i < room1.Count; i++)
         {
-            GameObject row = Instantiate(data_row_prefeb, tabs[0].gameObject.transform, false);
+            GameObject row = Instantiate(UpdatedTabDataBar, tabs[0].gameObject.transform, false);
             row.gameObject.name = "data_row" + i;
             tab1_object[i] = row;
             row.SetActive(true);
@@ -1074,134 +1105,261 @@ public class Zonehandler : MonoBehaviour
                 tab1_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = item_name_list1[b];
                 if (score_room1[b] != "0")
                 {
-                    tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+" + score_room1[b];
+                    tab1_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "+" + score_room1[b];
                 }
                 else
                 {
-                    tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = score_room1[b];
+                    tab1_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = score_room1[b];
                 }
 
                 if (dropped_bin1[b].ToLower() == "reduce")
                 {
-                    if (score_room1[b] == "10" || score_room1[b] == "5")    
+                    if (score_room1[b] == "10" )    
                     {
                         room1_is_right.Add(1);
-                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
 
                     }
-                    else
+                    else 
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if (score_room1[b] == "5")
                         {
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list1[b])
-                            {
-                                correct_option1[b] = "Reduce" ;
-                                tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+
                             }
-                           
+                            for (int c = 0; c < reuse.Count; c++)
+                            {
+                                if (reuse[c].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int d = 0; d < recycle.Count; d++)
+                            {
+                                if (recycle[d].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            
                         }
-                        for (int c = 0; c < reuse.Count; c++)
+                        else
                         {
-                            if (reuse[c].gameObject.name == item_name_list1[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option1[b] = "Reuse";
-                                tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+
                             }
-                        }
-                        for (int d = 0; d < recycle.Count; d++)
-                        {
-                            if (recycle[d].gameObject.name == item_name_list1[b])
+                            for (int c = 0; c < reuse.Count; c++)
                             {
-                                correct_option1[b] = "Recycle";
-                                tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[c].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int d = 0; d < recycle.Count; d++)
+                            {
+                                if (recycle[d].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room1_is_right.Add(0);
+                            tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room1_is_right.Add(0);
-                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+
                     }
+                 
 
                 }
                 else if (dropped_bin1[b].ToLower() == "reuse")
                 {
-                    if (score_room1[b] == "10" || score_room1[b] == "5")
+                    if (score_room1[b] == "10")
                     {
                         room1_is_right.Add(1);
-                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if(score_room1[b] == "5")
                         {
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list1[b])
-                            {
-                                correct_option1[b] = "Reduce";
-                                tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < reuse.Count; a++)
+                            {
+                                if (reuse[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list1[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option1[b] = "Reuse";
-                                tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list1[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option1[b] = "Recycle";
-                                tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room1_is_right.Add(0);
+                            tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room1_is_right.Add(0);
-                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                       
                     }
                 }
                 else if (dropped_bin1[b].ToLower() == "recycle")
                 {
-                    if (score_room1[b] == "10" || score_room1[b] == "5")
+                    if (score_room1[b] == "10")
                     {
                         room1_is_right.Add(1);
-                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if(score_room1[b] == "5")
                         {
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list1[b])
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option1[b] = "Reduce";
-                                tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list1[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option1[b] = "Reuse";
-                                tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reduce";
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list1[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option1[b] = "Recycle";
-                                tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Reuse";
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list1[b])
+                                {
+                                    correct_option1[b] = "Recycle";
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room1_is_right.Add(0);
+                            tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room1_is_right.Add(0);
-                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                      
                     }
                 }
             }
@@ -1222,10 +1380,13 @@ public class Zonehandler : MonoBehaviour
                 }
                
                
-                tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "0";
-                tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
+                tab1_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(3).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
+                tab1_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
                
                 correct_option1[b] = "null";
             }
@@ -1237,7 +1398,7 @@ public class Zonehandler : MonoBehaviour
         //=================================================tab 2 data filling==========================================================//
         for (int i = 0; i < room2.Count; i++)
         {
-            GameObject row = Instantiate(data_row_prefeb, tabs[1].gameObject.transform, false);
+            GameObject row = Instantiate(UpdatedTabDataBar, tabs[1].gameObject.transform, false);
             row.gameObject.name = "data_row" + i;
             tab2_object[i] = row;
             row.SetActive(true);
@@ -1252,133 +1413,258 @@ public class Zonehandler : MonoBehaviour
                 tab2_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = item_name_list2[b];
                 if (score_room2[b] != "0")
                 {
-                    tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+" + score_room2[b];
+                    tab2_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "+" + score_room2[b];
                 }
                 else
                 {
-                    tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = score_room2[b];
+                    tab2_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = score_room2[b];
                 }
 
                 if (dropped_bin2[b].ToLower() == "reduce")
                 {
-                    if (score_room2[b] == "10" || score_room2[b] == "5")
+                    if (score_room2[b] == "10"  )
                     {
                         room2_is_right.Add(1);
-                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
 
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if(score_room2[b] == "5")
                         {
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list2[b])
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option2[b] = "Reduce";
-                                tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list2[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option2[b] = "Reuse";
-                                tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list2[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option2[b] = "Recycle";
-                                tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room2_is_right.Add(0);
+                            tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room2_is_right.Add(0);
-                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                    
                     }
 
                 }
                 else if (dropped_bin2[b].ToLower() == "reuse")
                 {
-                    if (score_room2[b] == "10" || score_room2[b] == "5")
+                    if (score_room2[b] == "10")
                     {
                         room2_is_right.Add(1);
-                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if(score_room2[b] == "5")
                         {
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list2[b])
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option2[b] = "Reduce";
-                                tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list2[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option2[b] = "Reuse";
-                                tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list2[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option2[b] = "Recycle";
-                                tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room2_is_right.Add(0);
+                            tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room2_is_right.Add(0);
-                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                     
                     }
                 }
                 else if (dropped_bin2[b].ToLower() == "recycle")
                 {
-                    if (score_room2[b] == "10" || score_room2[b] == "5")
+                    if (score_room2[b] == "10" )
                     {
                         room2_is_right.Add(1);
-                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
-                        {
 
-                            if (reduce[a].gameObject.name == item_name_list2[b])
-                            {
-                                correct_option2[b] = "Reduce";
-                                tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
-                            }
-                        }
-                        for (int a = 0; a < reuse.Count; a++)
+                        if(score_room2[b] == "5")
                         {
-                            if (reuse[a].gameObject.name == item_name_list2[b])
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option2[b] = "Reuse";
-                                tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
+                            {
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < recycle.Count; a++)
+                        else
                         {
-                            if (recycle[a].gameObject.name == item_name_list2[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option2[b] = "Recycle";
-                                tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reduce";
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < reuse.Count; a++)
+                            {
+                                if (reuse[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Reuse";
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list2[b])
+                                {
+                                    correct_option2[b] = "Recycle";
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room2_is_right.Add(0);
+                            tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room2_is_right.Add(0);
-                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                       
+                   
                     }
                 }
             }
@@ -1400,10 +1686,13 @@ public class Zonehandler : MonoBehaviour
                 }
                 
                
-                tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "0";
-                tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
+                tab2_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(3).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
+                tab2_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
                
             }
 
@@ -1412,7 +1701,7 @@ public class Zonehandler : MonoBehaviour
         //=================================================tab 3 data filling===========================================//
         for (int i = 0; i < room3.Count; i++)
         {
-            GameObject row = Instantiate(data_row_prefeb, tabs[2].gameObject.transform, false);
+            GameObject row = Instantiate(UpdatedTabDataBar, tabs[2].gameObject.transform, false);
             row.gameObject.name = "data_row" + i;
             tab3_object[i] = row;
             row.SetActive(true);
@@ -1428,133 +1717,257 @@ public class Zonehandler : MonoBehaviour
                 tab3_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = item_name_list3[b];
                 if (score_room3[b] != "0")
                 {
-                    tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+" + score_room3[b];
+                    tab3_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "+" + score_room3[b];
                 }
                 else
                 {
-                    tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = score_room3[b];
+                    tab3_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = score_room3[b];
                 }
 
                 if (dropped_bin3[b].ToLower() == "reduce")
                 {
-                    if (score_room3[b] == "10" || score_room3[b] == "5")
+                    if (score_room3[b] == "10" )
                     {
                         room3_is_right.Add(1);
-                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
 
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if(score_room3[b] == "5")
                         {
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list3[b])
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option3[b] = "Reduce";
-                                tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list3[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option3[b] = "Reuse";
-                                tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list3[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option3[b] = "Recycle";
-                                tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room3_is_right.Add(0);
+                            tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room3_is_right.Add(0);
-                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                     
                     }
 
                 }
                 else if (dropped_bin3[b].ToLower() == "reuse")
                 {
-                    if (score_room3[b] == "10" || score_room3[b] == "5")
+                    if (score_room3[b] == "10")
                     {
                         room3_is_right.Add(1);
-                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
-                        {
 
-                            if (reduce[a].gameObject.name == item_name_list3[b])
-                            {
-                                correct_option3[b] = "Reduce";
-                                tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
-                            }
-                        }
-                        for (int a = 0; a < reuse.Count; a++)
+                        if(score_room3[b] == "5")
                         {
-                            if (reuse[a].gameObject.name == item_name_list3[b])
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option3[b] = "Reuse";
-                                tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
+                            {
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < recycle.Count; a++)
+                        else
                         {
-                            if (recycle[a].gameObject.name == item_name_list3[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option3[b] = "Recycle";
-                                tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < reuse.Count; a++)
+                            {
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room3_is_right.Add(0);
+                            tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room3_is_right.Add(0);
-                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                    
                     }
                 }
                 else if (dropped_bin3[b].ToLower() == "recycle")
                 {
-                    if (score_room3[b] == "10" || score_room3[b] == "5")
+                    if (score_room3[b] == "10")
                     {
                         room3_is_right.Add(1);
-                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = right_ans;
+                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
                     }
                     else
                     {
-                        for (int a = 0; a < reduce.Count; a++)
+                        if (score_room3[b] == "5")
                         {
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            for (int a = 0; a < reduce.Count; a++)
+                            {
 
-                            if (reduce[a].gameObject.name == item_name_list3[b])
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option3[b] = "Reduce";
-                                tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
                         }
-                        for (int a = 0; a < reuse.Count; a++)
+                        else
                         {
-                            if (reuse[a].gameObject.name == item_name_list3[b])
+                            for (int a = 0; a < reduce.Count; a++)
                             {
-                                correct_option3[b] = "Reuse";
-                                tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+
+                                if (reduce[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reduce";
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
-                        }
-                        for (int a = 0; a < recycle.Count; a++)
-                        {
-                            if (recycle[a].gameObject.name == item_name_list3[b])
+                            for (int a = 0; a < reuse.Count; a++)
                             {
-                                correct_option3[b] = "Recycle";
-                                tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct";
+                                if (reuse[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Reuse";
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
                             }
+                            for (int a = 0; a < recycle.Count; a++)
+                            {
+                                if (recycle[a].gameObject.name == item_name_list3[b])
+                                {
+                                    correct_option3[b] = "Recycle";
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
+                                }
+                            }
+                            room3_is_right.Add(0);
+                            tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                        room3_is_right.Add(0);
-                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.SetActive(true);
-                        tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = wrong_ans;
+                      
                     }
                 }
             }
@@ -1576,18 +1989,21 @@ public class Zonehandler : MonoBehaviour
                 }
                 
             
-                tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "0";
-                tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
-                tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
+                tab3_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(3).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
+                tab3_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
               
             }
 
         }
-        foreach(GameObject a in tabs)
-        {
-            a.SetActive(true);
-        }
+
+        RoomName.text = RoomNames[RoomPageCounter];
+        tabs[RoomPageCounter].SetActive(true);
+        UpdatedOverallscore.text = RoomsScores[RoomPageCounter].ToString();
 
         var logs = new List<ZoneDataPost>();
         int l = 0;
@@ -1733,8 +2149,7 @@ public class Zonehandler : MonoBehaviour
        
 
         string data = JsonMapper.ToJson(logs);
-        Debug.Log(data);
-        StartCoroutine(Post_data(data));
+        //StartCoroutine(Post_data(data));
 
         if (Application.platform == RuntimePlatform.Android)
         {
@@ -1747,6 +2162,28 @@ public class Zonehandler : MonoBehaviour
         }
         
 
+    }
+
+    public void RightPageEnable()
+    {
+        CurrentPagecounter = RoomPageCounter;
+        RoomPageCounter++;
+        RoomName.text = RoomNames[RoomPageCounter];
+        tabs[CurrentPagecounter].SetActive(false);
+        UpdatedOverallscore.text = RoomsScores[RoomPageCounter].ToString();
+        tabs[RoomPageCounter].SetActive(true);
+
+    }
+
+    public void LeftPageEnable()
+    {
+        
+        CurrentPagecounter = RoomPageCounter;
+        RoomPageCounter--;
+        RoomName.text = RoomNames[RoomPageCounter];
+        UpdatedOverallscore.text = RoomsScores[RoomPageCounter].ToString();
+        tabs[CurrentPagecounter].SetActive(false);
+        tabs[RoomPageCounter].SetActive(true);
     }
 
     IEnumerator Post_data(string log_data)
@@ -1764,58 +2201,20 @@ public class Zonehandler : MonoBehaviour
         }
 
     }
-    public void dash_tab1()
-    {
-        kitch_btn.gameObject.GetComponent<Image>().enabled = true;
-        kitch_btn.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-        bedrom_btn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        livingbtn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        bedrom_btn.gameObject.GetComponent<Image>().enabled = false;
-        livingbtn.gameObject.GetComponent<Image>().enabled = false;
-        tabs[0].gameObject.SetActive(true);
-        tabs[1].gameObject.SetActive(false);
-        tabs[2].gameObject.SetActive(false);
-    }
-    public void dash_tab2()
-    {
-        kitch_btn.gameObject.GetComponent<Image>().enabled = false;
-        bedrom_btn.gameObject.GetComponent<Image>().enabled = true;
-        kitch_btn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        bedrom_btn.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-        livingbtn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        livingbtn.gameObject.GetComponent<Image>().enabled = false;
-        tabs[0].gameObject.SetActive(false);
-        tabs[1].gameObject.SetActive(true);
-        tabs[2].gameObject.SetActive(false);
-    }
-
-    public void dash_tab3()
-    {
-        kitch_btn.gameObject.GetComponent<Image>().enabled = false;
-        bedrom_btn.gameObject.GetComponent<Image>().enabled = false;
-        kitch_btn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        bedrom_btn.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-        livingbtn.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-        livingbtn.gameObject.GetComponent<Image>().enabled = true;
-        tabs[0].gameObject.SetActive(false);
-        tabs[1].gameObject.SetActive(false);
-        tabs[2].gameObject.SetActive(true);
-    }
+  
 
     public void action_plan_activite()
     {
-        //PlayerPrefs.SetString("zonename", this.gameObject.name);
+        
         action_plan_page.SetActive(true);
     }
 
     IEnumerator CaptureIt()
     {
-        //string timeStamp = System.DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss");
         string fileName = Zone_name  + ".png";
         string pathToSave = fileName;
         ScreenCapture.CaptureScreenshot(pathToSave);
         yield return new WaitForEndOfFrame();
-        //Instantiate(blink, new Vector2(0f, 0f), Quaternion.identity);
     }
 
 

@@ -9,7 +9,7 @@ public class CompleteIntroPage : MonoBehaviour
     public Sprite Hero_intro, badge_intro,avatar_page,main_page,bg_image;
     public GameObject profile_setup, Stage_page,logoutbutton;
     public StartpageController startpage;
-    public Button Next_btn, Back_btn,skip_btn;
+    public Button Next_btn, Back_btn;
     public GameObject Homepage_obj;
     
     void Start()
@@ -78,9 +78,11 @@ public class CompleteIntroPage : MonoBehaviour
         {
             logoutbutton.SetActive(false);
             yield return new WaitForSeconds(0.1f);
+            Next_btn.onClick.RemoveAllListeners();
+            Back_btn.onClick.RemoveAllListeners();
             Next_btn.gameObject.SetActive(false);
             Back_btn.gameObject.SetActive(false);
-            skip_btn.gameObject.SetActive(false);
+            //skip_btn.gameObject.SetActive(false);
             StartCoroutine(startpage.scenechanges(Homepage_obj, avatar_page));
             yield return new WaitForSeconds(1.2f);
             profile_setup.SetActive(true);
@@ -91,10 +93,11 @@ public class CompleteIntroPage : MonoBehaviour
 
     public void After_profile()
     {
+        Debug.Log("excuted after avatar seletion");
         logoutbutton.SetActive(false);
         Next_btn.gameObject.SetActive(true);
         Back_btn.gameObject.SetActive(true);
-        skip_btn.gameObject.SetActive(true);
+        //skip_btn.gameObject.SetActive(true);
         Next_btn.onClick.RemoveAllListeners();
         Back_btn.onClick.RemoveAllListeners();
         Next_btn.onClick.AddListener(delegate { after_badge(); });
@@ -111,7 +114,7 @@ public class CompleteIntroPage : MonoBehaviour
         logoutbutton.SetActive(false);
         Next_btn.gameObject.SetActive(false);
         Back_btn.gameObject.SetActive(false);
-        skip_btn.gameObject.SetActive(false);
+       // skip_btn.gameObject.SetActive(false);
         StartCoroutine(startpage.scenechanges(Homepage_obj, bg_image));
         yield return new WaitForSeconds(1.2f);
         Stage_page.SetActive(true);
@@ -127,7 +130,7 @@ public class CompleteIntroPage : MonoBehaviour
        
         Next_btn.gameObject.SetActive(false);
         Back_btn.gameObject.SetActive(false);
-        skip_btn.gameObject.SetActive(false);
+        //skip_btn.gameObject.SetActive(false);
         StartCoroutine(startpage.scenechanges(Homepage_obj, Hero_intro));
         yield return new WaitForSeconds(1.2f);
         initialtask();
