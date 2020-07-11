@@ -17,14 +17,23 @@ public class TriviaHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-    
+        System.Random ran = new System.Random();
+        int randomnum = ran.Next(1, TriviaMsg.Count);
+            //int randomindex = UnityEngine.Random.Range(1, TriviaMsg.Count + 1);
+        ShowMSg.text = TriviaMsg[randomnum];
+        Laodingstart = true;
     }
 
      void OnEnable()
     {
-        int randomindex = UnityEngine.Random.Range(1, TriviaMsg.Count + 1);
-        ShowMSg.text = TriviaMsg[randomindex];
+     
+    }
+
+     void OnDisable()
+    {
         Laodingstart = true;
+        currentTime = 0f;
+        LoadingBar.fillAmount = 0f;
     }
 
     // Update is called once per frame

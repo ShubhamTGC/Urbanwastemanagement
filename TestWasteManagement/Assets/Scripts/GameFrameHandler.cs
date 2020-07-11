@@ -33,7 +33,7 @@ public class GameFrameHandler : MonoBehaviour
     public GameObject exitpanel,logoutpage,logoutpanel,logoutmsg,loadinganim;
     public GameObject updatemsg;
     public GameObject Leaderboard;
-
+    public GameObject OverallPage;
     public AudioSource mainaudio;
     public Image brightness;
     static StartpageController instance;
@@ -388,6 +388,20 @@ public class GameFrameHandler : MonoBehaviour
         Leaderboard.SetActive(true);
         panel_btn2.GetComponent<Image>().sprite = in_sprite;
         iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+    }
+
+    public void ShowOverallDashboard()
+    {
+        if (OverallPage.activeInHierarchy)
+        {
+            OverallPage.SetActive(false);
+        }
+        else
+        {
+            OverallPage.SetActive(true);
+            panel_btn.GetComponent<Image>().sprite = in_sprite;
+            iTween.MoveTo(buttonpanel, iTween.Hash("position", outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+        }
     }
 
 }

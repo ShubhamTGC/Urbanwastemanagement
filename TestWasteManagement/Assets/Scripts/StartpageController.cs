@@ -73,6 +73,10 @@ public class StartpageController : MonoBehaviour
     public GameObject homesliderpanel;
     public GameObject UpdatedHomePage, UpdatedLoginPage;
 
+    //===================== ON BORDING VARIABLES================= //
+    public GameObject TriviaPage;
+    public GameObject YoutubeVideopage,skipVideo;
+
     private void Awake()
     {
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
@@ -109,6 +113,7 @@ public class StartpageController : MonoBehaviour
     {
         //UpdatedHomePage.SetActive(true);
         superhero.SetActive(true);
+        settingpanelbtn.gameObject.SetActive(true);
         superhero.GetComponent<CompleteIntroPage>().after_badge();
     }
 
@@ -656,17 +661,14 @@ public class StartpageController : MonoBehaviour
                     loadinganim.SetActive(false);
                     string msg = "Logged In Successfully!";
                     StartCoroutine(Messagedisplay(msg));
-                    yield return new WaitForSeconds(3.5f);
+                    yield return new WaitForSeconds(3.6f);
                    // firstscreen.SetActive(false);
                     loginpage.SetActive(false);
-                    if(remeberme.isOn == true)
-                    {
-                        PlayerPrefs.SetString("logged", "true");
-                    }
-                    remeberme.isOn = false;
-                    StartCoroutine(scenechanges(HomepageObject, toplayer_sprite));
-                    yield return new WaitForSeconds(1.2f);
-                    superhero.SetActive(true);
+                    YoutubeVideopage.SetActive(true);
+                    TriviaPage.SetActive(true);
+                    Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+                    skipVideo.SetActive(true);
+                  
                 }
                 else
                 {
@@ -683,7 +685,31 @@ public class StartpageController : MonoBehaviour
 
         }
     }
-  
+
+    public void SkipVideoTask()
+    {
+        StartCoroutine(CoroutineskipVideo());
+    }
+    IEnumerator CoroutineskipVideo()
+    {
+        skipVideo.SetActive(false);
+        YoutubeVideopage.SetActive(false);
+        TriviaPage.SetActive(false);
+        if (remeberme.isOn == true)
+        {
+            PlayerPrefs.SetString("logged", "true");
+        }
+        remeberme.isOn = false;
+        StartCoroutine(scenechanges(HomepageObject, toplayer_sprite));
+        yield return new WaitForSeconds(1.2f);
+        superhero.SetActive(true);
+        Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
+    }
+
+
+
+
+
 
     IEnumerator Enablepage(GameObject enableobject, GameObject disableobject, float time)
     {

@@ -414,6 +414,7 @@ public class profilehandler : MonoBehaviour
             yield return new WaitForSeconds(1.2f);
             intro_panel.GetComponent<CompleteIntroPage>().After_profile();
             intro_panel.SetActive(true);
+            PlayerPrefs.GetString("profile_done", "done");
             PlayerPrefs.SetString("User_grade", grade_value);
             PlayerPrefs.SetString("avatar_type", FaceType);
             PlayerPrefs.SetString("body_type", BodyType);

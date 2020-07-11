@@ -95,6 +95,8 @@ public class CompleteIntroPage : MonoBehaviour
     {
         Debug.Log("excuted after avatar seletion");
         logoutbutton.SetActive(false);
+        Next_btn.onClick.RemoveAllListeners();
+        Back_btn.onClick.RemoveAllListeners();
         Next_btn.gameObject.SetActive(true);
         Back_btn.gameObject.SetActive(true);
         //skip_btn.gameObject.SetActive(true);

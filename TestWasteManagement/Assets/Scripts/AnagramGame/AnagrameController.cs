@@ -261,6 +261,7 @@ public class AnagrameController : MonoBehaviour
         Words.Clear();
         Dashs.Clear();
         Timepaused = false;
+        PlayerPrefs.SetInt("BonusScore", score);
         ScoreText.text = "You got total bonus score : " + score;
         GameoverObj.SetActive(true);
 

@@ -2146,8 +2146,8 @@ public class Zonehandler : MonoBehaviour
                 logs.Add(log2);
             });
         }
-       
-
+        int totalscore = room1_score + room2_score + room3_score;
+        PlayerPrefs.SetInt("ZoneScore", totalscore);
         string data = JsonMapper.ToJson(logs);
         StartCoroutine(Post_data(data));
 

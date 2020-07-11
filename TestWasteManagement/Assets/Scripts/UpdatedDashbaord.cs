@@ -10,15 +10,30 @@ public class UpdatedDashbaord : MonoBehaviour
     public List<GameObject> Tabs;
     public Sprite PresssedSprite, RealesedSprite;
     public List<GameObject> MainPages;
+
+
+    public Image OverallScoreFiller, ZoneScorezfiller, BonusScoreFiller;
+    public Text OverallScore, ZoneScore, BonusScore;
+    [SerializeField]
+    private int Totalscore,BonusTotalscore;
+    public Text Gamescore,TotalGamescore;
+    public Image GamescoreFiller, TotalGameFiller;
+    public List<StageOneDashboard> ZoneDashbaords;
+    public GameObject triviapage;
     void Start()
     {
-        initialSetup();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnEnable()
+    {
+        initialSetup();
     }
 
     void initialSetup() 
@@ -32,7 +47,19 @@ public class UpdatedDashbaord : MonoBehaviour
             Tabs[a].GetComponent<Image>().sprite = RealesedSprite;
             MainPages[a].SetActive(false);
         }
-    
+
+
+        OverallScore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
+        Gamescore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
+        TotalGamescore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
+        ZoneScore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
+        BonusScore.text = PlayerPrefs.GetInt("BonusScore").ToString();
+
+        OverallScoreFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
+        GamescoreFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
+        TotalGameFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
+        ZoneScorezfiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
+        BonusScoreFiller.fillAmount =(float)PlayerPrefs.GetInt("BonusScore") / (float)BonusTotalscore;
 
     }
 
@@ -54,7 +81,23 @@ public class UpdatedDashbaord : MonoBehaviour
     }
 
 
+    public void closeDashboard()
+    {
+        triviapage.SetActive(true);
+        StartCoroutine(closeingtask());
+       
+       
+    }
 
-
+    IEnumerator closeingtask()
+    {
+        for(int a = 0; a < ZoneDashbaords.Count; a++)
+        {
+            ZoneDashbaords[a].resetTask();
+            yield return new WaitForSeconds(0.5f);
+        }
+        triviapage.SetActive(false);
+        this.gameObject.SetActive(false);
+    }
 
 }

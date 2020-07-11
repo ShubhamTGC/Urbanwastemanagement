@@ -19,7 +19,7 @@ public class StageOneDashboard : MonoBehaviour
     private string correct_option;
     public Button LeftPage, Rightpage;
     public Text RoomHeading;
-    private int RoomPageCounter = 0;
+    private int RoomPageCounter;
     private int CurrentPageCounter;
     [SerializeField]
     private int TotalRooms;
@@ -27,15 +27,18 @@ public class StageOneDashboard : MonoBehaviour
 
 
     //=================private lists========================================//
+    [SerializeField]
     private List<string> room1_obj = new List<string>();
+    [SerializeField]
     private List<string> room2_obj = new List<string>();
+    [SerializeField]
     private List<string> room3_obj = new List<string>();
 
-    [HideInInspector]
+    [SerializeField]
     private List<int> room1_score = new List<int>();
-    [HideInInspector]
+    [SerializeField]
     private List<int> room2_score = new List<int>();
-    [HideInInspector]
+    [SerializeField]
     private List<int> room3_score = new List<int>();
     [HideInInspector]
     private List<int> room1_correct = new List<int>();
@@ -58,14 +61,17 @@ public class StageOneDashboard : MonoBehaviour
     public Sprite right, wrong,correctoption,partiallycorrect;
     [HideInInspector]
     private List<GameObject> room1_obejcts = new List<GameObject>();
+    [HideInInspector]
     private List<GameObject> room2_obejcts = new List<GameObject>();
+    [HideInInspector]
     private List<GameObject> room3_obejcts = new List<GameObject>();
+    [HideInInspector]
     private List<int> RoomScores = new List<int>();
     public GameObject Dashboard_row;
     public List<GameObject> tabs;
-    private int totalscore_room1;
-    private int totalscore_room2;
-    private int totalscore_room3;
+    [HideInInspector]
+    public int totalscore_room1, totalscore_room2, totalscore_room3;
+    public GameObject showmsg, dashboardpanel;
 
 
     //======================================================//
@@ -76,9 +82,69 @@ public class StageOneDashboard : MonoBehaviour
 
     void Start()
     {
+       
+    }
+    private void OnEnable()
+    {
+        RoomPageCounter = 0;
         StartCoroutine(GetDashboardData());
+        LeftPage.onClick.RemoveAllListeners();
+        Rightpage.onClick.RemoveAllListeners();
         LeftPage.onClick.AddListener(delegate { SwitchLeftPage(); });
         Rightpage.onClick.AddListener(delegate { SwitchRightPage(); });
+    }
+    private void OnDisable()
+    {
+        
+    }
+
+    public void resetTask()
+    {
+        RoomPageCounter = 0;
+        CurrentPageCounter = 0;
+        Debug.Log("data clearing");
+        for(int a = 0; a < room1_obejcts.Count; a++)
+        {
+            DestroyImmediate(room1_obejcts[a].gameObject);
+        }
+        for (int a = 0; a < room2_obejcts.Count; a++)
+        {
+            DestroyImmediate(room2_obejcts[a].gameObject);
+        }
+        for (int a = 0; a < room3_obejcts.Count; a++)
+        {
+            DestroyImmediate(room3_obejcts[a].gameObject);
+        }
+
+        room1_obejcts.Clear();
+        room2_obejcts.Clear();
+        room3_obejcts.Clear();
+        room1_obj.Clear();
+        room2_obj.Clear();
+        room3_obj.Clear();
+        totalscore_room1 = 0;
+        totalscore_room2 = 0;
+        totalscore_room3 = 0;
+        room1_score.Clear();
+        room2_score.Clear();
+        room3_score.Clear();
+        room1_correct.Clear();
+        room2_correct.Clear();
+        room3_correct.Clear();
+        dustin_room1.Clear();
+        dustin_room2.Clear();
+        dustin_room3.Clear();
+        correct_option_1.Clear();
+        correct_option_2.Clear();
+        correct_option_3.Clear();
+        RoomScores.Clear();
+        //StartCoroutine(ClosurTask());
+    }
+
+    IEnumerator ClosurTask()
+    {
+        
+        yield return new WaitForSeconds(0.1f);
     }
 
     // Update is called once per frame
@@ -121,6 +187,7 @@ public class StageOneDashboard : MonoBehaviour
 
     IEnumerator GetDashboardData()
     {
+        //resetTask();
         string Response_url = MainUrl + DashBoard_Api + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
           "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
 
@@ -139,8 +206,11 @@ public class StageOneDashboard : MonoBehaviour
                 //Totalscore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
                 //zonescore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
                 float scorevalue = float.Parse(response[0]["ContentList"][zoneNo]["totalscore"].ToString());
-               // total_score_filler.fillAmount = (float)scorevalue / total_gamescore;
-               // zone_score_filler.fillAmount = (float)scorevalue / total_gamescore;
+                // total_score_filler.fillAmount = (float)scorevalue / total_gamescore;
+                // zone_score_filler.fillAmount = (float)scorevalue / total_gamescore;
+                showmsg.SetActive(false);
+                dashboardpanel.SetActive(true);
+                
                 for (int a = 0; a < Room1items.Count; a++)
                 {
                     for (int i = 0; i < loopcount; i++)
@@ -194,6 +264,8 @@ public class StageOneDashboard : MonoBehaviour
 
             else
             {
+                dashboardpanel.SetActive(false);
+                showmsg.SetActive(true);
                 //extrapanel.SetActive(false);
                 //dashboard_btn.interactable = true;
                 //Debug.Log("null values");
@@ -208,7 +280,8 @@ public class StageOneDashboard : MonoBehaviour
 
     void Room1_sorting()
     {
-        if(room1_obejcts.Count == 0)
+        showmsg.SetActive(false);
+        if (room1_obejcts.Count == 0)
         {
             for (int a = 0; a < room1_obj.Count; a++)
             {
@@ -607,7 +680,7 @@ public class StageOneDashboard : MonoBehaviour
                 var Query_room1 = gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
                 var Query_room2 = gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject;
                 var Query_room3 = gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject;
-                gb.transform.GetChild(7).GetComponent<Text>().text = room2_score[a].ToString();
+                gb.transform.GetChild(7).GetComponent<Text>().text = room3_score[a].ToString();
 
                 totalscore_room3 += room3_score[a];
                 //room2_total.text = totalscore_room3.ToString();

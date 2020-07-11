@@ -37,6 +37,7 @@ namespace YoutubePlayer
         private VideoPlayer videoPlayer;
         private YoutubeClient youtubeClient;
         public GameObject loadingmsg;
+        
 
         private void Awake()
         {
@@ -76,6 +77,7 @@ namespace YoutubePlayer
                 videoPlayer.Play();
                 youtubeUrl = videoUrl;
                 YoutubeVideoStarting?.Invoke(youtubeUrl);
+               // Debug.Log(videoPlayer.clip.length);
                 loadingmsg.SetActive(false);
             }
             catch (Exception ex)

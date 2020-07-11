@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,12 +25,12 @@ public class Stage1Menus : MonoBehaviour
 
     void Initialsetup()
     {
-        //Zones[0].SetActive(true);
+        Zones[0].SetActive(true);
         ZoneButtons[0].GetComponent<Image>().sprite = Pressed;
         for(int a=1;a< ZoneButtons.Count; a++)
         {
             ZoneButtons[a].GetComponent<Image>().sprite = Relased;
-           // Zones[a].SetActive(false);
+            Zones[a].SetActive(false);
         }
 
     }
@@ -39,11 +38,11 @@ public class Stage1Menus : MonoBehaviour
     public void Zoneselection(GameObject currentZone)
     {
         bool enable;
-        //Zones.ForEach(z =>
-        //{
-        //    enable = z.name == currentZone.name;
-        //    z.gameObject.SetActive(enable);
-        //});
+        Zones.ForEach(z =>
+        {
+            enable = z.name == currentZone.name;
+            z.gameObject.SetActive(enable);
+        });
 
         ZoneButtons.ForEach(b =>
         {
