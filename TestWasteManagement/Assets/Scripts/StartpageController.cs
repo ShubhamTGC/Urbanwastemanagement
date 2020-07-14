@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using LitJson;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 public class StartpageController : MonoBehaviour 
 {
@@ -77,6 +78,7 @@ public class StartpageController : MonoBehaviour
     public GameObject TriviaPage;
     public GameObject YoutubeVideopage,skipVideo;
 
+    private bool videoPlayed, checkforEnd;
     private void Awake()
     {
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
@@ -184,6 +186,23 @@ public class StartpageController : MonoBehaviour
             if (Time.time > NewTime)
             {
                 TapCount = 0;
+            }
+
+            if (videoPlayed)
+            {
+                if (YoutubeVideopage.GetComponent<VideoPlayer>().isPlaying)
+                {
+                    checkforEnd = true;
+                }
+                if (checkforEnd)
+                {
+                    if (!YoutubeVideopage.GetComponent<VideoPlayer>().isPlaying)
+                    {
+                        videoPlayed = false;
+                        checkforEnd = false;
+                        SkipVideoTask();
+                    }
+                }
             }
         }
     }
@@ -664,6 +683,7 @@ public class StartpageController : MonoBehaviour
                     yield return new WaitForSeconds(3.6f);
                    // firstscreen.SetActive(false);
                     loginpage.SetActive(false);
+                    videoPlayed = true;
                     YoutubeVideopage.SetActive(true);
                     TriviaPage.SetActive(true);
                     Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
@@ -688,6 +708,7 @@ public class StartpageController : MonoBehaviour
 
     public void SkipVideoTask()
     {
+        videoPlayed = false;
         StartCoroutine(CoroutineskipVideo());
     }
     IEnumerator CoroutineskipVideo()

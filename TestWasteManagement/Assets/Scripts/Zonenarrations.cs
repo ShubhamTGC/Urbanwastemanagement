@@ -2,31 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using LitJson;
+using System.Linq;
+using UnityEngine.Video;
 
 public class Zonenarrations : MonoBehaviour
 {
     // Start is called before the first frame update
     public List<GameObject> zones;
     public List<string> zone_info;
-    public GameObject superhero,msg1,msg2,msg3,popupobject,skipbtn,touchinfo,backbtn;
+    public GameObject superhero, msg1, msg2, msg3, popupobject, skipbtn, touchinfo, backbtn;
     private string onetime_narration;
     public GameObject videplayer;
 
     [Header("===zone narrarion======")]
     public GameObject textbox;
-    public GameObject zone_text,video_msg_panel;
+    public GameObject zone_text, video_msg_panel;
     private bool isskipped = false;
     public GameObject startpage;
-    public Zonehandler hoomzone, schoolzone,Hospitalzone,officezone,industryzone,parkzone;
+    public Zonehandler hoomzone, schoolzone, Hospitalzone, officezone, industryzone, parkzone;
     public GameObject last_msg;
-    public GameObject YoutubePlayer,skipbutton,videomsg;
-
+    public GameObject YoutubePlayer, skipbutton, videomsg;
+    bool VideoPlayed, CheckForEnd; 
 
     [Header("Stage 2 unlock Portion")]
     [Space(10)]
     public string MainUrl;
-    public string DashbaordApi;
+    public string levelClearnessApi;
+    public int ZoneNo;
     [SerializeField]
     private int Stage2UnlockScore;
     private int totalscoreOfUser;
@@ -35,29 +37,17 @@ public class Zonenarrations : MonoBehaviour
 
     public GameObject startpageobj;
     private Generationlevel Mainpage;
-    public Sprite greenBackground,CityPage;
+    public Sprite greenBackground, CityPage;
     public GameObject Bonusgamepage;
+    public GameObject StageWiseLeaderBOard;
     void Start()
     {
         Mainpage = FindObjectOfType<Generationlevel>();
-        //onetime_narration = PlayerPrefs.GetString("zone_guide");
-        //if (onetime_narration != "done")
-        //{
-        //    StartCoroutine(startguide());
-        //}
-        //else
-        //{
-        //    skipbtn.SetActive(false);
-        //    superhero.SetActive(false);
-        //    for (int a = 0; a < zones.Count; a++)
-        //    {
-        //        zones[a].gameObject.SetActive(true);
-        //    }
-        //}
+
         if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
             || industryzone.zone_completed || parkzone.zone_completed)
         {
-            if(hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed 
+            if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed
                 && industryzone.final_completed && parkzone.final_completed)
             {
                 for (int a = 0; a < zones.Count; a++)
@@ -73,25 +63,25 @@ public class Zonenarrations : MonoBehaviour
                     zones[a].gameObject.SetActive(true);
                 }
             }
-           
+
         }
         else
         {
             StartCoroutine(startNarration());
         }
-       
-    
-        
+
+
+
     }
 
 
 
-     void OnEnable()
+    void OnEnable()
     {
-      
+
 
         StartCoroutine(CheckForStage2());
-        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed 
+        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
             || industryzone.zone_completed || parkzone.zone_completed)
         {
             if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed
@@ -102,7 +92,7 @@ public class Zonenarrations : MonoBehaviour
                     zones[a].gameObject.SetActive(false);
                 }
                 StartCoroutine(last_msg_task());
-               
+
             }
             else
             {
@@ -146,7 +136,25 @@ public class Zonenarrations : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (VideoPlayed)
+        {
+            if (YoutubePlayer.GetComponent<VideoPlayer>().isPlaying)
+            {
+                CheckForEnd = true;
+            }
+            if (CheckForEnd)
+            {
+                if (!YoutubePlayer.GetComponent<VideoPlayer>().isPlaying)
+                {
+                    Debug.Log("done video");
+                    CheckForEnd = false;
+                    VideoPlayed = false;
+                    close_video();
+                }
+            }
+        }
+    
+      
     }
 
     IEnumerator startguide()
@@ -161,7 +169,7 @@ public class Zonenarrations : MonoBehaviour
         yield return new WaitForSeconds(10f);
         msg1.SetActive(false);
         msg2.SetActive(true);
-       
+
 
     }
     public void for_msg2()
@@ -184,6 +192,7 @@ public class Zonenarrations : MonoBehaviour
         skipbtn.SetActive(true);
         //videplayer.SetActive(true);
         videomsg.SetActive(true);
+        VideoPlayed = true;
         YoutubePlayer.SetActive(true);
         skipbutton.SetActive(true);
         backbtn.SetActive(false);
@@ -192,16 +201,18 @@ public class Zonenarrations : MonoBehaviour
 
     public void close_video()
     {
+        VideoPlayed = false;
         StartCoroutine(closevideo_action());
     }
 
     IEnumerator closevideo_action()
     {
         yield return new WaitForSeconds(0.1f);
-        Camera.main.GetComponent<AudioSource>().enabled =true;
+        Camera.main.GetComponent<AudioSource>().enabled = true;
         backbtn.SetActive(true);
         // videplayer.GetComponent<RawImage>().enabled = false;
         // videplayer.SetActive(false);
+        videomsg.SetActive(false);
         YoutubePlayer.SetActive(false);
         skipbutton.SetActive(false);
         popupobject.SetActive(true);
@@ -233,9 +244,9 @@ public class Zonenarrations : MonoBehaviour
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
         foreach (GameObject e in zones)
         {
-           e.transform.GetChild(0).gameObject.SetActive(false);
-           e.GetComponent<BoxCollider2D>().enabled = true;
-           e.SetActive(false);
+            e.transform.GetChild(0).gameObject.SetActive(false);
+            e.GetComponent<BoxCollider2D>().enabled = true;
+            e.SetActive(false);
         }
         for (int a = 0; a < zones.Count; a++)
         {
@@ -247,7 +258,7 @@ public class Zonenarrations : MonoBehaviour
         //{
         //    Stage2popup.SetActive(true);
         //}
-        
+
     }
 
 
@@ -276,7 +287,7 @@ public class Zonenarrations : MonoBehaviour
         zone_text.SetActive(true);
 
         yield return new WaitForSeconds(0.1f);
-        for(int a = 0; a < zones.Count; a++)
+        for (int a = 0; a < zones.Count; a++)
         {
             zone_text.transform.GetChild(0).gameObject.GetComponent<Text>().text = zone_info[a];
             startpage.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 1);
@@ -298,33 +309,19 @@ public class Zonenarrations : MonoBehaviour
 
     IEnumerator CheckForStage2()
     {
-        string Response_url = MainUrl + DashbaordApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
-        "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
+
+        string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
 
         WWW dashboard_res = new WWW(Response_url);
         yield return dashboard_res;
         if (dashboard_res.text != null)
         {
-            JsonData response_data = JsonMapper.ToObject(dashboard_res.text);
-            int loopcount = int.Parse(response_data[0]["ContentList"].Count.ToString());
-            for (int a = 0; a < loopcount; a++)
-            {
-                totalscoreOfUser += int.Parse(response_data[0]["ContentList"][a]["totalscore"].ToString());
-            }
+            List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
+            totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
         }
 
-        Stage2unlocked = totalscoreOfUser >= Stage2UnlockScore;
-        //if (totalscoreOfUser >= Stage2UnlockScore)
-        //{
-            
-        //    Debug.Log("Cleared level");
-                
-        //}
-        //else
-        //{
-        //    Stage2unlocked = true;
-        //    Debug.Log("User score is less");
-        //}
+        Stage2unlocked = totalscoreOfUser <= Stage2UnlockScore;
+
     }
 
     public void ClosePopup()
@@ -341,9 +338,9 @@ public class Zonenarrations : MonoBehaviour
         {
             zones[a].gameObject.SetActive(true);
         }
-    
+
     }
-    
+
     public void PlayBonusGame()
     {
         StartCoroutine(BonusgameTask());
@@ -351,11 +348,13 @@ public class Zonenarrations : MonoBehaviour
 
     IEnumerator BonusgameTask()
     {
+        zone_text.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
         for (int a = 0; a < zones.Count; a++)
         {
             zones[a].gameObject.SetActive(false);
         }
+        yield return new WaitForSeconds(0.5f);
         iTween.ScaleTo(Stage2popup, Vector3.zero, 0.5f);
         StartCoroutine(Mainpage.scenechanges(startpage, greenBackground));
         yield return new WaitForSeconds(1.2f);
@@ -376,6 +375,13 @@ public class Zonenarrations : MonoBehaviour
         StartCoroutine(Mainpage.scenechanges(startpage, CityPage));
         yield return new WaitForSeconds(1.2f);
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+        StageWiseLeaderBOard.SetActive(true);
+
+    }
+
+    public void CloseStageDashboard()
+    {
+        StageWiseLeaderBOard.SetActive(false);
         foreach (GameObject e in zones)
         {
             e.transform.GetChild(0).gameObject.SetActive(false);
@@ -386,9 +392,8 @@ public class Zonenarrations : MonoBehaviour
         {
             zones[a].gameObject.SetActive(true);
         }
-        
+      
     }
-
 
 
 }

@@ -1263,6 +1263,9 @@ MonoBehaviour:
   ScoreText: {fileID: 5032911111447818318}
   BlastEffect: {fileID: 843657018}
   randomindex: 
+  AudioObject: {fileID: 0}
+  CorrectSound: {fileID: 8300000, guid: 0bb26a64f902fc844b948e35d0a9d0a3, type: 3}
+  WrongSound: {fileID: 8300000, guid: c27e3e4c85261cd4b9cdefe5612846a6, type: 3}
 --- !u!1 &5032911112172238926
 GameObject:
   m_ObjectHideFlags: 0

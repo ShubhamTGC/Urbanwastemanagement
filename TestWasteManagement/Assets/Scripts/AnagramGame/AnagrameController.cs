@@ -11,8 +11,8 @@ using System.Linq;
 
 public class AnagrameController : MonoBehaviour
 {
-    public string[] Answordlist;
-    public string[] Questionlist;
+    private string[] Answordlist;
+    private string[] Questionlist;
     public Sprite[] AnswerSprite;
     public Text Currentquestion;
     public Image HintImage;
@@ -23,10 +23,14 @@ public class AnagrameController : MonoBehaviour
     public Transform WordPrenet, DashPrenet;
     private List<GameObject> Words = new List<GameObject>();
     private List<GameObject> Dashs = new List<GameObject>();
-    [SerializeField]
     private string[] CorrectAns;
-    [SerializeField]
     private string[] SelectedWord;
+    private List<string> AnsStatus = new List<string>();
+    private List<string> UserGivenWord = new List<string>();
+    [SerializeField]
+    private int[] OriginalIds;
+    [SerializeField]
+    private int[] id_word;
     private int SelectionCounter = 0;
     private int CorrectAnsCounter;
     private int RunningWordCount;
@@ -35,6 +39,7 @@ public class AnagrameController : MonoBehaviour
     public Text Timer;
     public Image Timerbar;
     public float minute, second;
+    [SerializeField]
     private float sec, Totaltimer, RunningTimer;
     private bool helpingbool = true;
     private bool WrongGuess = true;
@@ -47,14 +52,32 @@ public class AnagrameController : MonoBehaviour
     //============ TEMP WORKING VARIABLES===========================//
     [SerializeField]
     private List<int> randomindex;
+    [SerializeField]
+    private AudioSource AudioObject;
+    public AudioClip CorrectSound, WrongSound;
 
+    public string MainUrl, AnagramApi,PostDataApi;
+    private AnagramPostData anagramePostdata;
     void Start()
     {
+       
+     
+    }
+
+    private void OnEnable()
+    {
         score = 0;
-        Timer.text = "0" + minute + ":" + second;
-        Totaltimer = (minute * 60) + second;     
         sec = second;
+        Timepaused = true;
+        Timer.text = "0" + minute + ":" + second;
+        Totaltimer = (minute * 60) + second;
         RunningTimer = Totaltimer;
+        StartCoroutine(GetAnagramedata());
+    }
+
+    void Mainsetup()
+    {
+        
         int maxLength = 0;
         while (maxLength < Answordlist.Length)
         {
@@ -66,24 +89,52 @@ public class AnagrameController : MonoBehaviour
             }
         }
         Debug.Log("total length " + randomindex.Count);
-        for(int a = 0; a < randomindex.Count; a++)
+        id_word = new int[Answordlist.Length];
+        for (int a = 0; a < randomindex.Count; a++)
         {
-           
+
             int num = randomindex[a];
             Debug.Log(num);
+            id_word[a] = OriginalIds[num-1];
             string temp = Answordlist[a];
             string temp2 = Questionlist[a];
             Sprite tempsprite = AnswerSprite[a];
-            Questionlist[a] = Questionlist[num-1];
-            Answordlist[a] = Answordlist[num-1];
+            Questionlist[a] = Questionlist[num - 1];
+            Answordlist[a] = Answordlist[num - 1];
             AnswerSprite[a] = AnswerSprite[num - 1];
             AnswerSprite[num - 1] = tempsprite;
-            Answordlist[num-1] = temp;
-            Questionlist[num-1] = temp2;
+            Answordlist[num - 1] = temp;
+            Questionlist[num - 1] = temp2;
         }
         GameSetup(CurrentWordCount);
     }
 
+    IEnumerator GetAnagramedata()
+    {
+       
+        string HittingUrl = MainUrl + AnagramApi + "?id_sheet=" + 1;
+        WWW Anagrame_www = new WWW(HittingUrl);
+        yield return Anagrame_www;
+        if(Anagrame_www.text != null)
+        {
+            List<AnagramModel> AnagramResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AnagramModel>>(Anagrame_www.text);
+            int arrayindex =0;
+            Answordlist = new string[AnagramResponse.Count];
+            Questionlist = new string[AnagramResponse.Count];
+            OriginalIds = new int[AnagramResponse.Count];
+            AnagramResponse.ForEach(x =>
+            {
+
+                Questionlist[arrayindex] = x.question;
+                Answordlist[arrayindex] = x.answer;
+                OriginalIds[arrayindex] = x.id_word;
+                arrayindex++;
+
+            });
+            Mainsetup();
+
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -125,9 +176,7 @@ public class AnagrameController : MonoBehaviour
             if(wrongGuessTimer.ToString("0") == "15")
             {
                 WrongGuess = false;
-                wrongGuessTimer = 0f;
-                score += 0;
-                StartCoroutine(ResetAnagramFields());
+                StartCoroutine(CheckForAns());
             }
         }
     }
@@ -175,6 +224,8 @@ public class AnagrameController : MonoBehaviour
     {
         GameObject selectedobj = EventSystem.current.currentSelectedGameObject;
         string word = selectedobj.transform.GetChild(0).GetComponent<Text>().text;
+        selectedobj.GetComponent<Button>().enabled = false;
+        selectedobj.GetComponent<Image>().enabled = false;
         Dashs[SelectionCounter].transform.GetChild(0).GetComponent<Text>().text = word;
         selectedobj.transform.GetChild(0).GetComponent<Text>().text = "";
         SelectedWord[SelectionCounter] = word;
@@ -182,6 +233,7 @@ public class AnagrameController : MonoBehaviour
         selectedobj.GetComponent<Button>().enabled = false;
         if(SelectionCounter == Dashs.Count)
         {
+
             StartCoroutine(CheckForAns());
         }
         
@@ -202,27 +254,42 @@ public class AnagrameController : MonoBehaviour
      
             wrongGuessTimer = 0;
             score += 10;
+            AnsStatus.Add("1");
+            AudioObject.clip = CorrectSound;
             StartCoroutine(ResetAnagramFields());
         }
         else
         {
             Debug.Log("wrong ans");
             // WrongGuess = true;
-
+            AnsStatus.Add("0");
             BlastEffect.SetActive(true);
             wrongGuessTimer = 0;
             score += 0;
+            AudioObject.clip = WrongSound;
             StartCoroutine(ResetAnagramFields());
         }
      
     }
     IEnumerator ResetAnagramFields()
     {
+
+        if(SelectedWord.Length > 0)
+        {
+            string UserWord = string.Join("", SelectedWord);
+            UserGivenWord.Add(UserWord);
+        }
+        else
+        {
+            UserGivenWord.Add("null");
+        }
+       
         for (int a = 0; a < Words.Count; a++)
         {
             DestroyImmediate(Words[a].gameObject);
             DestroyImmediate(Dashs[a].gameObject);
         }
+        AudioObject.Play();
         SelectionCounter = 0;
         Words.Clear();
         Dashs.Clear();
@@ -236,7 +303,7 @@ public class AnagrameController : MonoBehaviour
         BlastEffect.SetActive(false);
         CurrentWordCount++;
         WrongGuess = true;
-        if(CurrentWordCount < Answordlist.Length)
+        if (CurrentWordCount < Answordlist.Length)
         {
             GameSetup(CurrentWordCount);
         }
@@ -260,11 +327,42 @@ public class AnagrameController : MonoBehaviour
         CorrectAnsCounter = 0;
         Words.Clear();
         Dashs.Clear();
+        WrongGuess = false;
         Timepaused = false;
         PlayerPrefs.SetInt("BonusScore", score);
         ScoreText.text = "You got total bonus score : " + score;
         GameoverObj.SetActive(true);
+        StartCoroutine(PostGameData());
 
+    }
+
+    IEnumerator PostGameData()
+    {
+        var logs = new List<AnagramPostData>();
+        int a = 0;
+        if(UserGivenWord.Count > 0)
+        {
+            UserGivenWord.ForEach(x =>
+            {
+                var log = new AnagramPostData()
+                {
+                    id_user = PlayerPrefs.GetInt("UID").ToString(),
+                    id_sheet = "1",
+                    id_word = id_word[a].ToString(),
+                    is_correct = AnsStatus[a],
+                    user_input = UserGivenWord[a]
+
+                };
+                a = a + 1;
+                logs.Add(log);
+            });
+        }
+        Debug.Log("Getting log" + Newtonsoft.Json.JsonConvert.SerializeObject(logs));
+        string HIttingUrl = MainUrl + PostDataApi;
+        yield return new WaitForSeconds(0.1f);
+
+
+        
     }
 
 

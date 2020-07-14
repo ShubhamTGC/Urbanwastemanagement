@@ -72,7 +72,7 @@ public class StageOneDashboard : MonoBehaviour
     [HideInInspector]
     public int totalscore_room1, totalscore_room2, totalscore_room3;
     public GameObject showmsg, dashboardpanel;
-
+    private string CorrectansRoom1, CorrectansRoom2, CorrectansRoom3;
 
     //======================================================//
 
@@ -307,43 +307,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room1_score[a] == 5)
                         {
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                          
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
                         else
                         {
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
 
                     }
@@ -360,43 +371,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room1_score[a] == 5)
                         {
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                         
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
                         else
                         {
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
 
                     }
@@ -412,43 +434,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room1_score[a] == 5)
                         {
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                          
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
                         else
                         {
                             if (correct_option_1[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom1 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom1 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_1[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom1 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom1;
                         }
 
                     }
@@ -500,43 +533,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room2_score[a] == 5)
                         {
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                          
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
                         }
 
                     }
@@ -553,43 +597,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room2_score[a] == 5)
                         {
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                           
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
                         }
 
                     }
@@ -605,43 +660,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room2_score[a] == 5)
                         {
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                        
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_2[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom2 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom2 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_2[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom2 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom2;
                         }
 
                     }
@@ -696,43 +762,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room3_score[a] == 5)
                         {
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                      
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
+                            gb.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
                         }
 
                     }
@@ -749,43 +826,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room3_score[a] == 5)
                         {
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                  
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
+                            gb.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
                         }
 
                     }
@@ -801,43 +889,54 @@ public class StageOneDashboard : MonoBehaviour
                     {
                         if (room3_score[a] == 5)
                         {
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
+                         
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
+                            gb.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = partiallycorrect;
                         }
                         else
                         {
                             if (correct_option_3[a].ToLower() == "reduce")
                             {
                                 Query_room1.SetActive(true);
+                                CorrectansRoom3 = "Reduce";
                                 Query_room1.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "reuse")
                             {
                                 Query_room2.SetActive(true);
+                                CorrectansRoom3 = "Reuse";
                                 Query_room2.GetComponent<Image>().sprite = correctoption;
                             }
                             if (correct_option_3[a].ToLower() == "recycle")
                             {
                                 Query_room3.SetActive(true);
+                                CorrectansRoom3 = "Recycle";
                                 Query_room3.GetComponent<Image>().sprite = correctoption;
                             }
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong;
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            gb.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectansRoom3;
                         }
 
                     }

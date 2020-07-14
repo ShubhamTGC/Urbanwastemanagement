@@ -36,8 +36,7 @@ namespace YoutubePlayer
 
         private VideoPlayer videoPlayer;
         private YoutubeClient youtubeClient;
-        public GameObject loadingmsg;
-        
+        public bool videoplayed = false;
 
         private void Awake()
         {
@@ -64,26 +63,34 @@ namespace YoutubePlayer
                 videoUrl = videoUrl ?? youtubeUrl;
                 var videoId = GetVideoId(videoUrl);
                 var streamInfoSet = await youtubeClient.GetVideoMediaStreamInfosAsync(videoId);
+                
                 var streamInfo = streamInfoSet.WithHighestVideoQualitySupported();
                 if (streamInfo == null)
                     throw new NotSupportedException($"No supported streams in youtube video '{videoId}'");
-
+                Debug.Log("video played");
                 videoPlayer.source = VideoSource.Url;
-
                 //Resetting the same url restarts the video...
                 if (videoPlayer.url != streamInfo.Url)
                     videoPlayer.url = streamInfo.Url;
 
                 videoPlayer.Play();
+                videoplayed = true;
                 youtubeUrl = videoUrl;
                 YoutubeVideoStarting?.Invoke(youtubeUrl);
-               // Debug.Log(videoPlayer.clip.length);
-                loadingmsg.SetActive(false);
+                double timelength = videoPlayer.frameCount / videoPlayer.frameRate;
+               
+               
+
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
+        }
+
+        private void Update()
+        {
+            
         }
 
         /// <summary>
@@ -104,7 +111,7 @@ namespace YoutubePlayer
                 var videoId = GetVideoId(videoUrl);
                 var video = await youtubeClient.GetVideoAsync(videoId);
                 var streamInfoSet = await youtubeClient.GetVideoMediaStreamInfosAsync(videoId);
-                
+                Debug.Log(videoPlayer.frameCount + "  " + videoPlayer.frameRate);
                 cancellationToken.ThrowIfCancellationRequested();
                 var streamInfo = streamInfoSet.Muxed.WithHighestVideoQuality();
                 if (streamInfo == null)

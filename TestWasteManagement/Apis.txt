@@ -1,0 +1,23 @@
+
+
+
+=================================Leader board api================================
+
+
+School-  http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforSchool?id_user=3684&org_id=132&id_school=1 
+Grade - http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforGrade?id_user=3684&org_id=132&Usergrade=9
+
+
+==========================Zone Clearness api for bonus games:==============================================
+
+getWMSLevelMovementConfigDetails?id_org_game=1 
+Method : Get
+Sample response:
+
+[{"id_config":1,"id_level":1,"completion_score":70,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1},
+{"id_config":2,"id_level":2,"completion_score":50,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1},
+{"id_config":3,"id_level":3,"completion_score":40,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1}]
+
+
+
+

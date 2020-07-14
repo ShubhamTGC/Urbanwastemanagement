@@ -131,7 +131,9 @@ public class Zonehandler : MonoBehaviour
     public Button LeftPage, RightPage;
     public Text UpdatedOverallscore;
 
-
+    string correctOptionRoom1;
+    string correctOptionRoom2;
+    string correctOptionRoom3;
     void Start()
     {
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
@@ -940,6 +942,7 @@ public class Zonehandler : MonoBehaviour
     void Final_dashboard()
     {
         dashboard_panel.SetActive(true);
+       
         List<string> room1_elements = new List<string>(new string[room1.Count]);
         List<string> room2_elements = new List<string>(new string[room2.Count]);
         List<string> room3_elements = new List<string>(new string[room3.Count]);
@@ -1125,16 +1128,16 @@ public class Zonehandler : MonoBehaviour
                     {
                         if (score_room1[b] == "5")
                         {
-                            room1_is_right.Add(1);
-                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                           
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
 
@@ -1144,7 +1147,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[c].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1153,11 +1158,18 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[d].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             
+                            tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+
                         }
                         else
                         {
@@ -1167,7 +1179,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
 
@@ -1177,7 +1191,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[c].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1186,12 +1202,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[d].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room1_is_right.Add(0);
                             tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
 
@@ -1211,16 +1230,16 @@ public class Zonehandler : MonoBehaviour
                     {
                         if(score_room1[b] == "5")
                         {
-                            room1_is_right.Add(1);
-                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                      
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1229,7 +1248,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1238,10 +1259,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
 
                         }
                         else
@@ -1252,7 +1279,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1261,7 +1290,10 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1270,12 +1302,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+
+                                    tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room1_is_right.Add(0);
                             tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                        
@@ -1293,16 +1329,16 @@ public class Zonehandler : MonoBehaviour
                     {
                         if(score_room1[b] == "5")
                         {
-                            room1_is_right.Add(1);
-                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                         
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1311,7 +1347,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1320,10 +1358,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room1_is_right.Add(1);
+                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1333,7 +1377,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reduce";
+                                    correctOptionRoom1 = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reduce";
                                     tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1342,7 +1388,9 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Reuse";
+                                    correctOptionRoom1 = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Reuse";
                                     tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
@@ -1351,12 +1399,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list1[b])
                                 {
                                     correct_option1[b] = "Recycle";
+                                    correctOptionRoom1 = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+
+                                    tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = "Recycle";
                                     tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room1_is_right.Add(0);
                             tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                       
@@ -1433,15 +1485,14 @@ public class Zonehandler : MonoBehaviour
                     {
                         if(score_room2[b] == "5")
                         {
-                            room2_is_right.Add(1);
-                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                          
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1451,6 +1502,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1460,10 +1512,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
+                            tab2_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1473,6 +1531,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1482,6 +1541,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1491,12 +1551,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room2_is_right.Add(0);
                             tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                     
@@ -1515,15 +1578,14 @@ public class Zonehandler : MonoBehaviour
                     {
                         if(score_room2[b] == "5")
                         {
-                            room2_is_right.Add(1);
-                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                          
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1533,6 +1595,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1542,10 +1605,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                         }
                         else
                         {
@@ -1555,6 +1624,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1564,6 +1634,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1573,12 +1644,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle"; 
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room2_is_right.Add(0);
                             tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                      
@@ -1597,15 +1671,14 @@ public class Zonehandler : MonoBehaviour
 
                         if(score_room2[b] == "5")
                         {
-                            room2_is_right.Add(1);
-                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                         
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce"; 
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1615,6 +1688,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1624,10 +1698,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room2_is_right.Add(1);
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
+                            tab2_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1637,6 +1717,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1646,6 +1727,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reuse";
+                                    correctOptionRoom2 = "Reuse";
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1655,12 +1737,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room2_is_right.Add(0);
                             tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                        
@@ -1737,15 +1822,14 @@ public class Zonehandler : MonoBehaviour
                     {
                         if(score_room3[b] == "5")
                         {
-                            room3_is_right.Add(1);
-                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                      
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1755,6 +1839,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1764,10 +1849,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
+                            tab3_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1777,6 +1868,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1786,6 +1878,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1795,12 +1888,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room3_is_right.Add(0);
                             tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                      
@@ -1820,15 +1916,14 @@ public class Zonehandler : MonoBehaviour
 
                         if(score_room3[b] == "5")
                         {
-                            room3_is_right.Add(1);
-                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                         
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1838,6 +1933,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1847,10 +1943,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
+                            tab3_object[b].gameObject.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1860,6 +1962,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1869,6 +1972,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1878,12 +1982,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room3_is_right.Add(0);
                             tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                     
@@ -1901,15 +2008,14 @@ public class Zonehandler : MonoBehaviour
                     {
                         if (score_room3[b] == "5")
                         {
-                            room3_is_right.Add(1);
-                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
+                          
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1919,6 +2025,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1928,10 +2035,16 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
+                            room3_is_right.Add(1);
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
+                            tab3_object[b].gameObject.transform.GetChild(6).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
                         }
                         else
                         {
@@ -1941,6 +2054,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reduce[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reduce";
+                                    correctOptionRoom3 = "Reduce";
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1950,6 +2064,7 @@ public class Zonehandler : MonoBehaviour
                                 if (reuse[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Reuse";
+                                    correctOptionRoom3 = "Reuse";
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1959,12 +2074,15 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list3[b])
                                 {
                                     correct_option3[b] = "Recycle";
+                                    correctOptionRoom3 = "Recycle";
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
                             }
                             room3_is_right.Add(0);
                             tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                            tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
                       

@@ -98,7 +98,10 @@ MonoBehaviour:
   ShowMSg: {fileID: 101656889284167784}
   LoadingBar: {fileID: 101656888331364520}
   Laodingstart: 0
-  totaltime: 5
+  totaltime: 100
+  LimitValue: 90
+  videoplayed: 0
+  youtube: {fileID: 0}
 --- !u!114 &101656887509014845
 MonoBehaviour:
   m_ObjectHideFlags: 0
