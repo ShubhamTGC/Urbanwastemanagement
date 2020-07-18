@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 5a005a6dd80da604091a8532af937d04
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Caress
+  fontNames:
+  - Caress
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 1449946a6a057304987618359503b8e8, type: 3}
+  - {fileID: 12800000, guid: 701f820be6c8b4f47b3e1368884b9d7b, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

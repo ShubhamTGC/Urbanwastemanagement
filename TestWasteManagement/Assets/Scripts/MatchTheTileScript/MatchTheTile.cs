@@ -10,7 +10,7 @@ public class MatchTheTile : MonoBehaviour
     public GameObject ButtonPrefeb;
     public Transform TileParent;
     public int TileCount, wasteCount;
-    public Sprite DefaultSprite;
+    public Sprite DefaultSprite,WrongSprite,RightSprite, BlankTile;
     private Sprite[] DustbinSprite, WasteSprite;
     [SerializeField]
     private List<Sprite> GeneratedSprite = new List<Sprite>();
@@ -32,18 +32,19 @@ public class MatchTheTile : MonoBehaviour
     public Text TotalTils, CorrectTiles;
     public int Timercount;
     private float second;
-    private int totalTimercount, RunningTimeCount;
+    private float totalTimercount, RunningTimeCount;
     public Text TimerText;
+    public Image TimerImage;
     private Coloreffect colorglow;
     private bool helpingbool = true;
     void Start()
     {
-        colorglow = FindObjectOfType<Coloreffect>();
+       // colorglow = FindObjectOfType<Coloreffect>();
         totalTimercount = Timercount * 60;
         second = 60;
         Timercount = Timercount - 1;
         RunningTimeCount = totalTimercount;
-        colorglow.timertask();
+        //colorglow.timertask();
         TotalTils.text = TileCount.ToString();
         DustbinSprite = Resources.LoadAll<Sprite>(DustbinPath);
         WasteSprite = Resources.LoadAll<Sprite>(WastePath);
@@ -70,6 +71,8 @@ public class MatchTheTile : MonoBehaviour
         if(second >= 0 && Timercount >= 0 && helpingbool)
         {
             second = second - Time.deltaTime;
+            RunningTimeCount = RunningTimeCount - Time.deltaTime;
+            TimerImage.fillAmount = RunningTimeCount / totalTimercount;
             if (second.ToString("0").Length > 1)
             {
                 TimerText.text = "0" + Timercount.ToString("0") + ":" + second.ToString("0");
@@ -87,7 +90,7 @@ public class MatchTheTile : MonoBehaviour
         }else if (helpingbool)
         {
             helpingbool = false;
-            colorglow.isdone = true;
+           // colorglow.isdone = true;
 
         }
     }
@@ -145,7 +148,9 @@ public class MatchTheTile : MonoBehaviour
             FirstGuess = true;
             FirstSelectedobj = EventSystem.current.currentSelectedGameObject;
             FirstObjSprite = FirstSelectedobj.GetComponent<Image>().sprite;
-            FirstSelectedobj.GetComponent<Image>().sprite = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)];
+            FirstSelectedobj.GetComponent<Image>().sprite = BlankTile;
+            FirstSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)];
+            FirstSelectedobj.transform.GetChild(0).gameObject.SetActive(true);
             FirstSelectedobj.GetComponent<Button>().enabled = false;
             FirstGuessName = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)].name;
            
@@ -156,7 +161,9 @@ public class MatchTheTile : MonoBehaviour
             SecondGuess = true;
             SecondSelectedobj = EventSystem.current.currentSelectedGameObject;
             SecondObjSprite = SecondSelectedobj.GetComponent<Image>().sprite;
-            SecondSelectedobj.GetComponent<Image>().sprite = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)];
+            SecondSelectedobj.GetComponent<Image>().sprite = BlankTile;
+            SecondSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)];
+            SecondSelectedobj.transform.GetChild(0).gameObject.SetActive(true);
             SecondSelectedobj.GetComponent<Button>().enabled = false;
             SecondGuessName = GeneratedSprite[int.Parse(EventSystem.current.currentSelectedGameObject.name)].name;
             
@@ -167,8 +174,8 @@ public class MatchTheTile : MonoBehaviour
         }
     }
 
-    private string FirstSelectedName => FirstSelectedobj.GetComponent<Image>().sprite.name;
-    private string SecondSelectedName => SecondSelectedobj.GetComponent<Image>().sprite.name;
+    private string FirstSelectedName => FirstSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite.name;
+    private string SecondSelectedName => SecondSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite.name;
 
     IEnumerator CheckAns()
     {
@@ -180,8 +187,8 @@ public class MatchTheTile : MonoBehaviour
                 Any(x => x.name.Equals(FirstSelectedName, System.StringComparison.OrdinalIgnoreCase));
             if (isBelongToWasteType)
             {
-                FirstSelectedobj.GetComponent<Image>().enabled = false;
-                SecondSelectedobj.GetComponent<Image>().enabled = false;
+                FirstSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = RightSprite;
+                SecondSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = RightSprite;
                 FirstSelectedobj.GetComponent<Button>().enabled = false;
                 SecondSelectedobj.GetComponent<Button>().enabled = false;
                 FirstGuess = SecondGuess = false;
@@ -193,11 +200,11 @@ public class MatchTheTile : MonoBehaviour
             else
             {
                 Debug.Log(" Found object");
-                FirstSelectedobj.GetComponent<Image>().sprite = FirstObjSprite;
-                SecondSelectedobj.GetComponent<Image>().sprite = SecondObjSprite;
-                FirstSelectedobj.GetComponent<Button>().enabled = true;
-                SecondSelectedobj.GetComponent<Button>().enabled = true;
-                FirstGuess = SecondGuess = false;
+                FirstSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+                SecondSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+                FirstSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+                SecondSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+                StartCoroutine(ResetTiles(FirstSelectedobj, SecondSelectedobj));
             }
         }
         else if(SecondSelectedobj.tag == "Waste" && FirstSelectedobj.tag == "Dustbin")
@@ -207,8 +214,8 @@ public class MatchTheTile : MonoBehaviour
                 Any(x => x.name.Equals(SecondSelectedName, System.StringComparison.OrdinalIgnoreCase));
             if (isBelongToWasteType)
             {
-                FirstSelectedobj.GetComponent<Image>().enabled = false;
-                SecondSelectedobj.GetComponent<Image>().enabled = false;
+                FirstSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = RightSprite;
+                SecondSelectedobj.transform.GetChild(0).GetComponent<Image>().sprite = RightSprite;
                 FirstGuess = SecondGuess = false;
                 FirstSelectedobj.GetComponent<Button>().enabled = false;
                 SecondSelectedobj.GetComponent<Button>().enabled = false;
@@ -219,29 +226,38 @@ public class MatchTheTile : MonoBehaviour
             else
             {
                 Debug.Log(" Found object");
-                FirstSelectedobj.GetComponent<Image>().sprite = FirstObjSprite;
-                SecondSelectedobj.GetComponent<Image>().sprite = SecondObjSprite;
-                FirstSelectedobj.GetComponent<Button>().enabled = true;
-                SecondSelectedobj.GetComponent<Button>().enabled = true;
-                FirstGuess = SecondGuess = false;
+                FirstSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+                SecondSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+                FirstSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+                SecondSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+                StartCoroutine(ResetTiles(FirstSelectedobj, SecondSelectedobj));
             }
         }
         else
         {
             Debug.Log("Found object");
-            FirstSelectedobj.GetComponent<Image>().sprite = FirstObjSprite;
-            SecondSelectedobj.GetComponent<Image>().sprite = SecondObjSprite;
-            FirstSelectedobj.GetComponent<Button>().enabled = true;
-            SecondSelectedobj.GetComponent<Button>().enabled = true;
-            FirstGuess = SecondGuess = false;
+            FirstSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+            SecondSelectedobj.transform.GetChild(0).gameObject.SetActive(false);
+            FirstSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+            SecondSelectedobj.GetComponent<Image>().sprite = WrongSprite;
+            StartCoroutine(ResetTiles(FirstSelectedobj, SecondSelectedobj));
+          
         }
-        //{
-        //   
-        //}
+
 
         if (CorrectGuess == TileCount)
         {
             Debug.Log("wind");
         }
+    }
+
+    IEnumerator ResetTiles(GameObject FrstObj,GameObject secondObj)
+    {
+        yield return new WaitForSeconds(1.5f);
+        FirstSelectedobj.GetComponent<Image>().sprite = DefaultSprite;
+        SecondSelectedobj.GetComponent<Image>().sprite = DefaultSprite;
+        FirstSelectedobj.GetComponent<Button>().enabled = true;
+        SecondSelectedobj.GetComponent<Button>().enabled = true;
+        FirstGuess = SecondGuess = false;
     }
 }

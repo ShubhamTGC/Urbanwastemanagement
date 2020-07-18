@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.Video;
+using System.Net;
 
 public class Zonenarrations : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class Zonenarrations : MonoBehaviour
     [Header("Stage 2 unlock Portion")]
     [Space(10)]
     public string MainUrl;
-    public string levelClearnessApi;
+    public string levelClearnessApi, PostBadgeApi;
     public int ZoneNo;
     [SerializeField]
     private int Stage2UnlockScore;
@@ -254,10 +255,7 @@ public class Zonenarrations : MonoBehaviour
         }
 
         Stage2popup.SetActive(Stage2unlocked);
-        //if (Stage2unlocked)
-        //{
-        //    Stage2popup.SetActive(true);
-        //}
+       
 
     }
 
@@ -320,7 +318,7 @@ public class Zonenarrations : MonoBehaviour
             totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
         }
 
-        Stage2unlocked = totalscoreOfUser <= Stage2UnlockScore;
+        Stage2unlocked = totalscoreOfUser >= Stage2UnlockScore;
 
     }
 
@@ -393,6 +391,23 @@ public class Zonenarrations : MonoBehaviour
             zones[a].gameObject.SetActive(true);
         }
       
+    }
+
+    IEnumerator PostBadgeData()
+    {
+        yield return new WaitForSeconds(0.1f);
+        string hittingUrl = MainUrl + PostBadgeApi;
+        PostBadgeModel PostBadge = new PostBadgeModel();
+        PostBadge.id_user = PlayerPrefs.GetInt("UID").ToString();
+        PostBadge.id_level = "0";
+        PostBadge.id_zone = "0";
+        PostBadge.id_game = "0";
+        PostBadge.id_special_game = "0";
+        PostBadge.id_badge = "1";
+        PostBadge.id_room = "0";
+
+        string PostBadgeString = Newtonsoft.Json.JsonConvert.SerializeObject(PostBadge);
+
     }
 
 

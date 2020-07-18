@@ -100,7 +100,7 @@ public class Zonehandler : MonoBehaviour
     public string Zone_name;
     public int id_content;
     public bool is_zome_completed;
-    public string MainUrl, dashboard_api;
+    public string MainUrl, dashboard_api,ScorePostApi;
     public Button home_btn;
 
 
@@ -2268,16 +2268,8 @@ public class Zonehandler : MonoBehaviour
         PlayerPrefs.SetInt("ZoneScore", totalscore);
         string data = JsonMapper.ToJson(logs);
         StartCoroutine(Post_data(data));
-
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            StartCoroutine(CaptureIt());
-        }
-        else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
-        {
-            string image_name = Zone_name + PlayerPrefs.GetInt("UID").ToString();
-            UnityEngine.ScreenCapture.CaptureScreenshot(Application.persistentDataPath + "/" + image_name);
-        }
+        //StartCoroutine(ScorePostTask());
+     
         
 
     }
@@ -2319,22 +2311,37 @@ public class Zonehandler : MonoBehaviour
         }
 
     }
-  
+
+
+    IEnumerator ScorePostTask()
+    {
+        yield return new WaitForSeconds(0.1f);
+        string hittingUrl = MainUrl + ScorePostApi;
+        ScorePostModel scorePost = new ScorePostModel();
+        scorePost.log = new Log();
+        scorePost.UID = PlayerPrefs.GetInt("UID");
+        scorePost.OID = PlayerPrefs.GetInt("OID");
+        scorePost.log.id_user = PlayerPrefs.GetInt("UID");
+        scorePost.log.id_game_content = 1;
+        scorePost.log.score = 1;
+        scorePost.log.id_score_unit = 1;
+        scorePost.log.score_type = 1;
+        scorePost.log.score_unit = "points";
+        scorePost.log.status = "A";
+        //scorePost.log.updated_date_time 
+
+
+
+
+    }
+
+
 
     public void action_plan_activite()
     {
         
         action_plan_page.SetActive(true);
     }
-
-    IEnumerator CaptureIt()
-    {
-        string fileName = Zone_name  + ".png";
-        string pathToSave = fileName;
-        ScreenCapture.CaptureScreenshot(pathToSave);
-        yield return new WaitForEndOfFrame();
-    }
-
 
 
 }

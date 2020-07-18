@@ -3,6 +3,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+public class Dashboard
+{
+    public List<DashboardItem> Items { get; set; }
+}
+
+
 public class UserLog
 {
     public int id_log { get; set; }
@@ -46,7 +54,6 @@ public class DashboardItem
 
 }
 
-public class Dashboard
-{
-    public List<DashboardItem> Items { get; set; }
-}
+
+
+

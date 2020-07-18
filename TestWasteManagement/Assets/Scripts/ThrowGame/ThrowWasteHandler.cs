@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ThrowWasteHandler : MonoBehaviour
 {
     public int Objectcount;
-    private  Sprite[] WasteObejctSprites;
+    private Sprite[] WasteObejctSprites;
     public string wasteImagePath;
     public GameObject WastePrefeb;
     public Transform WastePerent;
@@ -18,8 +18,8 @@ public class ThrowWasteHandler : MonoBehaviour
     private int Objectlive = 0;
     private Vector3 timerPanelPos;
     public GameObject TimerPanel;
-    public GameObject Gamecanvas, ZonePag,MainZone, Canvasobject;
-
+    public GameObject Gamecanvas, ZonePag,ZoneselectionPage, MainZone, Startpage;
+    public Button closeButton;
     //============== COMPLETE GAME SCORE VARIABLE AND HELPING VARIABLE======================
     [Header("Time portion and score ")]
     [Space(10)]
@@ -30,10 +30,10 @@ public class ThrowWasteHandler : MonoBehaviour
     private bool helpingbool = true;
     public Image Timerbar;
     public Text Timer;
-    public Text CorrectGuesscount,Totalwaste;
+    public Text CorrectGuesscount, Totalwaste;
     public Text TotalscoreText;
     private int SCore;
-    private int correctGoal=0;
+    private int correctGoal = 0;
     private bool gameend = false;
     private bool gameclose = false;
     [SerializeField]
@@ -49,21 +49,33 @@ public class ThrowWasteHandler : MonoBehaviour
     private bool TimePaused = false;
     [SerializeField]
     private Color WrongEffect;
+
+
+    //========================================== PRIVATE OBJECTS FOR GAME==================== 
+    private List<string> Dustbins = new List<string>();
+    private List<string> ItemColleted = new List<string>();
+    private List<int> ObjectScore = new List<int>();
+    private List<int> is_correct = new List<int>();
+    private List<string> CorrectOption = new List<string>();
+
+
     private void Awake()
     {
-      
-     
+
+
     }
 
     private void OnEnable()
     {
+        closeButton.onClick.RemoveAllListeners();
+        closeButton.onClick.AddListener(delegate { CloseGame(); });
         Gamecanvas.SetActive(true);
         initialsetup();
     }
     void initialsetup()
     {
 
-        gameend = gameclose  = false;
+        gameend = gameclose = false;
         timerPanelPos = TimerPanel.GetComponent<RectTransform>().localPosition;
         WasteObejctSprites = Resources.LoadAll<Sprite>(wasteImagePath);
         getRandomeSprite();
@@ -83,7 +95,7 @@ public class ThrowWasteHandler : MonoBehaviour
         RunningTimer = Totaltimer;
         Totalwaste.text = totalwasteCount.ToString();
         CorrectGuesscount.text = "0";
-        
+
         for (int a = 0; a < WasteObejctSprites.Length; a++)
         {
             GameObject gb = Instantiate(WastePrefeb, WastePerent, false);
@@ -95,14 +107,14 @@ public class ThrowWasteHandler : MonoBehaviour
             GeneratedObj.Add(gb);
         }
 
-         SpriteUpdator(0);
-         GeneratedObj[Objectlive].SetActive(true);
+        SpriteUpdator(0);
+        GeneratedObj[Objectlive].SetActive(true);
 
     }
 
     void getRandomeSprite()
     {
-        for(int a=0;a< WasteObejctSprites.Length; a++)
+        for (int a = 0; a < WasteObejctSprites.Length; a++)
         {
             Sprite temp = WasteObejctSprites[a];
             int randomindex = Random.Range(1, WasteObejctSprites.Length);
@@ -123,7 +135,7 @@ public class ThrowWasteHandler : MonoBehaviour
     {
 
     }
-    
+
     void Update()
     {
         if (!TimePaused)
@@ -155,7 +167,7 @@ public class ThrowWasteHandler : MonoBehaviour
 
             }
         }
-       
+
         if (!gameclose)
         {
             ThrowWasteObjectactiveStatus();
@@ -236,18 +248,20 @@ public class ThrowWasteHandler : MonoBehaviour
         TimePaused = true;
         yield return new WaitForSeconds(0.1f);
         Gamestaus.text = "You have scored " + SCore;
-        foreach(GameObject e in GeneratedObj)
+        foreach (GameObject e in GeneratedObj)
         {
             e.SetActive(false);
         }
     }
 
-    public void checkCollidedAns(string dustbin,string collidername,GameObject dustbinobj)
+    public void checkCollidedAns(string dustbin, string collidername, GameObject dustbinobj)
     {
-        
+
         var CollidedDustbin = WasteCollectionList.FirstOrDefault(x => x.Key.Equals(dustbin, System.StringComparison.OrdinalIgnoreCase));
-        var iscorrectWaste = CollidedDustbin.Value.Any(x => x.name.Equals(collidername,System.StringComparison.OrdinalIgnoreCase));
-        
+        var iscorrectWaste = CollidedDustbin.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase));
+
+       
+
         if (iscorrectWaste)
         {
             dustbinobj.GetComponent<ShakeEffect>().enabled = true;
@@ -256,20 +270,31 @@ public class ThrowWasteHandler : MonoBehaviour
             SCore += 10;
             TotalscoreText.text = SCore.ToString();
             checkScore = true;
+            is_correct.Add(1);
+            ObjectScore.Add(10);
         }
         else
         {
+            var RelatedDustbin = (from k in WasteCollectionList
+                                  where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
+                                  select k.Key).FirstOrDefault();
+            CorrectOption.Add(RelatedDustbin);
             dustbinobj.GetComponent<ShakeEffect>().enabled = true;
             dustbinobj.GetComponent<SpriteRenderer>().color = WrongEffect;
+            is_correct.Add(0);
             Debug.Log(" nitb correct waste");
+            ObjectScore.Add(0);
         }
+        ItemColleted.Add(collidername);
+        Dustbins.Add(dustbin);
+
         StartCoroutine(resetEffect(dustbinobj));
-        
+
     }
     IEnumerator resetEffect(GameObject dustbinobj)
     {
         yield return new WaitForSeconds(1f);
-        dustbinobj.GetComponent<SpriteRenderer>().color = Color.white; ;
+        dustbinobj.GetComponent<SpriteRenderer>().color = Color.white;
         dustbinobj.GetComponent<ShakeEffect>().enabled = false;
     }
 
@@ -282,7 +307,7 @@ public class ThrowWasteHandler : MonoBehaviour
     {
         iTween.MoveTo(TimerPanel, timerPanelPos, 0.5f);
         yield return new WaitForSeconds(0.5f);
-        for(int a = 0; a < GeneratedObj.Count; a++)
+        for (int a = 0; a < GeneratedObj.Count; a++)
         {
             DestroyImmediate(GeneratedObj[a].gameObject);
         }
@@ -290,10 +315,17 @@ public class ThrowWasteHandler : MonoBehaviour
         GeneratedObj.Clear();
         Gamecanvas.SetActive(false);
         ZonePag.SetActive(true);
+        ZoneselectionPage.SetActive(true);
+        Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         MainZone.SetActive(false);
-
-
-
-
     }
+
+    IEnumerator PostZoneData()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ZoneDataPost Zonedata = new ZoneDataPost();
+        
+    }
+
+
 }

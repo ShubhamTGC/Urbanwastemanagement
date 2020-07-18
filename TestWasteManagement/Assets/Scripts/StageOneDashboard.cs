@@ -9,7 +9,7 @@ public class StageOneDashboard : MonoBehaviour
 {
     // Start is called before the first frame update
     public string MainUrl, DashBoard_Api;
-    public int zoneNo;
+    public int zoneNo,id_game_content;
     public Text Totalscore, zonescore, room1_total, room2_total, room3_total;
     public Image total_score_filler, zone_score_filler;
     public int total_gamescore;
@@ -73,6 +73,8 @@ public class StageOneDashboard : MonoBehaviour
     public int totalscore_room1, totalscore_room2, totalscore_room3;
     public GameObject showmsg, dashboardpanel;
     private string CorrectansRoom1, CorrectansRoom2, CorrectansRoom3;
+    [SerializeField]
+    private int Gamelevel = 1;
 
     //======================================================//
 
@@ -196,7 +198,14 @@ public class StageOneDashboard : MonoBehaviour
 
         if (dashboard_res.text != null)
         {
-            Debug.Log(dashboard_res.text);
+            //Debug.Log(dashboard_res.text);
+
+            List<DashboardItem> DashboardHandler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashboardItem>>(dashboard_res.text);
+            var Contnetlist = DashboardHandler.Where(x => x.id_level == Gamelevel).Select(x => x.ContentList).FirstOrDefault();
+            var gotzonename = Contnetlist?.Where(x => x.id_game_content == id_game_content).Select(x => x.UserLog).FirstOrDefault();
+
+
+
             JsonData response = JsonMapper.ToObject(dashboard_res.text);
             string zonename = response[0]["ContentList"][zoneNo]["title"].ToString();
             Debug.Log("zone name " + zonename);

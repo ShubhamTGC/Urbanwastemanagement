@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -35,12 +36,21 @@ public class Generationlevel : MonoBehaviour
     public List<GameObject> G_levels;
     public Text zoneinfo;
     public GameObject zonelayer,ButtonSlider;
+
+
+    [Header("GET LEVEL DATA")]
+    [Space(10)]
+    public List<int> GameIDS = new List<int>();
+    public string MainUrl, GetGamesIDApi;
+    public int Gamelevel;
+
     // Start is called before the first frame update
     void Start()
     {
         ButtonSlider.SetActive(true);
         // dusbin.SetActive(true);
         is_check = true;
+
     }
      void OnEnable()
     {
@@ -48,6 +58,7 @@ public class Generationlevel : MonoBehaviour
         is_check = true;
         //StartCoroutine(sceneappear());
         Backbutton.SetActive(true);
+        StartCoroutine(GetGamesIDactivity());
     }
 
     // Update is called once per frame
@@ -100,6 +111,22 @@ public class Generationlevel : MonoBehaviour
         waste_count = 0;
         yield return new WaitForSeconds(0.5f);
         iTween.ScaleTo(Done_msg_panel, Vector3.one, 1f);
+    }
+
+    IEnumerator GetGamesIDactivity()
+    {
+        string HittingUrl = MainUrl + GetGamesIDApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
+            "&id_org_game=" + 1 + "&id_level=" + Gamelevel;
+        WWW GameResponse = new WWW(HittingUrl);
+        yield return GameResponse;
+        if(GameResponse.text != null)
+        {
+            GetLevelIDs gameIDs = Newtonsoft.Json.JsonConvert.DeserializeObject<GetLevelIDs>(GameResponse.text);
+            gameIDs.content.ForEach(x =>
+            {
+                GameIDS.Add(x.id_game_content);
+            });
+        }
     }
 
     public void movetonext()

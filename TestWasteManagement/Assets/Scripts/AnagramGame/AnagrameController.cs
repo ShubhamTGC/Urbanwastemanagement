@@ -7,10 +7,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Linq;
-
+using UnityEngine.Networking;
+using LitJson;
 
 public class AnagrameController : MonoBehaviour
 {
+    [SerializeField]
     private string[] Answordlist;
     private string[] Questionlist;
     public Sprite[] AnswerSprite;
@@ -27,9 +29,7 @@ public class AnagrameController : MonoBehaviour
     private string[] SelectedWord;
     private List<string> AnsStatus = new List<string>();
     private List<string> UserGivenWord = new List<string>();
-    [SerializeField]
     private int[] OriginalIds;
-    [SerializeField]
     private int[] id_word;
     private int SelectionCounter = 0;
     private int CorrectAnsCounter;
@@ -39,7 +39,6 @@ public class AnagrameController : MonoBehaviour
     public Text Timer;
     public Image Timerbar;
     public float minute, second;
-    [SerializeField]
     private float sec, Totaltimer, RunningTimer;
     private bool helpingbool = true;
     private bool WrongGuess = true;
@@ -50,21 +49,14 @@ public class AnagrameController : MonoBehaviour
     private int score;
     public GameObject BlastEffect;
     //============ TEMP WORKING VARIABLES===========================//
-    [SerializeField]
-    private List<int> randomindex;
+    private List<int> randomindex = new List<int>();
     [SerializeField]
     private AudioSource AudioObject;
     public AudioClip CorrectSound, WrongSound;
 
-    public string MainUrl, AnagramApi,PostDataApi;
+    public string MainUrl, AnagramApi,PostDataApi,UserScorePosting;
     private AnagramPostData anagramePostdata;
     void Start()
-    {
-       
-     
-    }
-
-    private void OnEnable()
     {
         score = 0;
         sec = second;
@@ -73,12 +65,19 @@ public class AnagrameController : MonoBehaviour
         Totaltimer = (minute * 60) + second;
         RunningTimer = Totaltimer;
         StartCoroutine(GetAnagramedata());
+
+    }
+
+    private void OnEnable()
+    {
+       
     }
 
     void Mainsetup()
     {
         
         int maxLength = 0;
+        
         while (maxLength < Answordlist.Length)
         {
             int num = UnityEngine.Random.Range(1, Answordlist.Length + 1);
@@ -332,7 +331,62 @@ public class AnagrameController : MonoBehaviour
         PlayerPrefs.SetInt("BonusScore", score);
         ScoreText.text = "You got total bonus score : " + score;
         GameoverObj.SetActive(true);
-        StartCoroutine(PostGameData());
+        StartCoroutine(GameScorePosting());
+        
+
+    }
+    IEnumerator GameScorePosting()
+    {
+        yield return new WaitForSeconds(0.1f);
+        string hittingUrl = MainUrl + UserScorePosting;
+        ScorePostModel postField = new ScorePostModel();
+        postField.log = new Log();
+        postField.UID = PlayerPrefs.GetInt("UID");
+        postField.OID = PlayerPrefs.GetInt("OID");
+        postField.log.id_log = 1;
+        postField.log.id_user = PlayerPrefs.GetInt("UID");
+        postField.log.id_game_content = 0;
+        postField.log.score = score;
+        postField.log.id_score_unit = 1;
+        postField.log.score_type = 1;
+        postField.log.score_unit = "points";
+        postField.log.status = "a";
+        postField.log.updated_date_time = DateTime.Now.ToString();
+        postField.log.id_level = 0;
+        postField.log.id_org_game = 1;
+        postField.log.attempt_no = 0;
+        postField.log.timetaken_to_complete = "";
+        postField.log.is_completed = 1;
+
+
+        string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(postField);
+        Debug.Log("Score posting " + PostLog);
+
+        using (UnityWebRequest request = UnityWebRequest.Put(hittingUrl, PostLog))
+        {
+            Debug.Log(request);
+            request.method = UnityWebRequest.kHttpVerbPOST;
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+            yield return request.SendWebRequest();
+            if (!request.isNetworkError && !request.isHttpError)
+            {
+                Debug.Log(request.downloadHandler.text);
+                 
+                JsonData post_res = JsonMapper.ToObject(request.downloadHandler.text);
+                string authstatus = post_res["STATUS"].ToString();
+                if (authstatus.ToLower() == "success")
+                {
+                    Debug.Log("successfully posted ");
+                    StartCoroutine(PostGameData());
+                }
+            }
+            else
+            {
+                Debug.Log("prob : " + request.error);
+            }
+        }
+
 
     }
 
@@ -357,12 +411,35 @@ public class AnagrameController : MonoBehaviour
                 logs.Add(log);
             });
         }
+        string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(logs);
         Debug.Log("Getting log" + Newtonsoft.Json.JsonConvert.SerializeObject(logs));
         string HIttingUrl = MainUrl + PostDataApi;
         yield return new WaitForSeconds(0.1f);
+        using (UnityWebRequest request = UnityWebRequest.Put(HIttingUrl, PostLog))
+        {
+            Debug.Log(request);
+            request.method = UnityWebRequest.kHttpVerbPOST;
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+            yield return request.SendWebRequest();
+            if (!request.isNetworkError && !request.isHttpError)
+            {
+                Debug.Log(request.downloadHandler.text);
+
+                JsonData post_res = JsonMapper.ToObject(request.downloadHandler.text);
+                string authstatus = post_res["STATUS"].ToString();
+                if (authstatus.ToLower() == "success")
+                {
+                    Debug.Log("successfully posted ");
+                }
+            }
+            else
+            {
+                Debug.Log("prob : " + request.error);
+            }
+        }
 
 
-        
     }
 
 
