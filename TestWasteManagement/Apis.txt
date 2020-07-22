@@ -1,4 +1,10 @@
+===============Main base link==========================
 
+https://www.skillmuni.in/wsmapi/api/
+
+
+stage clearness api
+getWMSLevelMovementConfigDetails
 
 
 =================================Leader board api================================
@@ -21,3 +27,62 @@ Sample response:
 
 
 
+API to get anagram words:
+getAnagramWords?id_sheet=1 
+Method: Get
+Sample response:
+[{"id_word":1,"id_sheet":1,"word_1":"Debit card","word_2":"Bad credit","status":"A","updated_date_time":"2020-04-15T12:38:49"},
+{"id_word":2,"id_sheet":1,"word_1":"Dormitory","word_2":"Dirty room","status":"A","updated_date_time":"2020-04-15T12:38:49"},
+{"id_word":3,"id_sheet":1,"word_1":"Astronomer","word_2":"Moon starrer","status":"A","updated_date_time":"2020-04-15T12:38:49"},
+{"id_word":4,"id_sheet":1,"word_1":"Punishments ","word_2":"Nine thumps","status":"A","updated_date_time":"2020-04-15T12:38:49"}]
+
+https://www.youtube.com/watch?v=OasbYWF4_S8&t=12s
+
+
+
+
+=================================== OVERALL DASHBOARD DATA======================================
+
+API -  getWMSOverallDashboard?UID=3734&id_org_game=1 
+Method-Get
+Sample response :
+
+{"Name":"Brenda Ferguson-Calloway","CLass":null,"Grade":"6","TotalGameScore":"0","TotalStagesPlayed":"0",
+"GreenJournelScore":"0","TotalAllLevelScore":"0","TotalZonesPlayed":"0","TotalZonesScore":"0","TotalBonusPlayed":"0",
+"TotalBonusScore":"0","OverAllScoreText":"Text 1","ZoneScoreText":"Text 3","BonusScoreText":"Text 2"}
+
+
+
+
+
+
+========================================== BADGE DATA API===========================================
+
+The API for getting details of the badge list available for a level is "getBadgeConfigDetails?id_level=1".
+Method : Get
+Sample response:
+[{"id_badge":1,"badge_name":"Badge 1","id_level":1,"badge_type":1,"status":"A","badge_eligibility_score":50,"updated_date_time":"2017-06-01T00:00:00"},
+{"id_badge":2,"badge_name":"Badge 1 Bonous","id_level":1,"badge_type":2,"status":"A","badge_eligibility_score":50,"updated_date_time":"2017-06-01T00:00:00"}]
+
+In the above response , if " badge_type " is "1" means it refers to the main game, if it is "2" means it refers to a bonus game.
+" badge_eligibility_score "  refers to the score needed to win the badge.
+
+The API for getting the badge log for the user is "getWMSBadgeLogForUser?id_user=2541"
+Method - Get
+Sample Response:
+[{"id_log":1,"id_user":2541,"id_level":1,"id_zone":0,"id_room":0,"id_game":0,"id_special_game":0,"status":"A","updated_date_time":"2017-06-01T00:00:00","id_badge":1},
+{"id_log":2,"id_user":2541,"id_level":1,"id_zone":0,"id_room":0,"id_game":0,"id_special_game":1,"status":"A","updated_date_time":"2017-06-01T00:00:00","id_badge":2}]
+
+The API to post the badge log of a particular user to the back end is "PostWMSBadgeLog"
+Method: Post
+Post Body -
+
+{
+"id_user":"2541",
+"id_level":"1",
+"id_zone":"0",
+"id_room":"0",
+"id_game":"0",
+"id_special_game":"0",
+"id_badge":"1"
+}

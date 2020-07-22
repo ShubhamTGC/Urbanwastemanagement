@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -41,8 +42,8 @@ public class Generationlevel : MonoBehaviour
     [Header("GET LEVEL DATA")]
     [Space(10)]
     public List<int> GameIDS = new List<int>();
-    public string MainUrl, GetGamesIDApi;
-    public int Gamelevel;
+    public string MainUrl, GetGamesIDApi,GetBadgeIdApi;
+    public int Gamelevel,BadgeType;
 
     // Start is called before the first frame update
     void Start()
@@ -59,6 +60,7 @@ public class Generationlevel : MonoBehaviour
         //StartCoroutine(sceneappear());
         Backbutton.SetActive(true);
         StartCoroutine(GetGamesIDactivity());
+        StartCoroutine(GetBadgeinfo());
     }
 
     // Update is called once per frame
@@ -127,6 +129,20 @@ public class Generationlevel : MonoBehaviour
                 GameIDS.Add(x.id_game_content);
             });
         }
+    }
+    IEnumerator GetBadgeinfo()
+    {
+        string HittingUrl = MainUrl + GetBadgeIdApi + "?id_level=" + Gamelevel;
+        WWW Hitting_res = new WWW(HittingUrl);
+        yield return Hitting_res;
+        if(Hitting_res.text != null)
+        {
+            List<BadgeDetails> Badgeinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeDetails>>(Hitting_res.text);
+            var id_badge = Badgeinfo.FirstOrDefault(x => x.id_level == Gamelevel && x.badge_type == BadgeType)?.id_badge;
+        }
+
+
+
     }
 
     public void movetonext()

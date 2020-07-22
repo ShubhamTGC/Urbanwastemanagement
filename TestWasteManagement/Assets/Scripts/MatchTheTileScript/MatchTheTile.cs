@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class MatchTheTile : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class MatchTheTile : MonoBehaviour
     private Sprite[] DustbinSprite, WasteSprite;
     [SerializeField]
     private List<Sprite> GeneratedSprite = new List<Sprite>();
+    private List<GameObject> GeneratedTiles = new List<GameObject>();
     public string DustbinPath, WastePath;
 
     //========== TILE GAME MAIN LOGIC VARIABLES================
@@ -37,9 +39,28 @@ public class MatchTheTile : MonoBehaviour
     public Image TimerImage;
     private Coloreffect colorglow;
     private bool helpingbool = true;
+    public GameObject TimesUp;
+    //======================== SCORE CAPTURING ELEMENTS ==================
+    public GameObject ScoreKnob;
+    private float knobAngle;
+    private bool ScoreCheckNow = false;
+    [SerializeField]
+    private float BonusGameScore;
+    public Text ScoreText;
+    private int ScoreConuter;
+    public GameObject ZoneA, ZoneB;
+
+
     void Start()
     {
-       // colorglow = FindObjectOfType<Coloreffect>();
+        // colorglow = FindObjectOfType<Coloreffect>();
+      
+
+    }
+
+     void OnEnable()
+    {
+        helpingbool = true;
         totalTimercount = Timercount * 60;
         second = 60;
         Timercount = Timercount - 1;
@@ -60,15 +81,24 @@ public class MatchTheTile : MonoBehaviour
             new KeyValuePair<string, List<Sprite>>("Metal", metal)
         };
     }
+    private void OnDisable()
+    {
+        TimerImage.fillAmount = 1f;
+        //second = 0.0f;
+        //Timercount = 0;
+        RunningTimeCount = 0f;
+    }
 
     // Update is called once per frame
     void Update()
     {
-        //if(second == 0 && Timercount == 0 && helpingbool) {
+        //if (second.ToString("0") == "0" && Timercount == 0 && helpingbool)
+        //{
         //    helpingbool = false;
-        //    colorglow.isdone = true; 
+        //    TimesUp.SetActive(true);
+        //    //colorglow.isdone = true;
         //}
-        if(second >= 0 && Timercount >= 0 && helpingbool)
+        if (second >= 0.0f && Timercount >= 0 && helpingbool)
         {
             second = second - Time.deltaTime;
             RunningTimeCount = RunningTimeCount - Time.deltaTime;
@@ -90,10 +120,43 @@ public class MatchTheTile : MonoBehaviour
         }else if (helpingbool)
         {
             helpingbool = false;
-           // colorglow.isdone = true;
+            StartCoroutine(TimeUpTask());
 
         }
+
+        if (ScoreCheckNow)
+        {
+            ScoreCheckNow = false;
+            knobAngle =  ((float)ScoreConuter / (float)BonusGameScore) * 200;
+
+        }
+        var rotationAngle = Quaternion.Euler(0f, 0f, -knobAngle);
+        ScoreKnob.GetComponent<RectTransform>().rotation = Quaternion.Lerp(ScoreKnob.GetComponent<RectTransform>().rotation, rotationAngle, 10 * 1 * Time.deltaTime);
     }
+
+    IEnumerator TimeUpTask()
+    {
+        GeneratedTiles.ForEach(DestroyImmediate);
+        yield return new WaitForSeconds(0.1f);
+        TimesUp.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
+        iTween.ScaleTo(TimesUp, Vector3.zero, 0.5f);
+        GeneratedSprite.Clear();
+        Array.Clear(DustbinSprite, 0, DustbinSprite.Length);
+        Array.Clear(WasteSprite, 0, WasteSprite.Length);
+        ScoreConuter = 0;
+        totalTimercount = 0f;
+        CorrectGuess = 0;
+        CorrectTiles.text = "0";
+        yield return new WaitForSeconds(0.5f);
+        TimesUp.SetActive(false);
+        ZoneA.GetComponent<PolygonCollider2D>().enabled = true;
+        ZoneB.GetComponent<PolygonCollider2D>().enabled = true;
+        this.gameObject.SetActive(false);
+
+    }
+
+
     void GamespriteGenerator()
     {
         int index = 0;
@@ -121,6 +184,7 @@ public class MatchTheTile : MonoBehaviour
             GameObject gb = Instantiate(ButtonPrefeb, TileParent, false);
             gb.GetComponent<Image>().sprite = DefaultSprite;
             gb.GetComponent<Button>().onClick.AddListener(delegate { TilesAction(); });
+            GeneratedTiles.Add(gb);
             gb.name = a.ToString();
             gb.SetActive(true);
         }
@@ -132,7 +196,7 @@ public class MatchTheTile : MonoBehaviour
         for (int a = 0; a < GeneratedSprite.Count; a++)
         {
             Sprite temp = GeneratedSprite[a];
-            int randomindex = Random.Range(1, GeneratedSprite.Count);
+            int randomindex = UnityEngine.Random.Range(1, GeneratedSprite.Count);
             GeneratedSprite[a] = GeneratedSprite[randomindex];
             GeneratedSprite[randomindex] = temp;
 
@@ -192,6 +256,9 @@ public class MatchTheTile : MonoBehaviour
                 FirstSelectedobj.GetComponent<Button>().enabled = false;
                 SecondSelectedobj.GetComponent<Button>().enabled = false;
                 FirstGuess = SecondGuess = false;
+                ScoreCheckNow = true;
+                ScoreConuter += 10;
+                ScoreText.text = ScoreConuter.ToString();
                 CorrectGuess++;
                 CorrectTiles.text = CorrectGuess.ToString();
 
@@ -219,6 +286,9 @@ public class MatchTheTile : MonoBehaviour
                 FirstGuess = SecondGuess = false;
                 FirstSelectedobj.GetComponent<Button>().enabled = false;
                 SecondSelectedobj.GetComponent<Button>().enabled = false;
+                ScoreCheckNow = true;
+                ScoreConuter += 10;
+                ScoreText.text = ScoreConuter.ToString();
                 CorrectGuess++;
                 CorrectTiles.text = CorrectGuess.ToString();
 
@@ -253,7 +323,7 @@ public class MatchTheTile : MonoBehaviour
 
     IEnumerator ResetTiles(GameObject FrstObj,GameObject secondObj)
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.4f);
         FirstSelectedobj.GetComponent<Image>().sprite = DefaultSprite;
         SecondSelectedobj.GetComponent<Image>().sprite = DefaultSprite;
         FirstSelectedobj.GetComponent<Button>().enabled = true;

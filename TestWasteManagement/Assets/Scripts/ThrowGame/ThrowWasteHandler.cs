@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class ThrowWasteHandler : MonoBehaviour
     public Transform WastePerent;
     public LineRenderer ForntLine, BackLine;
     public Rigidbody2D catapultback;
+    [SerializeField]
+    private LineRenderer BackLineRendere, ForntLinerendere;
     private List<GameObject> GeneratedObj = new List<GameObject>();
     public Image Previewimage1, Previewimage2, Previewimage3, Previewimage4;
     private int Objectlive = 0;
@@ -20,6 +23,8 @@ public class ThrowWasteHandler : MonoBehaviour
     public GameObject TimerPanel;
     public GameObject Gamecanvas, ZonePag,ZoneselectionPage, MainZone, Startpage;
     public Button closeButton;
+    public AudioSource gameSound;
+    public AudioClip RightAns, WrongAns;
     //============== COMPLETE GAME SCORE VARIABLE AND HELPING VARIABLE======================
     [Header("Time portion and score ")]
     [Space(10)]
@@ -50,15 +55,17 @@ public class ThrowWasteHandler : MonoBehaviour
     [SerializeField]
     private Color WrongEffect;
 
-
+    public Image PowerBar;
+    [SerializeField]
+    private float Maxstrecthvalue = 9.30f;
     //========================================== PRIVATE OBJECTS FOR GAME==================== 
     private List<string> Dustbins = new List<string>();
     private List<string> ItemColleted = new List<string>();
     private List<int> ObjectScore = new List<int>();
     private List<int> is_correct = new List<int>();
     private List<string> CorrectOption = new List<string>();
-
-
+    public GameObject onstrike;
+    private bool closeGame;
     private void Awake()
     {
 
@@ -74,7 +81,7 @@ public class ThrowWasteHandler : MonoBehaviour
     }
     void initialsetup()
     {
-
+        closeGame = false;
         gameend = gameclose = false;
         timerPanelPos = TimerPanel.GetComponent<RectTransform>().localPosition;
         WasteObejctSprites = Resources.LoadAll<Sprite>(wasteImagePath);
@@ -93,8 +100,8 @@ public class ThrowWasteHandler : MonoBehaviour
         Objectlive = 0;
         Totaltimer = (minut * 60) + second;
         RunningTimer = Totaltimer;
-        Totalwaste.text = totalwasteCount.ToString();
-        CorrectGuesscount.text = "0";
+        Totalwaste.text = "0 / " + totalwasteCount.ToString();
+        //CorrectGuesscount.text = "0";
 
         for (int a = 0; a < WasteObejctSprites.Length; a++)
         {
@@ -104,6 +111,7 @@ public class ThrowWasteHandler : MonoBehaviour
             gb.GetComponent<SpringJoint2D>().connectedBody = catapultback;
             gb.GetComponent<ProjectileDragging>().catapultLineFront = ForntLine;
             gb.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = WasteObejctSprites[a];
+            gb.GetComponent<ProjectileDragging>().ONstrike = onstrike;
             GeneratedObj.Add(gb);
         }
 
@@ -125,10 +133,10 @@ public class ThrowWasteHandler : MonoBehaviour
 
     void SpriteUpdator(int a)
     {
-        Previewimage1.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[a].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        Previewimage2.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[a + 1].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        Previewimage3.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[a + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        Previewimage4.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[a + 3].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        Previewimage1.GetComponent<Image>().sprite = GeneratedObj[a].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        Previewimage2.GetComponent<Image>().sprite = GeneratedObj[a + 1].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        Previewimage3.GetComponent<Image>().sprite = GeneratedObj[a + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        Previewimage4.GetComponent<Image>().sprite = GeneratedObj[a + 3].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
 
     }
     void Start()
@@ -181,7 +189,10 @@ public class ThrowWasteHandler : MonoBehaviour
         }
         var Rotationangle = Quaternion.Euler(0f, 0f, -Knobangle);
         ScoreKnob.GetComponent<RectTransform>().rotation = Quaternion.Lerp(ScoreKnob.GetComponent<RectTransform>().rotation, Rotationangle, 10 * 1 * Time.deltaTime);
-
+        if (!closeGame)
+        {
+            PowerBar.fillAmount = GeneratedObj[Objectlive].GetComponent<ProjectileDragging>().catapultToMouse.sqrMagnitude / Maxstrecthvalue;
+        }
 
     }
 
@@ -197,11 +208,11 @@ public class ThrowWasteHandler : MonoBehaviour
 
                 if (Objectlive < GeneratedObj.Count)
                 {
-                    Previewimage1.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[Objectlive].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                    Previewimage1.GetComponent<Image>().sprite = GeneratedObj[Objectlive].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
                     if (Objectlive < GeneratedObj.Count - 2)
                     {
-                        Previewimage2.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[Objectlive + 1].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-                        Previewimage3.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[Objectlive + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                        Previewimage2.GetComponent<Image>().sprite = GeneratedObj[Objectlive + 1].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                        Previewimage3.GetComponent<Image>().sprite = GeneratedObj[Objectlive + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
                     }
                     else
                     {
@@ -210,7 +221,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     }
                     if (Objectlive < GeneratedObj.Count - 3)
                     {
-                        Previewimage3.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[Objectlive + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                        Previewimage3.GetComponent<Image>().sprite = GeneratedObj[Objectlive + 2].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
 
                     }
                     else
@@ -219,7 +230,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     }
                     if (Objectlive < GeneratedObj.Count - 4)
                     {
-                        Previewimage4.transform.GetChild(0).GetComponent<Image>().sprite = GeneratedObj[Objectlive + 3].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+                        Previewimage4.GetComponent<Image>().sprite = GeneratedObj[Objectlive + 3].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
 
                     }
                     else
@@ -246,12 +257,20 @@ public class ThrowWasteHandler : MonoBehaviour
     IEnumerator GameEndProcess()
     {
         TimePaused = true;
+        gameclose = true;
+        BackLineRendere.enabled = false;
+        ForntLinerendere.enabled = false;
         yield return new WaitForSeconds(0.1f);
         Gamestaus.text = "You have scored " + SCore;
-        foreach (GameObject e in GeneratedObj)
+        GeneratedObj.ForEach(x =>
         {
-            e.SetActive(false);
-        }
+            x.SetActive(false);
+        });
+        yield return new WaitForSeconds(0.1f);
+        //foreach (GameObject e in GeneratedObj)
+        //{
+        //    e.SetActive(false);
+        //}
     }
 
     public void checkCollidedAns(string dustbin, string collidername, GameObject dustbinobj)
@@ -259,14 +278,14 @@ public class ThrowWasteHandler : MonoBehaviour
 
         var CollidedDustbin = WasteCollectionList.FirstOrDefault(x => x.Key.Equals(dustbin, System.StringComparison.OrdinalIgnoreCase));
         var iscorrectWaste = CollidedDustbin.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase));
-
-       
+        correctGoal++;
+        Totalwaste.text = correctGoal.ToString() + " / " + totalwasteCount.ToString();
 
         if (iscorrectWaste)
         {
-            dustbinobj.GetComponent<ShakeEffect>().enabled = true;
-            correctGoal++;
-            CorrectGuesscount.text = correctGoal.ToString();
+            gameSound.clip = RightAns;
+            gameSound.Play();
+            //dustbinobj.GetComponent<ShakeEffect>().enabled = true;
             SCore += 10;
             TotalscoreText.text = SCore.ToString();
             checkScore = true;
@@ -279,16 +298,17 @@ public class ThrowWasteHandler : MonoBehaviour
                                   where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
                                   select k.Key).FirstOrDefault();
             CorrectOption.Add(RelatedDustbin);
-            dustbinobj.GetComponent<ShakeEffect>().enabled = true;
-            dustbinobj.GetComponent<SpriteRenderer>().color = WrongEffect;
+            //dustbinobj.GetComponent<ShakeEffect>().enabled = true;
+            //dustbinobj.GetComponent<SpriteRenderer>().color = WrongEffect;
+            gameSound.clip = WrongAns;
+            gameSound.Play();
             is_correct.Add(0);
             Debug.Log(" nitb correct waste");
             ObjectScore.Add(0);
         }
         ItemColleted.Add(collidername);
         Dustbins.Add(dustbin);
-
-        StartCoroutine(resetEffect(dustbinobj));
+        //StartCoroutine(resetEffect(dustbinobj));
 
     }
     IEnumerator resetEffect(GameObject dustbinobj)
@@ -300,6 +320,7 @@ public class ThrowWasteHandler : MonoBehaviour
 
     public void CloseGame()
     {
+        closeGame = true;
         gameclose = true;
         StartCoroutine(CloserGame());
     }
@@ -316,6 +337,7 @@ public class ThrowWasteHandler : MonoBehaviour
         Gamecanvas.SetActive(false);
         ZonePag.SetActive(true);
         ZoneselectionPage.SetActive(true);
+        Startpage.SetActive(true);
         Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         MainZone.SetActive(false);
     }

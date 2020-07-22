@@ -16,10 +16,17 @@ public class UpdatedDashbaord : MonoBehaviour
     public Text OverallScore, ZoneScore, BonusScore;
     [SerializeField]
     private int Totalscore,BonusTotalscore;
-    public Text Gamescore,TotalGamescore;
-    public Image GamescoreFiller, TotalGameFiller;
     public List<StageOneDashboard> ZoneDashbaords;
     public GameObject triviapage;
+    public string MainUrl, OverallDataApi;
+    [Space(10)]
+    public Image GameScorefiller;
+    public Image GreenJournalFiller, TotalScoreFiller;
+    public Text Gamescoretext, GreenJournalText, TotalScoretext;
+    public Text PlayedStages, PlayedZones, PlayedBonusGames, StageText, ZoneText, BonusText;
+    
+    [SerializeField]
+    private float TotalGameScore, TotalGreenJScore, TotalFinalScore;
     void Start()
     {
         
@@ -33,13 +40,13 @@ public class UpdatedDashbaord : MonoBehaviour
 
     private void OnEnable()
     {
+        StartCoroutine(Overalldata());
         initialSetup();
     }
 
     void initialSetup() 
     {
-        Username.text = PlayerPrefs.GetString("username");
-        GradeValue.text = PlayerPrefs.GetString("User_grade");
+
         Tabs[0].GetComponent<Image>().sprite = PresssedSprite;
         MainPages[0].SetActive(true);
         for(int a = 1; a < Tabs.Count; a++)
@@ -49,17 +56,7 @@ public class UpdatedDashbaord : MonoBehaviour
         }
 
 
-        OverallScore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
-        Gamescore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
-        TotalGamescore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
-        ZoneScore.text = PlayerPrefs.GetInt("ZoneScore").ToString();
-        BonusScore.text = PlayerPrefs.GetInt("BonusScore").ToString();
-
-        OverallScoreFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
-        GamescoreFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
-        TotalGameFiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
-        ZoneScorezfiller.fillAmount =(float)PlayerPrefs.GetInt("ZoneScore") / (float)Totalscore;
-        BonusScoreFiller.fillAmount =(float)PlayerPrefs.GetInt("BonusScore") / (float)BonusTotalscore;
+      
 
     }
 
@@ -98,6 +95,39 @@ public class UpdatedDashbaord : MonoBehaviour
         }
         triviapage.SetActive(false);
         this.gameObject.SetActive(false);
+    }
+
+    IEnumerator Overalldata()
+    {
+        string HittingUrl = MainUrl + OverallDataApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&id_org_game=" + 1;
+        WWW response = new WWW(HittingUrl);
+        yield return response;
+        if(response.text != null)
+        {
+            OverallDashboardModel OverallModel = Newtonsoft.Json.JsonConvert.DeserializeObject<OverallDashboardModel>(response.text);
+            Username.text = OverallModel.Name;
+            GradeValue.text = OverallModel.Grade;
+            float GameScore = int.Parse(OverallModel.TotalGameScore);
+            float GreenJournal = int.Parse(OverallModel.GreenJournelScore);
+            Gamescoretext.text = GameScore.ToString();
+            GreenJournalText.text = GreenJournal.ToString();
+            TotalScoretext.text = (GameScore + GreenJournal).ToString();
+            GameScorefiller.fillAmount = GameScore / TotalGameScore;
+            GreenJournalFiller.fillAmount = GreenJournal / TotalGreenJScore;
+            TotalScoreFiller.fillAmount = (GameScore + GreenJournal) / TotalFinalScore;
+            OverallScore.text = OverallModel.TotalAllLevelScore.ToString();
+            ZoneScore.text = OverallModel.TotalZonesScore.ToString();
+            BonusScore.text = OverallModel.TotalBonusScore.ToString();
+            OverallScoreFiller.fillAmount = float.Parse(OverallModel.TotalAllLevelScore) / (float)Totalscore;
+            ZoneScorezfiller.fillAmount = float.Parse(OverallModel.TotalZonesScore) / (float)Totalscore;
+            BonusScoreFiller.fillAmount = float.Parse(OverallModel.TotalBonusScore) / (float)BonusTotalscore;
+            PlayedStages.text = OverallModel.TotalStagesPlayed;
+            PlayedZones.text = OverallModel.TotalZonesPlayed;
+            PlayedBonusGames.text = OverallModel.TotalBonusPlayed;
+            StageText.text = OverallModel.OverAllScoreText;
+            ZoneText.text = OverallModel.ZoneScoreText;
+            BonusText.text = OverallModel.BonusScoreText;
+        }
     }
 
 }

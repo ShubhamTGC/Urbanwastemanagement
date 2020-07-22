@@ -43,7 +43,7 @@ public class Zoneselection : MonoBehaviour
         {
             zoneinfo.text = zonemsg;
         }
-        startpage.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 1);
+        startpage.GetComponent<Image>().color = new Color(0.4f, 0.4f, 0.4f, 1);
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
     }
     

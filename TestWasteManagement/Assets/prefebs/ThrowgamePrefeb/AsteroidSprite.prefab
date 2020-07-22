@@ -110,7 +110,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1893014443442094758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.82, y: -8.2, z: 0}
+  m_LocalPosition: {x: -21.5, y: -6.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4022595742276271486}
@@ -156,7 +156,7 @@ SpriteRenderer:
   m_SortingLayerID: -483032571
   m_SortingLayer: 1
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: db32459b4465489419e4d01241e433ad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 16e17e9eae02fa346a334f7e928b7e13, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -239,3 +239,5 @@ MonoBehaviour:
   maxStretch: 3
   catapultLineFront: {fileID: 0}
   catapultLineBack: {fileID: 0}
+  catapultToMouse: {x: 0, y: 0}
+  ONstrike: {fileID: 0}

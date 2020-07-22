@@ -7,10 +7,16 @@ public class ZonepopUp : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject startpage;
+    public GameObject ZoneChild;
     public Color HoverEffect, RelasedEffect;
+    public Vector3 targetposition;
+    public float targetScale;
+    private Vector2 initialpos;
+    [SerializeField]
+    private float time = 0.3f;
     void Start()
     {
-        
+        initialpos = startpage.GetComponent<RectTransform>().localPosition;
     }
 
     // Update is called once per frame
@@ -21,13 +27,28 @@ public class ZonepopUp : MonoBehaviour
 
     public void OnMouseEnter()
     {
+        //StartCoroutine(ZoneEffect());
         startpage.GetComponent<Image>().color = HoverEffect;
-        this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        ZoneChild.SetActive(true);
     }
 
     public void OnMouseExit()
     {
+        // StartCoroutine(CancelEffect());
         startpage.GetComponent<Image>().color = RelasedEffect;
-        this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+        ZoneChild.SetActive(false);
+    }
+
+    IEnumerator ZoneEffect()
+    {
+        iTween.ScaleTo(startpage, new Vector3(targetScale, targetScale, targetScale), time);
+        iTween.MoveTo(startpage, iTween.Hash("position", targetposition, "easeType", iTween.EaseType.linear, "time", time, "isLocal", true));
+        yield return new WaitForSeconds(time);
+    }
+    IEnumerator CancelEffect()
+    {
+        iTween.MoveTo(startpage, iTween.Hash("position", Vector3.zero, "easeType", iTween.EaseType.linear, "time", 0.2f, "isLocal", true));
+        iTween.ScaleTo(startpage, Vector3.one, time);
+        yield return new WaitForSeconds(time);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,9 @@ public class ProjectileDragging : MonoBehaviour
     private Rigidbody2D rigidbody2d;
     private CircleCollider2D circle;
     private ThrowWasteHandler throwwaste;
+    [HideInInspector]
+    public Vector2 catapultToMouse;
+    public GameObject ONstrike;
     void Awake()
     {
        
@@ -109,9 +113,11 @@ public class ProjectileDragging : MonoBehaviour
     void Dragging()
     {
         Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 catapultToMouse = mouseWorldPoint - catapult.position;
+        catapultToMouse = mouseWorldPoint - catapult.position;
+        
         if (catapultToMouse.sqrMagnitude > maxStretchSqr)
         {
+            
             rayToMouse.direction = catapultToMouse;
             mouseWorldPoint = rayToMouse.GetPoint(maxStretch);
         }
@@ -130,20 +136,27 @@ public class ProjectileDragging : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-         if (collision.gameObject.tag == "Groud")
-            {
-                string collidername = collision.collider.gameObject.name;
-                string objectname = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
-                throwwaste.checkCollidedAns(collidername, objectname,collision.gameObject);
-                this.gameObject.SetActive(false);
-
+        if (collision.gameObject.tag == "Groud")
+        {
+            ONstrike.transform.position = this.transform.position;
+            string collidername = collision.collider.gameObject.name;
+            string objectname = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
+            throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
+            StartCoroutine(CollidedTask());
         }
         else
         {
-            this.gameObject.SetActive(false);
+            StartCoroutine(CollidedTask());
         }
+    }
 
-
-
+    IEnumerator CollidedTask()
+    {
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        this.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+        ONstrike.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        ONstrike.SetActive(false);
+        this.gameObject.SetActive(false);
     }
 }

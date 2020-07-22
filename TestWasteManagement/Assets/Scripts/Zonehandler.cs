@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using LitJson;
 using System.Linq;
+using UnityEngine.Networking;
 
 public class Zonehandler : MonoBehaviour
 {
@@ -134,6 +135,11 @@ public class Zonehandler : MonoBehaviour
     string correctOptionRoom1;
     string correctOptionRoom2;
     string correctOptionRoom3;
+    [SerializeField]
+    private int GameLevelId;
+    private bool Game_over_time = false;
+    //======================TIME TAKEN TO COMPLETE THE ONE ZONE VARIABLERS===================
+    private float pri_sec,pri_time;
     void Start()
     {
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
@@ -606,12 +612,23 @@ public class Zonehandler : MonoBehaviour
         {
             RightPage.gameObject.SetActive(false);
         }
+        if (!Game_over_time)
+        {
+            Time_taken();
+        }
+        
     }
 
-    void Timer_functionlity(bool nextroom1,bool nextroom2)
+    private void Time_taken()
     {
-     
-    }
+        pri_sec += pri_sec + Time.deltaTime;
+        if(pri_sec > 59.00)
+        {
+            pri_time += 1;
+            pri_sec = 0.0f;
+        }
+    } 
+
 
     void stopshake()
     {
@@ -911,6 +928,7 @@ public class Zonehandler : MonoBehaviour
     IEnumerator zone_completiontask(int zone)
     {
         is_win = true;
+        Game_over_time = true;
         yield return new WaitForSeconds(0f);
         timer.GetComponent<AudioSource>().enabled = false;
         string donemsg = "OK, you have completed the zone, let’s see how have you scored!" +
@@ -2316,23 +2334,38 @@ public class Zonehandler : MonoBehaviour
     IEnumerator ScorePostTask()
     {
         yield return new WaitForSeconds(0.1f);
-        string hittingUrl = MainUrl + ScorePostApi;
+        string HittingUrl = MainUrl + ScorePostApi;
         ScorePostModel scorePost = new ScorePostModel();
         scorePost.log = new Log();
         scorePost.UID = PlayerPrefs.GetInt("UID");
         scorePost.OID = PlayerPrefs.GetInt("OID");
         scorePost.log.id_user = PlayerPrefs.GetInt("UID");
-        scorePost.log.id_game_content = 1;
+        scorePost.log.id_game_content = startpage.GameIDS[GameLevelId];
         scorePost.log.score = 1;
         scorePost.log.id_score_unit = 1;
         scorePost.log.score_type = 1;
         scorePost.log.score_unit = "points";
         scorePost.log.status = "A";
-        //scorePost.log.updated_date_time 
+        scorePost.log.updated_date_time = DateTime.Now.ToString();
+        scorePost.log.id_level = 1;
+        scorePost.log.id_org_game = 1;
+        scorePost.log.attempt_no = 1;
+        scorePost.log.timetaken_to_complete = pri_sec.ToString() + ":" + pri_time.ToString("0");
+        scorePost.log.is_completed = 1;
 
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(scorePost);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if(!Request.isNetworkError && Request.isHttpError)
+            {
 
+            }
 
-
+        }
     }
 
 

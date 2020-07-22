@@ -10081,6 +10081,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!1 &134055535
 GameObject:
   m_ObjectHideFlags: 0
@@ -12532,7 +12533,9 @@ MonoBehaviour:
   MainUrl: 
   levelClearnessApi: 
   PostBadgeApi: 
+  BadgeUpadteApi: 
   ZoneNo: 0
+  Gamelevel: 0
   Stage2UnlockScore: 0
   Stage2popup: {fileID: 0}
   startpageobj: {fileID: 0}
@@ -23479,6 +23482,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!1 &302629791
 GameObject:
   m_ObjectHideFlags: 0
@@ -71022,6 +71026,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!1 &1055621397
 GameObject:
   m_ObjectHideFlags: 0
@@ -84586,6 +84591,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!4 &1270044023 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 27d0bc612307a584894a0c762a326f60,
@@ -102136,6 +102142,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!1 &1555724241
 GameObject:
   m_ObjectHideFlags: 0
@@ -107901,6 +107908,7 @@ MonoBehaviour:
   LeftPage: {fileID: 0}
   RightPage: {fileID: 0}
   UpdatedOverallscore: {fileID: 0}
+  GameLevelId: 0
 --- !u!1 &1648574913
 GameObject:
   m_ObjectHideFlags: 0
@@ -140306,11 +140314,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 995908499}
     m_Modifications:
-    - target: {fileID: 7465861122166540100, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 13.680176
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861122278700691, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: Room1items.Array.data[0]
@@ -140431,11 +140434,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 549755063}
-    - target: {fileID: 7465861122278700691, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861122855211323, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: Room1items.Array.data[0]
@@ -140556,11 +140554,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 760497919}
-    - target: {fileID: 7465861122855211323, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861122986124973, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -140686,11 +140679,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 2056467059}
-    - target: {fileID: 7465861123155206265, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861123193691977, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: Room1items.Array.data[0]
@@ -140811,11 +140799,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 392736650}
-    - target: {fileID: 7465861123193691977, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861123494509184, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -140935,11 +140918,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7465861123633484493, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 13.680176
       objectReference: {fileID: 0}
     - target: {fileID: 7465861123715029121, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
@@ -141061,11 +141039,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 7767838572634881738}
-    - target: {fileID: 7465861123715029121, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 7465861123725513476, guid: e41318cc56f6d5548aa75a0f697c4d95,
         type: 3}
       propertyPath: Room1items.Array.data[0]
@@ -141186,21 +141159,6 @@ PrefabInstance:
       propertyPath: Room3items.Array.data[7]
       value: 
       objectReference: {fileID: 572857637}
-    - target: {fileID: 7465861123725513476, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: id_game_content
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7465861124014369434, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 7465861124014369434, guid: e41318cc56f6d5548aa75a0f697c4d95,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 13.680176
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e41318cc56f6d5548aa75a0f697c4d95, type: 3}
 --- !u!224 &7767838572092504472
