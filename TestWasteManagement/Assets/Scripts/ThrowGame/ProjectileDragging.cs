@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,18 @@ public class ProjectileDragging : MonoBehaviour
     [HideInInspector]
     public Vector2 catapultToMouse;
     public GameObject ONstrike;
+    private bool collide = false;
+    public int DotsNumber;
+    public GameObject dots;
+    public Transform ProjectionParent;
+    private GameObject[] projectionDots;
+    private Vector3 Endpos, startPos;
+    private Vector3 forceAtplayer;
+    private Vector3 mouseWorldPoint;
+    [SerializeField] private float Forcefactor;
+    private Vector3 lastForceAtPlayer;
+    [SerializeField] private float Timedata;
+    private Vector3 temppos;
     void Awake()
     {
        
@@ -32,15 +45,18 @@ public class ProjectileDragging : MonoBehaviour
 
     void Start()
     {
-        throwwaste = FindObjectOfType<ThrowWasteHandler>();
+       
     }
 
     private void OnEnable()
     {
-      
+        collide = false;
+        throwwaste = FindObjectOfType<ThrowWasteHandler>();
         StartCoroutine(initailsetup());
-       
-       
+        projectionDots = new GameObject[DotsNumber];
+
+
+
     }
 
     IEnumerator initailsetup()
@@ -68,11 +84,6 @@ public class ProjectileDragging : MonoBehaviour
 
         if (spring != null)
         {
-            if (!rigidbody2d.isKinematic && prevVelocity.sqrMagnitude > rigidbody2d.velocity.sqrMagnitude)
-            {
-                Destroy(spring);
-                rigidbody2d.velocity = prevVelocity;
-            }
             if (!clickedOn)
                 prevVelocity = rigidbody2d.velocity;
 
@@ -83,6 +94,8 @@ public class ProjectileDragging : MonoBehaviour
             catapultLineFront.enabled = false;
             catapultLineBack.enabled = false;
         }
+
+
     }
 
     void LineRendererSetup()
@@ -99,34 +112,84 @@ public class ProjectileDragging : MonoBehaviour
 
     void OnMouseDown()
     {
-        spring.enabled = false;
         clickedOn = true;
+        //LineRendererUpdate();
+        
+        throwwaste.gameSound.clip = throwwaste.Stretching;
+        throwwaste.gameSound.Play();
+        spring.enabled = false;
+        startPos = gameObject.transform.position;
+        for (int a = 0; a < DotsNumber; a++)
+        {
+            projectionDots[a] = Instantiate(dots, this.gameObject.transform);
+        }
     }
 
     void OnMouseUp()
     {
-        spring.enabled = true;
-        rigidbody2d.isKinematic = false;
         clickedOn = false;
+        Destroy(spring);
+        rigidbody2d.gravityScale = 1f;
+        throwwaste.gameSound.clip = throwwaste.Shoot;
+        throwwaste.gameSound.Play();
+        rigidbody2d.velocity = new Vector2(-forceAtplayer.x * Forcefactor, -forceAtplayer.y * Forcefactor);
+        for (int a = 0; a < DotsNumber; a++)
+        {
+            Destroy(projectionDots[a]);
+        }
     }
 
     void Dragging()
     {
-        Vector3 mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+       
+        mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         catapultToMouse = mouseWorldPoint - catapult.position;
-        
+
+       
         if (catapultToMouse.sqrMagnitude > maxStretchSqr)
         {
-            
             rayToMouse.direction = catapultToMouse;
             mouseWorldPoint = rayToMouse.GetPoint(maxStretch);
+          
         }
+        
+        Endpos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 10f);
+
+        forceAtplayer = Endpos - startPos;
+        if(Mathf.Sign(forceAtplayer.x) == 1)
+        {
+            for (int a = 0; a < DotsNumber; a++)
+            {
+                projectionDots[a].SetActive(false);
+            }
+        }
+        else
+        {
+            for (int a = 0; a < DotsNumber; a++)
+            {
+                projectionDots[a].SetActive(true);
+            }
+        }
+        //Debug.Log("force at player " + forceAtplayer);
+        forceAtplayer.x = Mathf.Min(0f, forceAtplayer.x);
+        forceAtplayer.y = Mathf.Min(0f, forceAtplayer.y);
+        float radius = 8f;
+        forceAtplayer = Vector2.ClampMagnitude(forceAtplayer, radius);
+        for (int a = 0; a < DotsNumber; a++)
+        {
+            projectionDots[a].transform.position = ProjectCalculate(a * Timedata);
+        }
+
+
+        //Debug.Log("force value " + forceAtplayer);
+
         mouseWorldPoint.z = 0f;
         transform.position = mouseWorldPoint;
     }
 
     void LineRendererUpdate()
     {
+       
         Vector2 catapultToProjectile = transform.position - catapultLineFront.transform.position;
         leftCatapultToProjectile.direction = catapultToProjectile;
         Vector3 holdPoint = leftCatapultToProjectile.GetPoint(catapultToProjectile.magnitude + circleRadius);
@@ -136,27 +199,52 @@ public class ProjectileDragging : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Groud")
+        
+        if (!collide)
         {
-            ONstrike.transform.position = this.transform.position;
-            string collidername = collision.collider.gameObject.name;
+            collide = true;
             string objectname = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
-            throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
-            StartCoroutine(CollidedTask());
+            if (collision.gameObject.tag == "Groud")
+            {
+                ONstrike.transform.position = this.gameObject.transform.position;
+                string collidername = collision.collider.gameObject.name;
+                throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
+                StartCoroutine(CollidedTask(collision.gameObject));
+            }
+            else
+            {
+                string collidername = "wall";
+                throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
+                collide = false;
+                this.gameObject.SetActive(false);
+               
+            }
         }
-        else
-        {
-            StartCoroutine(CollidedTask());
-        }
+     
     }
 
-    IEnumerator CollidedTask()
+    IEnumerator CollidedTask(GameObject dustbin)
     {
+        dustbin.transform.GetChild(0).gameObject.SetActive(false);
+        dustbin.transform.GetChild(1).gameObject.SetActive(true);
         this.GetComponent<SpriteRenderer>().enabled = false;
         this.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
         ONstrike.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.8f);
+        dustbin.transform.GetChild(0).gameObject.SetActive(true);
+        dustbin.transform.GetChild(1).gameObject.SetActive(false);
         ONstrike.SetActive(false);
+        collide = false;
         this.gameObject.SetActive(false);
+    }
+
+    private Vector2 ProjectCalculate(float time)
+    {
+        return new Vector2(Endpos.x, Endpos.y) +
+            new Vector2(-forceAtplayer.x * Forcefactor, -forceAtplayer.y * Forcefactor) * time + 0.5f * Physics2D.gravity * time * time;
+    }
+    private Vector2 ShowProjectAfterStrtch(float time,Vector3 forceAtplayer1)
+    {
+        return new Vector2(Endpos.x, Endpos.y) + new Vector2(-forceAtplayer1.x * Forcefactor, -forceAtplayer1.y * Forcefactor);
     }
 }

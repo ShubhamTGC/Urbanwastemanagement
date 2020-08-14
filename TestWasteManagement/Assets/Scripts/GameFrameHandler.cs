@@ -11,7 +11,7 @@ public class GameFrameHandler : MonoBehaviour
     private int clickcount = 1,clickcount2=1, playcount = 1,volume_count =1,dashboard_count =1;
     public Sprite in_sprite,out_sprite,play,pause,slient,volume;
     public GameObject panel_btn,panel_btn2,play_btn,volume_btn,pausepanel,dashboard_btn;
-    public GameObject leftdashboard, dashboard_target;
+    //public GameObject leftdashboard, dashboard_target;
 
     [Header("======For count down time====")]
     public float mint;
@@ -19,7 +19,6 @@ public class GameFrameHandler : MonoBehaviour
     public float sec;
     private float totalsecond,TotalSec;
     public Image timerimage;
-    public Image profileimage;
     public Sprite boyface, girlface;
     public GameObject Status_msg_panel;
 
@@ -39,6 +38,7 @@ public class GameFrameHandler : MonoBehaviour
     static StartpageController instance;
     public void Awake()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         instance = StartpageController.Home_instane;
         mainaudio.volume = PlayerPrefs.GetFloat("volume");
         brightness.color = new Color(0, 0, 0, PlayerPrefs.GetFloat("brightness"));
@@ -47,18 +47,6 @@ public class GameFrameHandler : MonoBehaviour
     {
         
        
-        if(PlayerPrefs.GetInt("characterType") == 1)
-        {
-            profileimage.sprite = boyface;
-        }
-        else
-        {
-            profileimage.sprite = girlface;
-        }
-        
-        //StartCoroutine(Countdowntimer());
-        dashboard_inpos = dashboard_target.GetComponent<RectTransform>().localPosition;
-        dashboard_outpos = leftdashboard.GetComponent<RectTransform>().localPosition;
         incomepos = targetobj.GetComponent<RectTransform>().localPosition;
         outpos = buttonpanel.GetComponent<RectTransform>().localPosition;
         normalpanelin_pos = normaltargetobj.GetComponent<RectTransform>().localPosition;
@@ -213,22 +201,22 @@ public class GameFrameHandler : MonoBehaviour
         volume_count += 1;
     }
 
-    public void Movedashborad()
-    {
-        if (dashboard_count % 2 == 0)
-        {
-            Debug.Log("income");
-            dashboard_btn.GetComponent<Image>().sprite = out_sprite;
-            iTween.MoveTo(leftdashboard, iTween.Hash("position", dashboard_outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
-        }
-        else
-        {
-            Debug.Log("outcome");
-           dashboard_btn.GetComponent<Image>().sprite = in_sprite;
-            iTween.MoveTo(leftdashboard, iTween.Hash("position", dashboard_inpos, "easeType", iTween.EaseType.linear, "isLocal", true, "time", 0.5));
-        }
-        dashboard_count += 1; 
-    }
+    //public void Movedashborad()
+    //{
+    //    if (dashboard_count % 2 == 0)
+    //    {
+    //        Debug.Log("income");
+    //        dashboard_btn.GetComponent<Image>().sprite = out_sprite;
+    //        iTween.MoveTo(leftdashboard, iTween.Hash("position", dashboard_outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("outcome");
+    //       dashboard_btn.GetComponent<Image>().sprite = in_sprite;
+    //        iTween.MoveTo(leftdashboard, iTween.Hash("position", dashboard_inpos, "easeType", iTween.EaseType.linear, "isLocal", true, "time", 0.5));
+    //    }
+    //    dashboard_count += 1; 
+    //}
 
     public void gallery_msg()
     {
@@ -284,7 +272,10 @@ public class GameFrameHandler : MonoBehaviour
         }
         else
         {
+
             gallery_panel.SetActive(true);
+            panel_btn2.GetComponent<Image>().sprite = in_sprite;
+            iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
             if (dashboard_panel.activeInHierarchy)
             {
                 dashboard_panel.SetActive(false);
@@ -335,12 +326,18 @@ public class GameFrameHandler : MonoBehaviour
         iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
         yield return new WaitForSeconds(0.6f);
         logoutpage.SetActive(true);
+        //Time.timeScale = 0f;
     }
 
     public void YesLogout()
     {
+        //Time.timeScale = 1f;
         logoutpage.SetActive(false);
         StartCoroutine(afterlogout());
+    }
+    public void LogoutCancel()
+    {
+        //Time.timeScale = 1f;
     }
 
     IEnumerator afterlogout()

@@ -56,8 +56,10 @@ public class AnagrameController : MonoBehaviour
 
     public string MainUrl, AnagramApi,PostDataApi,UserScorePosting;
     private AnagramPostData anagramePostdata;
+    private ZoneShowHandler ZoneHandlers;
     void Start()
     {
+        ZoneHandlers = new ZoneShowHandler();
         score = 0;
         sec = second;
         Timepaused = true;
@@ -315,7 +317,7 @@ public class AnagrameController : MonoBehaviour
     }
     IEnumerator GameoverPage()
     {
-
+        StartCoroutine(GameScorePosting());
         yield return new WaitForSeconds(0.5f);
         for (int a = 0; a < Words.Count; a++)
         {
@@ -331,7 +333,7 @@ public class AnagrameController : MonoBehaviour
         PlayerPrefs.SetInt("BonusScore", score);
         ScoreText.text = "You got total bonus score : " + score;
         GameoverObj.SetActive(true);
-        StartCoroutine(GameScorePosting());
+        
         
 
     }
@@ -340,23 +342,22 @@ public class AnagrameController : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         string hittingUrl = MainUrl + UserScorePosting;
         ScorePostModel postField = new ScorePostModel();
-        postField.log = new Log();
         postField.UID = PlayerPrefs.GetInt("UID");
         postField.OID = PlayerPrefs.GetInt("OID");
-        postField.log.id_log = 1;
-        postField.log.id_user = PlayerPrefs.GetInt("UID");
-        postField.log.id_game_content = 0;
-        postField.log.score = score;
-        postField.log.id_score_unit = 1;
-        postField.log.score_type = 1;
-        postField.log.score_unit = "points";
-        postField.log.status = "a";
-        postField.log.updated_date_time = DateTime.Now.ToString();
-        postField.log.id_level = 0;
-        postField.log.id_org_game = 1;
-        postField.log.attempt_no = 0;
-        postField.log.timetaken_to_complete = "";
-        postField.log.is_completed = 1;
+        postField.id_log = 1;
+        postField.id_user = PlayerPrefs.GetInt("UID");
+        postField.id_game_content = 0;
+        postField.score = score;
+        postField.id_score_unit = 1;
+        postField.score_type = 1;
+        postField.score_unit = "points";
+        postField.status = "a";
+        postField.updated_date_time = DateTime.Now.ToString();
+        postField.id_level = 0;
+        postField.id_org_game = 1;
+        postField.attempt_no = 0;
+        postField.timetaken_to_complete = "00:00";
+        postField.is_completed = 1;
 
 
         string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(postField);
@@ -371,13 +372,11 @@ public class AnagrameController : MonoBehaviour
             yield return request.SendWebRequest();
             if (!request.isNetworkError && !request.isHttpError)
             {
-                Debug.Log(request.downloadHandler.text);
-                 
-                JsonData post_res = JsonMapper.ToObject(request.downloadHandler.text);
-                string authstatus = post_res["STATUS"].ToString();
-                if (authstatus.ToLower() == "success")
+                MasterTabelResponse post_res = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(request.downloadHandler.text);
+                if (post_res.STATUS.ToLower() == "success")
                 {
                     Debug.Log("successfully posted ");
+                    ZoneHandlers.AnagramPlayed = true;
                     StartCoroutine(PostGameData());
                 }
             }

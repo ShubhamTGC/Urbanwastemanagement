@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using LitJson;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using System.Linq;
 
 public class StartpageController : MonoBehaviour 
 {
@@ -52,7 +53,7 @@ public class StartpageController : MonoBehaviour
 
     [Header("=====generation level sprites=====")]
     public Sprite toplayer_sprite;
-    public Sprite midlayer_sprite,home_sprite,industry_sprite,hospital_sprite,forest_sprite,school_sprite,park_sprite, Dirty_Sky;
+    public Sprite midlayer_sprite,home_sprite,industry_sprite,hospital_sprite,forest_sprite,school_sprite,park_sprite, Dirty_Sky,Moderate_sky, Stage2Bg;
     public Button Back,dashboardbtn,settingpanelbtn;
 
 
@@ -79,6 +80,7 @@ public class StartpageController : MonoBehaviour
     public GameObject YoutubeVideopage,skipVideo;
 
     private bool videoPlayed, checkforEnd;
+    public string nextSceneAddress;
     private void Awake()
     {
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
@@ -96,6 +98,7 @@ public class StartpageController : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("diy path " + UnityEngine.Application.persistentDataPath);
         if(Home_instane != null)
         {
             
@@ -110,6 +113,8 @@ public class StartpageController : MonoBehaviour
         }
         DontDestroyOnLoad(Home_instane);
     }
+
+    
 
     void ComeFromStages()
     {
@@ -305,15 +310,12 @@ public class StartpageController : MonoBehaviour
         switch (buttobiobj)
         {
             case "Generation":
-                //StartCoroutine(levelanim(selectedobj));
-                StartCoroutine(ZoneGameActive());
+                StartCoroutine(ZoneGameActive(1, midlayer_sprite));
                 StartCoroutine(scenechanges(HomepageObject, Dirty_Sky));
-               // Invoke("midlayerenable", 0.5f);
                 break;
             case "seperation":
-                //StartCoroutine(scenechanges(this.gameObject, midlayer_sprite));
-                string msg = "You need to Complete Generation level.";
-                StartCoroutine(showindication(msg, popupNotification));
+                StartCoroutine(ZoneGameActive(2, Stage2Bg));
+                StartCoroutine(scenechanges(HomepageObject, Moderate_sky));
                 break;
             case "Mangement":
                 string msg1 = "You need to Complete Separation level.";
@@ -325,15 +327,16 @@ public class StartpageController : MonoBehaviour
         }
     }
 
-    IEnumerator ZoneGameActive()
+    IEnumerator ZoneGameActive(int Sceneno,Sprite midlayer_sprite)
     {
         yield return new WaitForSeconds(0.2f);
         toplayer.SetActive(false);
         yield return new WaitForSeconds(1.2f);
         yield return new WaitForSeconds(1.5f);
         StartCoroutine(scenechanges(HomepageObject, midlayer_sprite));
-        yield return new WaitForSeconds(1.2f);
-        SceneManager.LoadScene(1);
+        yield return new WaitForSeconds(1.4f);
+        SceneManager.LoadScene(Sceneno);
+
     }
     //-------------------end of method----------------------//
 
@@ -621,6 +624,7 @@ public class StartpageController : MonoBehaviour
                         PlayerPrefs.SetInt("UID", UID);
                         PlayerPrefs.SetInt("OID", OID);
                         PlayerPrefs.SetInt("game_id", game_id);
+                        PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
                         if (login_json["FIRST_NAME"].ToString() != null)
                         {
                             PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
@@ -634,9 +638,11 @@ public class StartpageController : MonoBehaviour
                             PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
                         }
                         PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-                        if (login_json["avatar_type"].ToString() != "0")
+                        PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
+                        if (login_json["avatar_type"] != null)
                         {
                             PlayerPrefs.SetString("profile_done", "done");
+                           
                         }
                     }
                     else
@@ -644,6 +650,7 @@ public class StartpageController : MonoBehaviour
                         PlayerPrefs.SetInt("UID", UID);
                         PlayerPrefs.SetInt("OID", OID);
                         PlayerPrefs.SetInt("game_id", game_id);
+                        PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
                         if (login_json["FIRST_NAME"] != null)
                         {
                             PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
@@ -657,18 +664,20 @@ public class StartpageController : MonoBehaviour
                             PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
                         }
                         PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-                        if (login_json["avatar_type"].ToString() != "0")
+                        PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
+                        if (login_json["avatar_type"] != null)
                         {
                             PlayerPrefs.SetString("profile_done", "done");
                         }
-                        else
-                        {
-                            PlayerPrefs.DeleteKey("profile_done");
-                            PlayerPrefs.DeleteKey("username");
-                            PlayerPrefs.DeleteKey("User_grade");
-                            PlayerPrefs.DeleteKey("characterType");
+                        //else
+                        //{
+                        //    PlayerPrefs.DeleteKey("profile_done");
+                        //    PlayerPrefs.DeleteKey("username");
+                        //    PlayerPrefs.DeleteKey("User_grade");
+                        //    PlayerPrefs.DeleteKey("characterType");
+                        //    PlayerPrefs.DeleteKey("PlayerBody");
 
-                        }
+                        //}
                     }
                     //===============================================================//
                     settingpanelbtn.gameObject.SetActive(true);
@@ -687,7 +696,7 @@ public class StartpageController : MonoBehaviour
                     YoutubeVideopage.SetActive(true);
                     TriviaPage.SetActive(true);
                     Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
-                    skipVideo.SetActive(true);
+                    //skipVideo.SetActive(true);
                   
                 }
                 else

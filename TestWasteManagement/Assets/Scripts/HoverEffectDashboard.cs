@@ -21,7 +21,7 @@ public class HoverEffectDashboard : MonoBehaviour
     {
         NoticeBoard.SetActive(true);
         NoticeBoard.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Correct Option is " + CorrectAns;
-        transform.SetAsLastSibling();
+        NoticeBoard.transform.SetSiblingIndex(1);
 
     }
     private void OnMouseExit()

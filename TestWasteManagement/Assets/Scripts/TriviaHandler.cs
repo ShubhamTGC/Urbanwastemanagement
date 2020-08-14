@@ -29,8 +29,7 @@ namespace YoutubePlayer
         void OnEnable()
         {
             System.Random ran = new System.Random();
-            int randomnum = ran.Next(1, TriviaMsg.Count);
-            //int randomindex = UnityEngine.Random.Range(1, TriviaMsg.Count + 1);
+            int randomnum = ran.Next(0, TriviaMsg.Count-1);
             ShowMSg.text = TriviaMsg[randomnum];
             Laodingstart = true;
             StartCoroutine(CustomLoader());
@@ -80,9 +79,6 @@ namespace YoutubePlayer
             {
                 StartCoroutine(CustomLoader());
             }
-
-            
-
         }
        
     }

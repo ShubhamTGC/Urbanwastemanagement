@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using UnityEngine.Networking;
+using LitJson;
 
 public class MatchTheTile : MonoBehaviour
 {
@@ -33,7 +35,7 @@ public class MatchTheTile : MonoBehaviour
     //==========TIMER AND SCORE PANEL DATRA ==========================
     public Text TotalTils, CorrectTiles;
     public int Timercount;
-    private float second;
+    public float second;
     private float totalTimercount, RunningTimeCount;
     public Text TimerText;
     public Image TimerImage;
@@ -49,21 +51,24 @@ public class MatchTheTile : MonoBehaviour
     public Text ScoreText;
     private int ScoreConuter;
     public GameObject ZoneA, ZoneB;
-
-
+    public string MainUrl, UserScorePosting;
+    private PostScoreInMasterTable PostMasterTable;
+    public GameObject SCorePanel;
+    public Stage2SceneOpenup Stage2objects;
+    public GameObject Stage2LeaderBaord;
     void Start()
     {
-        // colorglow = FindObjectOfType<Coloreffect>();
-      
+     
+        PostMasterTable = new PostScoreInMasterTable();
 
     }
 
      void OnEnable()
     {
         helpingbool = true;
-        totalTimercount = Timercount * 60;
-        second = 60;
-        Timercount = Timercount - 1;
+        totalTimercount = Timercount * 60  + second;
+        //second = 60;
+        //Timercount = Timercount - 1;
         RunningTimeCount = totalTimercount;
         //colorglow.timertask();
         TotalTils.text = TileCount.ToString();
@@ -119,6 +124,7 @@ public class MatchTheTile : MonoBehaviour
             }     
         }else if (helpingbool)
         {
+            Debug.Log(" done timer");
             helpingbool = false;
             StartCoroutine(TimeUpTask());
 
@@ -144,14 +150,16 @@ public class MatchTheTile : MonoBehaviour
         GeneratedSprite.Clear();
         Array.Clear(DustbinSprite, 0, DustbinSprite.Length);
         Array.Clear(WasteSprite, 0, WasteSprite.Length);
-        ScoreConuter = 0;
         totalTimercount = 0f;
         CorrectGuess = 0;
         CorrectTiles.text = "0";
         yield return new WaitForSeconds(0.5f);
         TimesUp.SetActive(false);
-        ZoneA.GetComponent<PolygonCollider2D>().enabled = true;
-        ZoneB.GetComponent<PolygonCollider2D>().enabled = true;
+        yield return StartCoroutine(PostMasterTable.GameScorePosting(ScoreConuter,0,"00:00",1));
+        Stage2objects.BonusGamePLay = true;
+        ScoreConuter = 0;
+        //Stage2objects.CommonTask();
+        Stage2LeaderBaord.SetActive(true);
         this.gameObject.SetActive(false);
 
     }
@@ -313,12 +321,14 @@ public class MatchTheTile : MonoBehaviour
             StartCoroutine(ResetTiles(FirstSelectedobj, SecondSelectedobj));
           
         }
-
-
         if (CorrectGuess == TileCount)
         {
             Debug.Log("wind");
         }
+
+        SCorePanel.GetComponent<shakeeffect>().enabled = true;
+        yield return new WaitForSeconds(1.5f);
+        SCorePanel.GetComponent<shakeeffect>().enabled = false;
     }
 
     IEnumerator ResetTiles(GameObject FrstObj,GameObject secondObj)
@@ -330,4 +340,7 @@ public class MatchTheTile : MonoBehaviour
         SecondSelectedobj.GetComponent<Button>().enabled = true;
         FirstGuess = SecondGuess = false;
     }
+
+
+  
 }

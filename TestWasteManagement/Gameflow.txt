@@ -21,7 +21,7 @@ school*
 parent id*
 parent name*
 student id*
-parenr email id
+parents email id
 
 
 ===============================================================================
@@ -40,14 +40,16 @@ overarching frame wrok:
 		- diy
 3. stage leaderboard - my stage leaderboard
 
-=========================stage 1 games
-Zone game: we need one api for locking the stages with respect to scoring 650 point to clear stage) ( common for all stage)
+=========================stage 1 games          ========================start working on this =========================
+Zone game: we need one api for locking the stages with respect to scoring 650 point to clear stage) (common for all stage)
 		- bonus points for each zone 30 point if you completed game within 1 mint
 		- bonus score show in dashboard
 		- edit my dashboard page text = "My dashboard"
-Bonus game ( game missions) 
+Bonus game ( game missions)  
 		-stage 1 , the anngram game : word jumble (wait for completing the timer)
 		-score data is coming from backend ( now 20 per annagram)
+		
+		
 		
 ====================== stage dashboard ======================
 after each stage we need to show stage dashbaord
@@ -90,6 +92,7 @@ total score 560 score
 stage leaderboard
 
 =============== final assessment========================
+
 question and ans coming from backend
 more than 75% pop up that you are chapion
 

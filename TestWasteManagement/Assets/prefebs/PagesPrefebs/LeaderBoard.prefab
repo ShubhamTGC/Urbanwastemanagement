@@ -222,6 +222,18 @@ MonoBehaviour:
   OverallScrollBar: {fileID: 3007333263529672634}
   GradeScrollBar: {fileID: 3007333262777113281}
   SchoolScrollBar: {fileID: 3007333262180189649}
+  BoyFace:
+  - {fileID: 21300000, guid: b057f553877536444a8bd0a4e023f0a4, type: 3}
+  - {fileID: 21300000, guid: 1a72d672630c7784e96731d66cea7e33, type: 3}
+  - {fileID: 21300000, guid: d12cde4f479e3fc419b11a02da1dde9e, type: 3}
+  - {fileID: 21300000, guid: b1f4011f8afc9654eb7bb472da042f75, type: 3}
+  - {fileID: 21300000, guid: be3fca00008b4ef429380cc646660007, type: 3}
+  GirlFace:
+  - {fileID: 21300000, guid: ad9e63dbb245dcd46b577d1f328137c2, type: 3}
+  - {fileID: 21300000, guid: c78c3acbb1d5588448504b2ba77b91fc, type: 3}
+  - {fileID: 21300000, guid: 4ccd5b4abb15d414499541eb4471fd9c, type: 3}
+  - {fileID: 21300000, guid: e8a8933e70c852342bbde4455f0a85c6, type: 3}
+  - {fileID: 21300000, guid: 07c9ee37e28808b4f8c745cc49e16fe5, type: 3}
 --- !u!1 &3007333261768460956
 GameObject:
   m_ObjectHideFlags: 0

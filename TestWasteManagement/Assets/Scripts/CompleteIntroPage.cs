@@ -86,7 +86,7 @@ public class CompleteIntroPage : MonoBehaviour
             StartCoroutine(startpage.scenechanges(Homepage_obj, avatar_page));
             yield return new WaitForSeconds(1.2f);
             profile_setup.SetActive(true);
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
         }
      
     }

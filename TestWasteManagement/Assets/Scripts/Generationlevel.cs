@@ -9,25 +9,12 @@ using UnityEngine.UI;
 public class Generationlevel : MonoBehaviour
 {
 
-    //public List<GameObject> home_kitchen,home_bedroom,home_living, industry_waste,school_waste,forest_waste,park_waste,hospital_waste;
-    public List<GameObject> levels;
-    //[HideInInspector]
-    public int waste_count = 0;
-    private bool home_check, industry_check, school_check, park_check, hospital_check, forest_check;
-    private bool is_check = true;
-    public GameObject Done_msg_panel,dusbin,exit_panel;
-    public Vector3 dusbinpos;
-    public StartpageController startpage_activitys;
-    public GameObject startpage;
-    public Sprite startpage_sprite;
-    private GameObject gb;
-
-    [Header("==kitchen objects list===")]
-    public List<GameObject> kitchen_reduce;
-    public List<GameObject> kitchen_reuse, kitchen_recycle,K_partially_reduce, K_partially_reuse, K_partially_recycle;
-    public Text score1;
-    public int level1score;
-    private bool kitchen, bedroom, livingroom;
+ 
+   
+    public GameObject Done_msg_panel,dusbin;
+    //[Header("==kitchen objects list===")]
+    //public List<GameObject> kitchen_reduce;
+    //public List<GameObject> kitchen_reuse, kitchen_recycle,K_partially_reduce, K_partially_reuse, K_partially_recycle;
     public GameObject HomepageObject,Backbutton;
 
 
@@ -44,34 +31,26 @@ public class Generationlevel : MonoBehaviour
     public List<int> GameIDS = new List<int>();
     public string MainUrl, GetGamesIDApi,GetBadgeIdApi;
     public int Gamelevel,BadgeType;
+    public List<GameObject> ZonesButtons;
+    public Text Zoneinfo;
 
     // Start is called before the first frame update
     void Start()
     {
-        ButtonSlider.SetActive(true);
-        // dusbin.SetActive(true);
-        is_check = true;
-
-    }
-     void OnEnable()
-    {
-       // dusbin.SetActive(true);
-        is_check = true;
-        //StartCoroutine(sceneappear());
         Backbutton.SetActive(true);
         StartCoroutine(GetGamesIDactivity());
         StartCoroutine(GetBadgeinfo());
+    }
+     void OnEnable()
+    {
+      
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if(waste_count == home_kitchen.Count && is_check)
-        //{
-        //    is_check = false;
-        //    StartCoroutine(showstatus());
-        //}
-        score1.text = level1score.ToString(); ;
+       
     }
 
     public IEnumerator scenechanges(GameObject parentobejct, Sprite new_sprite)
@@ -110,7 +89,7 @@ public class Generationlevel : MonoBehaviour
 
     IEnumerator showstatus()
     {
-        waste_count = 0;
+        //waste_count = 0;
         yield return new WaitForSeconds(0.5f);
         iTween.ScaleTo(Done_msg_panel, Vector3.one, 1f);
     }
@@ -141,57 +120,9 @@ public class Generationlevel : MonoBehaviour
             var id_badge = Badgeinfo.FirstOrDefault(x => x.id_level == Gamelevel && x.badge_type == BadgeType)?.id_badge;
         }
 
-
-
     }
 
-    public void movetonext()
-    {
-        StartCoroutine(nextroomactivity());
-     
-    }
-
-    IEnumerator nextroomactivity()
-    {
-        yield return new WaitForSeconds(0.1f);
-        iTween.ScaleTo(Done_msg_panel, Vector3.zero, 1f);
-        iTween.MoveTo(dusbin, iTween.Hash("x", dusbinpos.x, "y", dusbinpos.y, "z", dusbinpos.z, "easeType", iTween.EaseType.linear, "isLocal", true,
-           "time", 0.8f));
-        yield return new WaitForSeconds(1f);
-        dusbin.SetActive(false);
-        StartCoroutine(startpage_activitys.scenechanges(startpage,startpage_sprite));
-        yield return new WaitForSeconds(1f);
-        startpage_activitys.midlayerenable();
-    }
-
-    public void backtoG_level()
-    {
-        
-        for(int a = 0; a < levels.Count; a++)
-        {
-            if(levels[a].gameObject.activeInHierarchy == true)
-            {
-                gb = levels[a].gameObject;
-               
-            }
-        }
-
-        if(waste_count == gb.transform.childCount)
-        {
-            Debug.Log("level completed");
-        }
-        else
-        {
-
-        }
-        {
-            exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "You have not found all the waste, Do you really want to exit!";
-            iTween.ScaleTo(exit_panel, Vector3.one, 1f);
-            Debug.Log(" not level completed");
-        }
-      
-    }
-
+  
 
     public void BackToMainPage()
     {
@@ -243,9 +174,19 @@ public class Generationlevel : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
         Camera.main.GetComponent<AudioSource>().enabled = false;
+        Zoneinfo.text = "";
+        ZonesButtons.ForEach(x =>
+        {
+            x.transform.localPosition = new Vector3(0f, -1160f, 0f);
+            x.transform.localScale = Vector3.zero;
+            x.SetActive(false);
+            x.GetComponent<BoxCollider2D>().enabled = false;
+            x.GetComponent<Button>().enabled = false;
+            x.GetComponent<Animator>().enabled = false;
+        });
         zonelayer.SetActive(false);
         StartCoroutine(scenechanges(HomepageObject, scene_sprite));
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.2f);
         //Generation_level.SetActive(true);
         G_levels[level_id].SetActive(true);
 

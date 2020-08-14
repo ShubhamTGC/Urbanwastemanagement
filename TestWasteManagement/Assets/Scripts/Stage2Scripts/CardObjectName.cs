@@ -20,13 +20,13 @@ public class CardObjectName : MonoBehaviour
     public void OnMouseEnter()
     {
         string ObjectName = this.gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite.name;
-        this.gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = ObjectName;
+        this.gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = ObjectName;
         this.gameObject.transform.GetChild(1).gameObject.SetActive(true);
 
     }
     public void OnMouseExit()
     {
-        this.gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "";
+        this.gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
         this.gameObject.transform.GetChild(1).gameObject.SetActive(false);
     }
 }

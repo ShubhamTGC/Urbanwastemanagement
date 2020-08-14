@@ -37,6 +37,8 @@ namespace YoutubePlayer
         private VideoPlayer videoPlayer;
         private YoutubeClient youtubeClient;
         public bool videoplayed = false;
+        public GameObject Skipbutton;
+        
 
         private void Awake()
         {
@@ -76,6 +78,7 @@ namespace YoutubePlayer
                 videoPlayer.Play();
                 videoplayed = true;
                 youtubeUrl = videoUrl;
+                Skipbutton.SetActive(true);
                 YoutubeVideoStarting?.Invoke(youtubeUrl);
                 double timelength = videoPlayer.frameCount / videoPlayer.frameRate;
                

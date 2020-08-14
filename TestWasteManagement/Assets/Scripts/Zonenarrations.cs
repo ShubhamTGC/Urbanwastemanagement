@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine.Video;
 using System.Net;
 using UnityEngine.Networking;
+using YoutubeExplode.Models;
 
 public class Zonenarrations : MonoBehaviour
 {
@@ -45,7 +46,6 @@ public class Zonenarrations : MonoBehaviour
     void Start()
     {
         Mainpage = FindObjectOfType<Generationlevel>();
-
         if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
             || industryzone.zone_completed || parkzone.zone_completed)
         {
@@ -306,9 +306,8 @@ public class Zonenarrations : MonoBehaviour
 
     IEnumerator CheckForStage2()
     {
-
+        videomsg.SetActive(true);
         string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
-
         WWW dashboard_res = new WWW(Response_url);
         yield return dashboard_res;
         if (dashboard_res.text != null)
@@ -318,13 +317,9 @@ public class Zonenarrations : MonoBehaviour
         }
 
         Stage2unlocked = totalscoreOfUser >= Stage2UnlockScore;
-
-        if (Stage2unlocked)
-        {
-            Stage2unlocked = false;
-            StartCoroutine(BadgeUpadtingTask());
-        }
-
+        videomsg.SetActive(false);
+        
+     
     }
 
     IEnumerator BadgeUpadtingTask()
@@ -356,7 +351,7 @@ public class Zonenarrations : MonoBehaviour
 
     public void ClosePopup()
     {
-        iTween.ScaleTo(Stage2popup, Vector3.zero, 0.5f);
+        iTween.ScaleTo(Stage2popup, Vector3.zero, 0.4f);
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
         foreach (GameObject e in zones)
         {

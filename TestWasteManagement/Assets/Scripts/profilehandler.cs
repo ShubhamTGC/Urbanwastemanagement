@@ -23,7 +23,7 @@ public class profilehandler : MonoBehaviour
     public GameObject intro_panel;
     private string grade_value;
     private string playername;
-
+    private string Gender;
     [Header("Boy Updated Avatar SelectionPage")]
     [Space(10)]
     public List<GameObject> Faces;
@@ -231,44 +231,6 @@ public class profilehandler : MonoBehaviour
         StartCoroutine(ok_task());
     }
 
-    //IEnumerator ok_task()
-    //{
-
-    //    yield return new WaitForSeconds(0.5f);
-    //    iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
-    //    yield return new WaitForSeconds(0.5f);
-    //    StartCoroutine(startpage.scenechanges(startpage.gameObject, bagde_sprite));
-    //    yield return new WaitForSeconds(1.2f);
-    //    this.gameObject.SetActive(false);
-    //    intro_panel.GetComponent<CompleteIntroPage>().After_profile();
-    //    intro_panel.SetActive(true);
-    //    PlayerPrefs.SetString("User_grade", grade_value);
-    //    PlayerPrefs.SetInt("characterType", character_data);
-    //    //StartCoroutine(postAvatarData());
-
-    //}
-    //IEnumerator postAvatarData()
-    //{
-    //    yield return new WaitForSeconds(0.1f);
-    //    string avatar_url = Mainurl + AvatarAPI;
-    //    WWWForm avatar_form = new WWWForm();
-    //    int uid = PlayerPrefs.GetInt("UID");
-    //    int oid = PlayerPrefs.GetInt("OID");
-    //    avatar_form.AddField("UID", uid);
-    //    avatar_form.AddField("OID", oid);
-    //    avatar_form.AddField("avatar_type", character_data);
-    //    Debug.Log("UID" + uid + "oid" + oid + " " + character_data);
-    //    PlayerPrefs.SetInt("characterType", character_data);
-    //    WWW avatar_www = new WWW(avatar_url, avatar_form);
-    //    yield return avatar_www;
-    //    if (avatar_www.text != null)
-    //    {
-    //        Debug.Log(avatar_www.text);
-    //    }
-    //    this.gameObject.SetActive(false);
-    //    narration_activity.AfterAvatar_task();
-    //}
-
     public void back_from_profile()
     {
         StartCoroutine(back_task());
@@ -296,6 +258,11 @@ public class profilehandler : MonoBehaviour
 
 
     //========================== PLAYER UPDATE AVATAR SELECTION METHODS ===============================
+
+    public void GenderSelected(string gender)
+    {
+        Gender = gender;
+    }
     public void selectdFace(string facename)
     {
         for (int a = 0; a < Faces.Count; a++)
@@ -413,32 +380,16 @@ public class profilehandler : MonoBehaviour
             StartCoroutine(startpage.scenechanges(startpageObj, bagde_sprite));
             yield return new WaitForSeconds(1.2f);
             intro_panel.GetComponent<CompleteIntroPage>().After_profile();
-            intro_panel.SetActive(true);
-            PlayerPrefs.GetString("profile_done", "done");
+           // intro_panel.SetActive(true);
+            PlayerPrefs.SetString("profile_done", "done");
             PlayerPrefs.SetString("User_grade", grade_value);
             PlayerPrefs.SetString("avatar_type", FaceType);
             PlayerPrefs.SetString("body_type", BodyType);
             this.gameObject.SetActive(false);
-            
-            //this.gameObject.SetActive(false);
-            //narration_activity.AfterAvatar_task();
+         
         }
 
     }
 
-    IEnumerator testcorotine()
-    {
-        yield return new WaitForSeconds(0.5f);
-        iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
-        yield return new WaitForSeconds(0.5f);
-        StartCoroutine(startpage.scenechanges(startpageObj, bagde_sprite));
-        yield return new WaitForSeconds(1.2f);
-        intro_panel.SetActive(true);
-        intro_panel.GetComponent<CompleteIntroPage>().After_profile();
-        PlayerPrefs.SetString("User_grade", grade_value);
-        PlayerPrefs.SetString("avatar_type", FaceType);
-        PlayerPrefs.SetString("body_type", BodyType);
-        yield return new WaitForSeconds(0.5f);
-        this.gameObject.SetActive(false);
-    }
+ 
 }

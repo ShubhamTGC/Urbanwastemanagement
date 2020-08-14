@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class StageOneDashboard : MonoBehaviour
 {
     // Start is called before the first frame update
-    public string MainUrl, DashBoard_Api;
+    public string MainUrl, DashBoard_Api, GetGamesIDApi, RoomData_api;
     public int zoneNo,id_game_content;
     public Text Totalscore, zonescore, room1_total, room2_total, room3_total;
     public Image total_score_filler, zone_score_filler;
@@ -27,18 +27,18 @@ public class StageOneDashboard : MonoBehaviour
 
 
     //=================private lists========================================//
-    [SerializeField]
+    //[SerializeField]
     private List<string> room1_obj = new List<string>();
-    [SerializeField]
+    //[SerializeField]
     private List<string> room2_obj = new List<string>();
-    [SerializeField]
+    //[SerializeField]
     private List<string> room3_obj = new List<string>();
 
-    [SerializeField]
+    //[SerializeField]
     private List<int> room1_score = new List<int>();
-    [SerializeField]
+    //[SerializeField]
     private List<int> room2_score = new List<int>();
-    [SerializeField]
+    //[SerializeField]
     private List<int> room3_score = new List<int>();
     [HideInInspector]
     private List<int> room1_correct = new List<int>();
@@ -76,9 +76,10 @@ public class StageOneDashboard : MonoBehaviour
     [SerializeField]
     private int Gamelevel = 1;
 
-    //======================================================//
+    //================================== GAME CONTENT AND ROOM ID===========================
 
-
+    private List<int> RoomIds;
+    public string ZoneName;
 
 
 
@@ -88,8 +89,9 @@ public class StageOneDashboard : MonoBehaviour
     }
     private void OnEnable()
     {
+        RoomIds = new List<int>();
         RoomPageCounter = 0;
-        StartCoroutine(GetDashboardData());
+        StartCoroutine(GetGamesIDactivity());
         LeftPage.onClick.RemoveAllListeners();
         Rightpage.onClick.RemoveAllListeners();
         LeftPage.onClick.AddListener(delegate { SwitchLeftPage(); });
@@ -187,100 +189,182 @@ public class StageOneDashboard : MonoBehaviour
         tabs[CurrentPageCounter].SetActive(false);
     }
 
+
+
+   
+
+    IEnumerator GetGamesIDactivity()
+    {
+        string HittingUrl = MainUrl + GetGamesIDApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
+            "&id_org_game=" + 1 + "&id_level=" + Gamelevel;
+        WWW GameResponse = new WWW(HittingUrl);
+        yield return GameResponse;
+        if (GameResponse.text != null)
+        {
+            //Debug.Log("game id data " + GameResponse.text);
+            GetLevelIDs gameIDs = Newtonsoft.Json.JsonConvert.DeserializeObject<GetLevelIDs>(GameResponse.text);
+            var ContentList = gameIDs.content.ToList();
+            id_game_content = ContentList.FirstOrDefault(x => x.title == ZoneName).id_game_content;
+            StartCoroutine(CollectRoomdata());
+        }
+    }
+    IEnumerator CollectRoomdata()
+    {
+
+        string Hittingurl = MainUrl + RoomData_api + "?id_user=" + PlayerPrefs.GetInt("UID") + "&id_org_content=" + id_game_content;
+        Debug.Log("main Url " + Hittingurl);
+        WWW roominfo = new WWW(Hittingurl);
+        yield return roominfo;
+        if (roominfo.text != null)
+        {
+           // Debug.Log("rooom id " + roominfo.text);
+            JsonData RoomrRes = JsonMapper.ToObject(roominfo.text);
+            for (int a = 0; a < RoomrRes.Count; a++)
+            {
+                RoomIds.Add(int.Parse(RoomrRes[a]["id_room"].ToString()));
+            }
+
+            StartCoroutine(GetDashboardData());
+        }
+    }
+
+
     IEnumerator GetDashboardData()
     {
         //resetTask();
         string Response_url = MainUrl + DashBoard_Api + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
-          "&id_org_game=" + 1;//PlayerPrefs.GetInt("game_id");//
+          "&id_org_game=" + 1;
 
         WWW dashboard_res = new WWW(Response_url);
         yield return dashboard_res;
 
         if (dashboard_res.text != null)
         {
-            //Debug.Log(dashboard_res.text);
-
+            Debug.Log(" Zone data " + dashboard_res.text);
             List<DashboardItem> DashboardHandler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashboardItem>>(dashboard_res.text);
-            var Contnetlist = DashboardHandler.Where(x => x.id_level == Gamelevel).Select(x => x.ContentList).FirstOrDefault();
-            var gotzonename = Contnetlist?.Where(x => x.id_game_content == id_game_content).Select(x => x.UserLog).FirstOrDefault();
-
-
-
-            JsonData response = JsonMapper.ToObject(dashboard_res.text);
-            string zonename = response[0]["ContentList"][zoneNo]["title"].ToString();
-            Debug.Log("zone name " + zonename);
-            int loopcount = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"].Count.ToString());
-            if (loopcount > 0)
+            var Contentlist = DashboardHandler.Where(x => x.id_level == Gamelevel).Select(x => x.ContentList).FirstOrDefault();
+            var GotZoneData = Contentlist?.Where(x => x.id_game_content == id_game_content).Select(x => x.UserLog).FirstOrDefault();
+            if(GotZoneData.Count > 0)
             {
-                //Totalscore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
-                //zonescore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
-                float scorevalue = float.Parse(response[0]["ContentList"][zoneNo]["totalscore"].ToString());
-                // total_score_filler.fillAmount = (float)scorevalue / total_gamescore;
-                // zone_score_filler.fillAmount = (float)scorevalue / total_gamescore;
                 showmsg.SetActive(false);
                 dashboardpanel.SetActive(true);
-                
-                for (int a = 0; a < Room1items.Count; a++)
+                GotZoneData.ForEach(x =>
                 {
-                    for (int i = 0; i < loopcount; i++)
+                    if (x.id_room == RoomIds[0])
                     {
-                        string obj_name = response[0]["ContentList"][zoneNo]["UserLog"][i]["item_collected"].ToString();
-                        int score = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"][i]["score"].ToString());
-                        int is_correct = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"][i]["is_right"].ToString());
-                        string dustbin_name = response[0]["ContentList"][zoneNo]["UserLog"][i]["dustbin"].ToString();
-                        if (response[0]["ContentList"][zoneNo]["UserLog"][i]["correct_option"] != null)
-                        {
-                            correct_option = response[0]["ContentList"][zoneNo]["UserLog"][i]["correct_option"].ToString();
-                        }
-                        else
-                        {
-                            correct_option = "";
-                        }
-
-                        if (obj_name == Room1items[a].gameObject.name)
-                        {
-                            room1_obj.Add(obj_name);
-                            room1_score.Add(score);
-                            room1_correct.Add(is_correct);
-                            correct_option_1.Add(correct_option);
-                            dustin_room1.Add(dustbin_name);
-                        }
-                        if (obj_name == Room2items[a].gameObject.name)
-                        {
-                            room2_obj.Add(obj_name);
-                            room2_score.Add(score);
-                            room2_correct.Add(is_correct);
-                            correct_option_2.Add(correct_option);
-                            dustin_room2.Add(dustbin_name);
-
-                        }
-                        if (obj_name == Room3items[a].gameObject.name)
-                        {
-                            room3_obj.Add(obj_name);
-                            room3_score.Add(score);
-                            room3_correct.Add(is_correct);
-                            correct_option_3.Add(correct_option);
-                            dustin_room3.Add(dustbin_name);
-                        }
+                        room1_obj.Add(x.item_collected);
+                        room1_score.Add(x.score);
+                        room1_correct.Add(x.is_right);
+                        correct_option = x.correct_option != "" ? x.correct_option : null;
+                        correct_option_1.Add(correct_option);
+                        dustin_room1.Add(x.dustbin);
+                    }
+                    if (x.id_room == RoomIds[1])
+                    {
+                        room2_obj.Add(x.item_collected);
+                        room2_score.Add(x.score);
+                        room2_correct.Add(x.is_right);
+                        correct_option = x.correct_option != "" ? x.correct_option : null;
+                        correct_option_2.Add(correct_option);
+                        dustin_room2.Add(x.dustbin);
+                    }
+                    if (x.id_room == RoomIds[2])
+                    {
+                        room3_obj.Add(x.item_collected);
+                        room3_score.Add(x.score);
+                        room3_correct.Add(x.is_right);
+                        correct_option = x.correct_option != "" ? x.correct_option : null;
+                        correct_option_3.Add(correct_option);
+                        dustin_room3.Add(x.dustbin);
                     }
 
-                }
+                });
                 Room1_sorting();
                 Room2_sorting();
                 Room3_sorting();
-                //extrapanel.SetActive(false);
             }
-
             else
             {
                 dashboardpanel.SetActive(false);
                 showmsg.SetActive(true);
-                //extrapanel.SetActive(false);
-                //dashboard_btn.interactable = true;
-                //Debug.Log("null values");
-                //NotPlayedMsg.SetActive(true);
-                //this.gameObject.SetActive(false);
             }
+
+
+
+            //JsonData response = JsonMapper.ToObject(dashboard_res.text);
+            //string zonename = response[0]["ContentList"][zoneNo]["title"].ToString();
+            //Debug.Log("zone name " + zonename);
+            //int loopcount = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"].Count.ToString());
+            //if (loopcount > 0)
+            //{
+            //    //Totalscore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
+            //    //zonescore.text = response[0]["ContentList"][zoneNo]["totalscore"].ToString();
+            //    float scorevalue = float.Parse(response[0]["ContentList"][zoneNo]["totalscore"].ToString());
+            //    // total_score_filler.fillAmount = (float)scorevalue / total_gamescore;
+            //    // zone_score_filler.fillAmount = (float)scorevalue / total_gamescore;
+            //    showmsg.SetActive(false);
+            //    dashboardpanel.SetActive(true);
+
+            //    for (int a = 0; a < Room1items.Count; a++)
+            //    {
+            //        for (int i = 0; i < loopcount; i++)
+            //        {
+            //            string obj_name = response[0]["ContentList"][zoneNo]["UserLog"][i]["item_collected"].ToString();
+            //            int score = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"][i]["score"].ToString());
+            //            int is_correct = int.Parse(response[0]["ContentList"][zoneNo]["UserLog"][i]["is_right"].ToString());
+            //            string dustbin_name = response[0]["ContentList"][zoneNo]["UserLog"][i]["dustbin"].ToString();
+            //            if (response[0]["ContentList"][zoneNo]["UserLog"][i]["correct_option"] != null)
+            //            {
+            //                correct_option = response[0]["ContentList"][zoneNo]["UserLog"][i]["correct_option"].ToString();
+            //            }
+            //            else
+            //            {
+            //                correct_option = "";
+            //            }
+
+            //            if (obj_name == Room1items[a].gameObject.name)
+            //            {
+            //                room1_obj.Add(obj_name);
+            //                room1_score.Add(score);
+            //                room1_correct.Add(is_correct);
+            //                correct_option_1.Add(correct_option);
+            //                dustin_room1.Add(dustbin_name);
+            //            }
+            //            if (obj_name == Room2items[a].gameObject.name)
+            //            {
+            //                room2_obj.Add(obj_name);
+            //                room2_score.Add(score);
+            //                room2_correct.Add(is_correct);
+            //                correct_option_2.Add(correct_option);
+            //                dustin_room2.Add(dustbin_name);
+
+            //            }
+            //            if (obj_name == Room3items[a].gameObject.name)
+            //            {
+            //                room3_obj.Add(obj_name);
+            //                room3_score.Add(score);
+            //                room3_correct.Add(is_correct);
+            //                correct_option_3.Add(correct_option);
+            //                dustin_room3.Add(dustbin_name);
+            //            }
+            //        }
+
+            //    }
+            //    Room1_sorting();
+            //    Room2_sorting();
+            //    Room3_sorting();
+            //    //extrapanel.SetActive(false);
+            //}
+
+            //else
+            //{
+
+            //    //extrapanel.SetActive(false);
+            //    //dashboard_btn.interactable = true;
+            //    //Debug.Log("null values");
+            //    //NotPlayedMsg.SetActive(true);
+            //    //this.gameObject.SetActive(false);
+            //}
 
 
         }

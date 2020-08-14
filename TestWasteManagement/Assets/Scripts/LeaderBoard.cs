@@ -22,6 +22,7 @@ public class LeaderBoard : MonoBehaviour
     public Color RealsedColor;
     public List<GameObject> Tabs;
     public GameObject OverallScrollBar, GradeScrollBar, SchoolScrollBar;
+    public List<Sprite> BoyFace,GirlFace;
     void Start()
     {
        
@@ -147,7 +148,35 @@ public class LeaderBoard : MonoBehaviour
                     {
                         gb.transform.GetChild(6).gameObject.transform.GetChild(0).GetComponent<Text>().text = "0";
                     }
+
+                    if(leader_res[a]["Gender"] != null)
+                    {
+                        if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                        {
+                            for (int c = 0; c < BoyFace.Count; c++)
+                            {
+                                if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                                {
+                                    gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = BoyFace[c];
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            for (int c = 0; c < GirlFace.Count; c++)
+                            {
+                                if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                                {
+                                    gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = GirlFace[c];
+                                }
+
+                            }
+                        }
+                    }
+                
                     UserlistCreated.Add(gb);
+
                 }
             }
         }
@@ -303,6 +332,28 @@ public class LeaderBoard : MonoBehaviour
                 {
                     gb.transform.GetChild(6).gameObject.transform.GetChild(0).GetComponent<Text>().text = "0";
                 }
+                if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                {
+                    for (int c = 0; c < BoyFace.Count; c++)
+                    {
+                        if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                        {
+                            gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = BoyFace[c];
+                        }
+
+                    }
+                }
+                else
+                {
+                    for (int c = 0; c < GirlFace.Count; c++)
+                    {
+                        if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                        {
+                            gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = GirlFace[c];
+                        }
+
+                    }
+                }
                 UserlistCreated.Add(gb);
             }
          }
@@ -413,6 +464,28 @@ public class LeaderBoard : MonoBehaviour
                     else
                     {
                         gb.transform.GetChild(6).gameObject.transform.GetChild(0).GetComponent<Text>().text = "0";
+                    }
+                    if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                    {
+                        for (int c = 0; c < BoyFace.Count; c++)
+                        {
+                            if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                            {
+                                gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = BoyFace[c];
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        for (int c = 0; c < GirlFace.Count; c++)
+                        {
+                            if (int.Parse(leader_res[a]["avatar_type"].ToString()) == c)
+                            {
+                                gb.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = GirlFace[c];
+                            }
+
+                        }
                     }
                     UserlistCreated.Add(gb);
                 }

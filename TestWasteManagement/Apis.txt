@@ -1,31 +1,37 @@
 ===============Main base link==========================
 
+here is the base url of all api:
+
 https://www.skillmuni.in/wsmapi/api/
-
-
-stage clearness api
-getWMSLevelMovementConfigDetails
 
 
 =================================Leader board api================================
 
+Respective response of the leaderboard
 
-School-  http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforSchool?id_user=3684&org_id=132&id_school=1 
-Grade - http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforGrade?id_user=3684&org_id=132&Usergrade=9
+overall leaderboard - http://www.skillmuni.in/wsmapi/api/WMSLeaderboad?id_user=3684&org_id=132 
+
+School wise leaderboard -  http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforSchool?id_user=3684&org_id=132&id_school=1 
+Grade wise leaderboard - http://www.skillmuni.in/wsmapi/api/WMSLeaderboadforGrade?id_user=3684&org_id=132&Usergrade=9
 
 
 ==========================Zone Clearness api for bonus games:==============================================
+this will give response of which level is cleared, depend on user score "completion_score" need to compare with user score
+stage unlock check api:
+
 
 getWMSLevelMovementConfigDetails?id_org_game=1 
 Method : Get
 Sample response:
+
 
 [{"id_config":1,"id_level":1,"completion_score":70,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1},
 {"id_config":2,"id_level":2,"completion_score":50,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1},
 {"id_config":3,"id_level":3,"completion_score":40,"status":"A","updated_date_time":"2020-04-15T12:38:49","id_org_game":1}]
 
 
-
+==================================== ANAGRAME GAME WORDS  FROM SERVER =============================
+Anagram game api, which provides words.
 
 API to get anagram words:
 getAnagramWords?id_sheet=1 
@@ -36,12 +42,10 @@ Sample response:
 {"id_word":3,"id_sheet":1,"word_1":"Astronomer","word_2":"Moon starrer","status":"A","updated_date_time":"2020-04-15T12:38:49"},
 {"id_word":4,"id_sheet":1,"word_1":"Punishments ","word_2":"Nine thumps","status":"A","updated_date_time":"2020-04-15T12:38:49"}]
 
-https://www.youtube.com/watch?v=OasbYWF4_S8&t=12s
-
-
 
 
 =================================== OVERALL DASHBOARD DATA======================================
+ Overall dashboard Api
 
 API -  getWMSOverallDashboard?UID=3734&id_org_game=1 
 Method-Get
@@ -52,17 +56,15 @@ Sample response :
 "TotalBonusScore":"0","OverAllScoreText":"Text 1","ZoneScoreText":"Text 3","BonusScoreText":"Text 2"}
 
 
-
-
-
-
 ========================================== BADGE DATA API===========================================
 
-The API for getting details of the badge list available for a level is "getBadgeConfigDetails?id_level=1".
+The API for getting details of the badge list available for a level is "getBadgeConfigDetails?id_level=1".    level wise
+
 Method : Get
 Sample response:
 [{"id_badge":1,"badge_name":"Badge 1","id_level":1,"badge_type":1,"status":"A","badge_eligibility_score":50,"updated_date_time":"2017-06-01T00:00:00"},
 {"id_badge":2,"badge_name":"Badge 1 Bonous","id_level":1,"badge_type":2,"status":"A","badge_eligibility_score":50,"updated_date_time":"2017-06-01T00:00:00"}]
+
 
 In the above response , if " badge_type " is "1" means it refers to the main game, if it is "2" means it refers to a bonus game.
 " badge_eligibility_score "  refers to the score needed to win the badge.
@@ -86,3 +88,86 @@ Post Body -
 "id_special_game":"0",
 "id_badge":"1"
 }
+
+
+==================================== SCORE POSTING IN MASTER TABLE================================ 
+
+ this API is for master table data. score of any level need to post in this api, which goes in master table for dashboard and leaderboard
+
+API : OrgGameScoreDataPost
+Method : Post
+Post Body(C# Class) :
+Main Post Data-
+ public class ScoreDataPost
+    {
+        public int UID { get; set; }
+        public int OID { get; set; }
+		public int id_log { get; set; }
+        public int id_user { get; set; }
+        public int id_game_content { get; set; }
+        public int score { get; set; }
+        public int id_score_unit { get; set; }
+        public int score_type { get; set; }
+        public string score_unit { get; set; }
+        public string status { get; set; }
+        public DateTime updated_date_time { get; set; }
+        public int id_level { get; set; }
+        public int id_org_game { get; set; }
+        public int attempt_no { get; set; }
+
+       
+        public string timetaken_to_complete { get; set; }
+        public int is_completed { get; set; }
+      
+    }
+ 
+	
+
+=========================================== LEVEL WISE DATA ===============================================
+If in our application having more then one level then this api will gives games levels
+
+
+API - getLevelsForGame?UID=2541&OID=132&id_org_game=1
+Method- Get
+
+  UID &  OID - from authentication API 
+  id_org_game  - from game list API
+
+Sample Response  -
+
+[{"id_level":1,"level_sequence":1,"title":"Level 0","description":"Level 0 Description"},
+{"id_level":2,"level_sequence":2,"title":"Level 1","description":"Level 1 Description"},
+{"id_level":3,"level_sequence":3,"title":"Level 2","description":"Level 2 Description"},
+{"id_level":4,"level_sequence":4,"title":"Level 3","description":"Level 3 Description"},
+{"id_level":5,"level_sequence":5,"title":"Level 4","description":"Level 4 Description"}]
+
+
+
+===================================== INSIDE OF LEVEL GAME CONTENTS ========================================
+
+Games list of you application, if in your application, more than 1 game will be there, it will give you the list of games.
+
+API -  getGamesListForOrganization?UID=2541&OID=132
+Type - Get
+Sample Response- 
+
+
+
+[{"id_org_game":1,"id_org":132,"status":"A","updated_date_time":"2020-02-04T13:44:39","title":"Demo Game","description":"Demo game for testing internally."}].
+
+
+
+====================================== USER GAME DATA =====================================
+
+this API will gives you, id_game_content for your stage wise game, and that will helpful for score posting api in master table.
+
+API : getLevelwiseUserData?UID=2541&OID=132&id_org_game=1&id_level=2
+Method - Get
+Sample response :
+
+{"UID":2541,"OID":132,"id_game":1,"id_level":2,
+"content":[{"id_game_content":2,"content_type":2,"title":"E learning 1","description":"E learning 1","id_brief_master":647,"id_level":2,"status":"A","updated_date_time":"2020-02-04T13:44:39","content_sequence":1,
+"user_log":[{"id_log":2,"id_user":2541,"id_game_content":2,"score":30,"id_score_unit":1,"score_type":1,"score_unit":"Orbs","status":"A","updated_date_time":"2020-02-04T13:44:39","id_level":2,"id_org_game":1,"attempt_no":1,"timetaken_to_complete":"12:00"},{"id_log":3,"id_user":2541,"id_game_content":2,"score":10,"id_score_unit":1,"score_type":2,"score_unit":"Orbs","status":"A","updated_date_time":"2020-02-04T13:44:39","id_level":2,"id_org_game":1,"attempt_no":2,"timetaken_to_complete":"12:00"}],"badge_log":null},{"id_game_content":3,"content_type":3,"title":"Game 2","description":"Game 2","id_brief_master":0,"id_level":2,"status":"A","updated_date_time":"2020-02-04T13:44:39","content_sequence":2,"user_log":[],"badge_log":null},{"id_game_content":4,"content_type":2,"title":"E learning 2","description":"E learning 2","id_brief_master":648,"id_level":2,"status":"A","updated_date_time":"2020-02-04T13:44:39","content_sequence":3,"user_log":[],"badge_log":null},
+{"id_game_content":5,"content_type":4,"title":"Assessment 1","description":"Assessment 1","id_brief_master":649,"id_level":2,"status":"A","updated_date_time":"2020-02-04T13:44:39","content_sequence":4,"user_log":[],"badge_log":null}],"level_badge_log":null}
+
+

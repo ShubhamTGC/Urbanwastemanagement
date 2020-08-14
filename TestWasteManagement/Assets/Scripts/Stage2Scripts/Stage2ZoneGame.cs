@@ -65,19 +65,22 @@ public class Stage2ZoneGame : MonoBehaviour
         StartCoroutine(Zoneselected(SelectZonepage));
     }
 
-
-    IEnumerator Zoneselected(GameObject SelectZonepage)
+    IEnumerator Zoneselected(GameObject SelectedZone)
     {
-        selectedobj = SelectZonepage;
+        yield return new WaitForSeconds(0.1f);
         ZonePage.SetActive(false);
         this.gameObject.GetComponent<Image>().color = RelasedEffect;
         ChildZoneA.SetActive(false);
         ChildZoneB.SetActive(false);
-        StartCoroutine(stage2controller.scenechanges(Homepage, levelpagesprite));
-        yield return new WaitForSeconds(1.2f);
-        LevelPage.SetActive(true);
-        SelectZonepage.SetActive(true);
+        StartCoroutine(fadeEffect());
+        LevelPage.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        Homepage.SetActive(false);
+        yield return new WaitForSeconds(0.2f);
+        Homepage.GetComponent<Image>().sprite = CityZoneSprite;
+        SelectedZone.SetActive(true);
     }
+
 
     public void BackfromLevel()
     {

@@ -29,7 +29,7 @@ public class shakeeffect : MonoBehaviour
     IEnumerator shake()
     {
         initialpos = this.gameObject.GetComponent<RectTransform>().localPosition;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         iTween.ShakePosition(this.gameObject, iTween.Hash("x", 0.2f, "time", 1f));
         yield return new WaitForSeconds(1f);
         this.gameObject.GetComponent<RectTransform>().localPosition = initialpos;

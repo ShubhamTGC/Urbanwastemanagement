@@ -33,7 +33,7 @@ public class SaveImageToServer : MonoBehaviour
     private GameObject show_img_obj;
     public Button skipbtn, nextbutton;
     private string zone;
-    private int level_zone;
+    private int level_zone =0;
     public int Bigger_count;
     public List<byte[]> post_image_byte = new List<byte[]>(3);
     private List<string> User_plan = new List<string>(3), User_text = new List<string>(3);
@@ -59,19 +59,19 @@ public class SaveImageToServer : MonoBehaviour
 
     void Initialtask()
     {
-        player_name.text = PlayerPrefs.GetString("username");
+        //player_name.text = PlayerPrefs.GetString("username");
 
-        zone_name.text = PlayerPrefs.GetString("zonename");
-        zone = PlayerPrefs.GetString("zonename");
-        zone_data = GameObject.Find(zone_name.text);
-        if (zone.ToLower() == "homezone")
-        {
-            level_zone = 1;
-        }
-        else if (zone.ToLower() == "schoolzone")
-        {
-            level_zone = 2;
-        }
+        //zone_name.text = PlayerPrefs.GetString("zonename");
+        //zone = PlayerPrefs.GetString("zonename");
+        //zone_data = GameObject.Find(zone_name.text);
+        //if (zone.ToLower() == "homezone")
+        //{
+        //    level_zone = 1;
+        //}
+        //else if (zone.ToLower() == "schoolzone")
+        //{
+        //    level_zone = 2;
+        //}
         PlayerPrefs.SetInt("level_value", level_zone);
         zone_handle = zone_data.GetComponent<Zonehandler>();
         Debug.Log("zone obejct " + zone_data.name);
@@ -113,10 +113,10 @@ public class SaveImageToServer : MonoBehaviour
 
     public IEnumerator SaveToServer(GameObject captureimage)
     {
-
+        post_image_byte.Clear();
         closebtn.SetActive(false);
         capturebtn.SetActive(false);
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.1f);      
         int width = Screen.width;
         int height = Screen.height;
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, true);
@@ -125,7 +125,7 @@ public class SaveImageToServer : MonoBehaviour
         tex.Apply();
 
         Sprite image_taken = SpriteFromTexture2D(tex);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         captureimage.gameObject.GetComponent<Image>().sprite = image_taken;
         yield return new WaitForSeconds(0.5f);
         camera_preview.gameObject.SetActive(false);
@@ -186,45 +186,6 @@ public class SaveImageToServer : MonoBehaviour
         }
         else
         {
-            if (user_text.text != "" || plan_title.text != "")
-            {
-                User_text.Add(user_text.text);
-                User_plan.Add(plan_title.text);
-            }
-
-            int text_count = User_text.Count;
-            int plan_count = User_plan.Count;
-            int image_count = post_image_byte.Count;
-
-            Bigger_count = Mathf.Max(text_count, plan_count, image_count);
-            Debug.Log(Bigger_count);
-            Debug.Log("iimage count:" + post_image_byte.Count);
-            if (post_image_byte.Count == 0)
-            {
-                for (int a = 0; a < Bigger_count; a++)
-                {
-                    byte[] blank = new byte[1];
-                    post_image_byte.Add(blank);
-                    test = new Texture2D(128, 128, TextureFormat.RGB24, false);
-                    test.name = "test" + a + ".png";
-                    Debug.Log(test.name);
-
-                }
-            }
-            else if (post_image_byte.Count < Bigger_count)
-            {
-                int a = Bigger_count - post_image_byte.Count;
-                Debug.Log("count remaing " + a);
-                for (int b = 0; b < a; b++)
-                {
-                    byte[] blank = new byte[1];
-                    post_image_byte.Add(blank);
-                    test = new Texture2D(128, 128, TextureFormat.RGB24, false);
-                    test.name = "test" + a + ".png";
-                    Debug.Log(test.name);
-                }
-            }
-
             StartCoroutine(Upload());
         }
 
@@ -232,7 +193,7 @@ public class SaveImageToServer : MonoBehaviour
 
     public IEnumerator show_image_mathod(byte[] image_byte, GameObject selected_btn)
     {
-
+        post_image_byte.Clear();
         yield return new WaitForSeconds(0.1f);
         Texture2D texture = new Texture2D(1024, 1024, TextureFormat.RGB24, true);
         texture.LoadImage(image_byte);
@@ -253,18 +214,7 @@ public class SaveImageToServer : MonoBehaviour
             Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             selected_btn.GetComponent<Image>().sprite = btn_sprite;
         }
-        //if (selected_btn.name == "reuse")
-        //{
-        //    post_image_byte.Add(bytes);
-        //    Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-        //    selected_btn.GetComponent<Image>().sprite = btn_sprite;
-        //}
-        //if (selected_btn.name == "recycle")
-        //{
-        //    post_image_byte.Add(bytes);
-        //    Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-        //    selected_btn.GetComponent<Image>().sprite = btn_sprite;
-        //}
+     
     }
 
 
@@ -295,44 +245,42 @@ public class SaveImageToServer : MonoBehaviour
         string oid = PlayerPrefs.GetInt("OID").ToString();
 
  
-        for (int a = 0; a < Bigger_count; a++)
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        formData.Add(new MultipartFormDataSection("UID", uid));
+        formData.Add(new MultipartFormDataSection("OID", oid));
+        formData.Add(new MultipartFormDataSection("EXTN", "png"));
+        formData.Add(new MultipartFormFileSection("Media", post_image_byte[0], test.name, "image/png"));
+        formData.Add(new MultipartFormDataSection("GCI", level));
+        formData.Add(new MultipartFormDataSection("Level", level_zone.ToString()));
+        formData.Add(new MultipartFormDataSection("LATI", lati));
+        formData.Add(new MultipartFormDataSection("LONGI", longi));
+        formData.Add(new MultipartFormDataSection("DETAIL", user_text.text));
+        formData.Add(new MultipartFormDataSection("KEYINFO", plan_title.text));
+
+
+        UnityWebRequest www = UnityWebRequest.Post(post_url, formData);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError || www.isHttpError)
         {
-            List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-            formData.Add(new MultipartFormDataSection("UID", uid));
-            formData.Add(new MultipartFormDataSection("OID", oid));
-            formData.Add(new MultipartFormDataSection("EXTN", "png"));
-            formData.Add(new MultipartFormFileSection("Media", post_image_byte[a], test.name, "image/png"));
-            formData.Add(new MultipartFormDataSection("GCI", level));
-            formData.Add(new MultipartFormDataSection("Level", level_zone.ToString()));
-            formData.Add(new MultipartFormDataSection("LATI", lati));
-            formData.Add(new MultipartFormDataSection("LONGI", longi));
-            formData.Add(new MultipartFormDataSection("DETAIL", user_text.text));
-            formData.Add(new MultipartFormDataSection("KEYINFO", plan_title.text));
-
-
-            UnityWebRequest www = UnityWebRequest.Post(post_url, formData);
-            yield return www.SendWebRequest();
-            if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-                respose_text.text = www.downloadHandler.text;
-                //posting_msg.SetActive(false);
-                statusmsg.text = "PLEASE TRY LATER!";
-                yield return new WaitForSeconds(3f);
-                statusmsg.text = "";
-                imageBytes = null;
-                statusmsg.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("Form upload complete! " + a);
-                Debug.Log(www.downloadHandler.text);
-                yield return new WaitForSeconds(0.5f);
-                formData.Clear();
-                ////zone_handle.actionplan_score += 25;
-               
-            }
+            Debug.Log(www.error);
+            respose_text.text = www.downloadHandler.text;
+            //posting_msg.SetActive(false);
+            statusmsg.text = "PLEASE TRY LATER!";
+            yield return new WaitForSeconds(3f);
+            statusmsg.text = "";
+            imageBytes = null;
+            statusmsg.gameObject.SetActive(false);
         }
+        else
+        {
+           
+            Debug.Log(www.downloadHandler.text);
+            yield return new WaitForSeconds(0.5f);
+            formData.Clear();
+            ////zone_handle.actionplan_score += 25;
+               
+        }
+        
         //posting_msg.SetActive(false);
         //loadingAnim.SetActive(false);
         statusmsg.gameObject.SetActive(true);

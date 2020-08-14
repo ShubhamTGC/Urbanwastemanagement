@@ -7,6 +7,8 @@ using System.Linq;
 public class UpdatedDashbaord : MonoBehaviour
 {
     public Text Username, GradeValue;
+    public List<Sprite> BoyFace, GirlFace;
+    public Image PlayerFace;
     public List<GameObject> Tabs;
     public Sprite PresssedSprite, RealesedSprite;
     public List<GameObject> MainPages;
@@ -17,6 +19,7 @@ public class UpdatedDashbaord : MonoBehaviour
     [SerializeField]
     private int Totalscore,BonusTotalscore;
     public List<StageOneDashboard> ZoneDashbaords;
+    public List<Stage2OervallDashbaord> stage2Overall;
     public GameObject triviapage;
     public string MainUrl, OverallDataApi;
     [Space(10)]
@@ -40,10 +43,29 @@ public class UpdatedDashbaord : MonoBehaviour
 
     private void OnEnable()
     {
+        if (PlayerPrefs.GetString("gender").ToLower() == "m")
+        {
+            PlayerSetup(BoyFace);
+        }
+        else
+        {
+            PlayerSetup(GirlFace);
+        }
         StartCoroutine(Overalldata());
         initialSetup();
     }
 
+    void PlayerSetup(List<Sprite> Face)
+    {
+        Username.text = PlayerPrefs.GetString("username");
+        for (int a = 0; a < Face.Count; a++)
+        {
+            if (a == PlayerPrefs.GetInt("characterType"))
+            {
+                PlayerFace.sprite = Face[a];
+            }
+        }
+    }
     void initialSetup() 
     {
 
@@ -93,6 +115,11 @@ public class UpdatedDashbaord : MonoBehaviour
             ZoneDashbaords[a].resetTask();
             yield return new WaitForSeconds(0.5f);
         }
+        for(int b=0;b < stage2Overall.Count; b++)
+        {
+            stage2Overall[b].ResetTask();
+            yield return new WaitForSeconds(0.5f);
+        }
         triviapage.SetActive(false);
         this.gameObject.SetActive(false);
     }
@@ -104,8 +131,9 @@ public class UpdatedDashbaord : MonoBehaviour
         yield return response;
         if(response.text != null)
         {
+            Debug.Log("oevrall data " + response.text);
             OverallDashboardModel OverallModel = Newtonsoft.Json.JsonConvert.DeserializeObject<OverallDashboardModel>(response.text);
-            Username.text = OverallModel.Name;
+           
             GradeValue.text = OverallModel.Grade;
             float GameScore = int.Parse(OverallModel.TotalGameScore);
             float GreenJournal = int.Parse(OverallModel.GreenJournelScore);
@@ -118,15 +146,15 @@ public class UpdatedDashbaord : MonoBehaviour
             OverallScore.text = OverallModel.TotalAllLevelScore.ToString();
             ZoneScore.text = OverallModel.TotalZonesScore.ToString();
             BonusScore.text = OverallModel.TotalBonusScore.ToString();
-            OverallScoreFiller.fillAmount = float.Parse(OverallModel.TotalAllLevelScore) / (float)Totalscore;
+            OverallScoreFiller.fillAmount = float.Parse(OverallModel.TotalGameScore) / (float)Totalscore;
             ZoneScorezfiller.fillAmount = float.Parse(OverallModel.TotalZonesScore) / (float)Totalscore;
             BonusScoreFiller.fillAmount = float.Parse(OverallModel.TotalBonusScore) / (float)BonusTotalscore;
-            PlayedStages.text = OverallModel.TotalStagesPlayed;
-            PlayedZones.text = OverallModel.TotalZonesPlayed;
-            PlayedBonusGames.text = OverallModel.TotalBonusPlayed;
-            StageText.text = OverallModel.OverAllScoreText;
-            ZoneText.text = OverallModel.ZoneScoreText;
-            BonusText.text = OverallModel.BonusScoreText;
+            PlayedStages.text = "Stage Played:"+ OverallModel.TotalStagesPlayed + "/3";
+            PlayedZones.text = "Zone Played:" + OverallModel.TotalZonesPlayed + "/9";
+            PlayedBonusGames.text ="Bonus Game: " + OverallModel.TotalBonusPlayed;
+            StageText.text = OverallModel.TotalGameScore.ToString();
+            ZoneText.text = OverallModel.TotalZonesScore.ToString();
+            BonusText.text = OverallModel.TotalBonusScore.ToString();
         }
     }
 

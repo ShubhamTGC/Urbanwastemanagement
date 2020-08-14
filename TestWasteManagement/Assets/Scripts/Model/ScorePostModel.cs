@@ -4,11 +4,7 @@ public class ScorePostModel
 {
     public int UID { get; set; }
     public int OID { get; set; }
-    public Log log { get; set; }
-}
 
-public class Log
-{
     public int id_log { get; set; }
     public int id_user { get; set; }
     public int id_game_content { get; set; }
@@ -25,4 +21,6 @@ public class Log
     public int is_completed { get; set; }
 
 }
+
+
 

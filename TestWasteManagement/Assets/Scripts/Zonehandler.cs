@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using LitJson;
 using System.Linq;
 using UnityEngine.Networking;
+using UnityEditor;
 
 public class Zonehandler : MonoBehaviour
 {
@@ -39,7 +40,6 @@ public class Zonehandler : MonoBehaviour
     //public GameFrameHandler gameframe;
     private float totalobjs, totalscore, knobangle;
     public bool score_check = false;
-    public GameObject leftdashboardbtn;
     private bool timerstart,timerwarining = true;
     public GameObject timesuppage,timer;
     public Button timesupbtn;
@@ -101,15 +101,17 @@ public class Zonehandler : MonoBehaviour
     public string Zone_name;
     public int id_content;
     public bool is_zome_completed;
-    public string MainUrl, dashboard_api,ScorePostApi;
+    public string MainUrl, dashboard_api,ScorePostApi, GetGamesIDApi;
     public Button home_btn;
 
 
 
     [Header("For leaderboard Data")]
     [Space(10)]
+   
     public string RoomData_api;
-    private List<int> RoomIds = new List<int>();
+    [SerializeField]
+    private List<int> RoomIds;
     public int Bonus_Score;
     private float Bonusscore_room1, Bonusscore_room2, Bonusscore_room3;
     public Image BonusScoreFiller;
@@ -140,6 +142,27 @@ public class Zonehandler : MonoBehaviour
     private bool Game_over_time = false;
     //======================TIME TAKEN TO COMPLETE THE ONE ZONE VARIABLERS===================
     private float pri_sec,pri_time;
+    [SerializeField]
+    private int Gamelevel;
+    [SerializeField]
+    private string ZoneName;
+    [SerializeField]
+    private int id_game_content;
+
+
+
+    //===================== ABILITY BADGE DATA HANDLING ======================
+    public string LeaderBoardApi,CheckHighscoreApi, PostBadgeUserApi, GetBadgeConfigApi,MostActivePlayerApi, MostObservantApi, levelClearnessApi;
+    private int MyTotalScore;
+    private int HighScoreBadgeid, ActivebadgeId,MostObservantid,level1GameBadgeId;
+    [SerializeField] private string Highscorename;
+    [SerializeField] private string mostActiveName;
+    [SerializeField] private string MostObervantName;
+    [SerializeField] private string Level1BadgeName;
+    public int Levelnumber;
+    private int totalscoreOfUser;
+    public int Stage2UnlockScore;
+    private bool Stage2unlocked;
     void Start()
     {
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
@@ -148,7 +171,7 @@ public class Zonehandler : MonoBehaviour
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
         backbtn.onClick.RemoveAllListeners();
         backbtn.onClick.AddListener(delegate { initialback(); });
-        leftdashboardbtn.SetActive(true);
+        //leftdashboardbtn.SetActive(true);
         score_check = false;
         float totalobjs = room1.Count + room2.Count + room3.Count;
         totalscore = totalobjs * 10;
@@ -157,6 +180,9 @@ public class Zonehandler : MonoBehaviour
     }
      void OnEnable()
     {
+        id_game_content = 0;
+        RoomIds  = new List<int>();
+        StartCoroutine(GetGamesIDactivity());
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
         timerstop = false;
         room1_score = room2_score = room3_score = 0;
@@ -164,32 +190,48 @@ public class Zonehandler : MonoBehaviour
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
         backbtn.onClick.RemoveAllListeners();
         backbtn.onClick.AddListener(delegate { initialback(); });
-        leftdashboardbtn.SetActive(true);
+        //leftdashboardbtn.SetActive(true);
         score_check = false;
         float totalscore = room1.Count + room2.Count + room3.Count;
         totalscore = totalobjs * 10;
         timerpanel.SetActive(false);
         selectionpage.SetActive(true);
+        
         //Initialtask(0);
-        StartCoroutine(CollectRoomdata());
+
     }
     IEnumerator CollectRoomdata()
     {
 
-        string Hittingurl = MainUrl + RoomData_api + "?id_user=" + PlayerPrefs.GetInt("UID") + "&id_org_content=" + id_content;   
+        string Hittingurl = MainUrl + RoomData_api + "?id_user=" + PlayerPrefs.GetInt("UID") + "&id_org_content=" + id_game_content;   
         Debug.Log("main Url " + Hittingurl);
         WWW roominfo = new WWW(Hittingurl);
         yield return roominfo;
         if (roominfo.text != null)
         {
-            
+            Debug.Log("rooom id " + roominfo.text);
             JsonData RoomrRes = JsonMapper.ToObject(roominfo.text);
             for(int a = 0; a < RoomrRes.Count; a++)
             {
                 RoomIds.Add(int.Parse(RoomrRes[a]["id_room"].ToString()));
-                Debug.Log("Room " + a + " " + RoomIds[a]);
             }
 
+        }
+    }
+
+    IEnumerator GetGamesIDactivity()
+    {
+        string HittingUrl = MainUrl + GetGamesIDApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
+            "&id_org_game=" + 1 + "&id_level=" + Gamelevel;
+        WWW GameResponse = new WWW(HittingUrl);
+        yield return GameResponse;
+        if (GameResponse.text != null)
+        {
+            Debug.Log("game id data " + GameResponse.text);
+            GetLevelIDs gameIDs = Newtonsoft.Json.JsonConvert.DeserializeObject<GetLevelIDs>(GameResponse.text);
+            var ContentList = gameIDs.content.ToList();
+            id_game_content = ContentList.FirstOrDefault(x => x.title == ZoneName).id_game_content;
+            StartCoroutine(CollectRoomdata());
         }
     }
 
@@ -269,7 +311,7 @@ public class Zonehandler : MonoBehaviour
         timerwarining = true;
         scoreknob.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0f, 0f, 0f);
         level1score = 0;
-        leftdashboardbtn.SetActive(false);
+        //leftdashboardbtn.SetActive(false);
     }
 
 
@@ -989,14 +1031,14 @@ public class Zonehandler : MonoBehaviour
         int correctansroom1 = 0;
         int correctansroom2 = 0;
         int correctansroom3 = 0;
-        if(charater_type == 1)
-        {
-            player_image.sprite = boy_image;
-        }
-        else if(charater_type == 2)
-        {
-            player_image.sprite = girl_image;
-        }
+        //if(charater_type == 1)
+        //{
+        //    player_image.sprite = boy_image;
+        //}
+        //else if(charater_type == 2)
+        //{
+        //    player_image.sprite = girl_image;
+        //}
         
         for (int a = 0; a < room1_data_collected.Count; a++)
         {
@@ -2153,7 +2195,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room1[l]),
                     is_right = room1_is_right[l],
                     correct_option = correct_option1[l],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2176,7 +2218,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room1[l]),
                     is_right = room1_is_right[l],
                     correct_option = correct_option1[l],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2202,7 +2244,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room2[k]),
                     is_right = room2_is_right[k],
                     correct_option = correct_option2[k],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2224,7 +2266,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room2[k]),
                     is_right = room2_is_right[k],
                     correct_option = correct_option2[k],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2248,7 +2290,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room3[j]),
                     is_right = room3_is_right[j],
                     correct_option = correct_option3[j],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2270,7 +2312,7 @@ public class Zonehandler : MonoBehaviour
                     score = int.Parse(score_room3[j]),
                     is_right = room3_is_right[j],
                     correct_option = correct_option3[j],
-                    id_content = id_content,
+                    id_content = id_game_content,
                     id_level = 1,
                     status = "a",
                     updated_date_time = DateTime.Now,
@@ -2286,7 +2328,7 @@ public class Zonehandler : MonoBehaviour
         PlayerPrefs.SetInt("ZoneScore", totalscore);
         string data = JsonMapper.ToJson(logs);
         StartCoroutine(Post_data(data));
-        //StartCoroutine(ScorePostTask());
+        StartCoroutine(ScorePostTask());
      
         
 
@@ -2324,45 +2366,64 @@ public class Zonehandler : MonoBehaviour
         yield return zone_www;
         if (zone_www.text != null)
         {
-            Debug.Log(zone_www.text);
-            is_zome_completed = true;
+            //Debug.Log("Zone data posted "+zone_www.text);
+            MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(zone_www.text);
+            if (masterRes.STATUS.ToLower() == "success")
+            {
+                is_zome_completed = true;
+                StartCoroutine(getBadgeConfiguration(0));
+
+            }
+            else
+            {
+                Debug.Log(" STATUS  ====  FAILED stage 1 zonehandler script ");
+            }
+         
+
         }
 
     }
-
-
     IEnumerator ScorePostTask()
     {
         yield return new WaitForSeconds(0.1f);
         string HittingUrl = MainUrl + ScorePostApi;
         ScorePostModel scorePost = new ScorePostModel();
-        scorePost.log = new Log();
         scorePost.UID = PlayerPrefs.GetInt("UID");
         scorePost.OID = PlayerPrefs.GetInt("OID");
-        scorePost.log.id_user = PlayerPrefs.GetInt("UID");
-        scorePost.log.id_game_content = startpage.GameIDS[GameLevelId];
-        scorePost.log.score = 1;
-        scorePost.log.id_score_unit = 1;
-        scorePost.log.score_type = 1;
-        scorePost.log.score_unit = "points";
-        scorePost.log.status = "A";
-        scorePost.log.updated_date_time = DateTime.Now.ToString();
-        scorePost.log.id_level = 1;
-        scorePost.log.id_org_game = 1;
-        scorePost.log.attempt_no = 1;
-        scorePost.log.timetaken_to_complete = pri_sec.ToString() + ":" + pri_time.ToString("0");
-        scorePost.log.is_completed = 1;
+        scorePost.id_user = PlayerPrefs.GetInt("UID");
+        scorePost.id_game_content = id_game_content;
+        scorePost.score = room1_score + room2_score + room3_score;
+        scorePost.id_score_unit = 1;
+        scorePost.score_type = 1;
+        scorePost.score_unit = "points";
+        scorePost.status = "A";
+        scorePost.updated_date_time = DateTime.Now.ToString();
+        scorePost.id_level = 1;
+        scorePost.id_org_game = 1;
+        scorePost.attempt_no = 1;
+        scorePost.timetaken_to_complete =  "00:00";  /*pri_sec.ToString() + ":" + pri_time.ToString("0");*/
+        scorePost.is_completed = 1;
 
         string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(scorePost);
+        //Debug.Log("data log " + Data_log);
         using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
         {
             Request.method = UnityWebRequest.kHttpVerbPOST;
             Request.SetRequestHeader("Content-Type", "application/json");
             Request.SetRequestHeader("Accept", "application/json");
             yield return Request.SendWebRequest();
-            if(!Request.isNetworkError && Request.isHttpError)
+            if(!Request.isNetworkError && !Request.isHttpError)
             {
-
+                Debug.Log(Request.downloadHandler.text);
+                MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
+                if(masterRes.STATUS.ToLower() == "success")
+                {
+                    StartCoroutine(getHighScore());
+                }
+                else
+                {
+                    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
+                }
             }
 
         }
@@ -2372,9 +2433,298 @@ public class Zonehandler : MonoBehaviour
 
     public void action_plan_activite()
     {
-        
         action_plan_page.SetActive(true);
     }
 
+    //=============================  ABILITY BADGE APIS =======================================
+
+    IEnumerator getHighScore()
+    {
+        string Hitting_Url = MainUrl + LeaderBoardApi + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
+        //string Hitting_Url = "https://www.skillmuni.in/wsmapi/api/WMSLeaderboad" + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
+        WWW Userscore_www = new WWW(Hitting_Url);
+        yield return Userscore_www;
+        if (Userscore_www.text != null)
+        {
+            List<LeaderBoardmodel> LeaderBoardData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LeaderBoardmodel>>(Userscore_www.text);
+            MyTotalScore = LeaderBoardData.FirstOrDefault(x => x.id_user == PlayerPrefs.GetInt("UID")).Score;
+            StartCoroutine(CheckHighScoreTask());
+            StartCoroutine(CheckForGameBadge());
+
+        }
+        else
+        {
+            Debug.Log(" interner Lost ====  stage 1 zonehandler script ");
+        }
+
+    }
+
+    IEnumerator CheckHighScoreTask()
+    {
+        string HittingUrl = MainUrl + CheckHighscoreApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 1
+            + "&is_bonus_game=" + 0 + "&score=" + MyTotalScore;
+        WWW highscorecheck = new WWW(HittingUrl);
+        yield return highscorecheck;
+        if(highscorecheck.text != null)
+        {
+            //Debug.Log(" high score data " + highscorecheck.text);
+            HighScoreBadgeModel HighscoreRes = Newtonsoft.Json.JsonConvert.DeserializeObject<HighScoreBadgeModel>(highscorecheck.text);
+            if(HighscoreRes.is_high_scorer == "1")
+            {
+                Debug.Log("  USER IS A HIGH SCORER PLATYER ");
+                StartCoroutine(PostHighscoreBadge());
+
+            }
+            else
+            {
+                Debug.Log(" USER IS  NOT A HIGH SCORER PLATYER ");
+            }
+        }
+    }
+
+    IEnumerator PostHighscoreBadge()
+    {
+        string HittingUrl = MainUrl + PostBadgeUserApi;
+        var BadgeModel = new PostBadgeModel()
+        {
+            id_user = PlayerPrefs.GetInt("UID").ToString(),
+            id_level = "1",
+            id_zone = "0",
+            id_room = "0",
+            id_special_game = "0",
+            id_badge = HighScoreBadgeid.ToString()
+        };
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                string status = Request.downloadHandler.text;
+                if(status.ToLower() == "success")
+                {
+                    Debug.Log("High scorer badge uploaded " + status);
+                }
+                else
+                {
+                    Debug.Log("High scorer badge Something went wrong " + status);
+                }
+               
+            }
+
+        }
+
+    }
+
+    IEnumerator getBadgeConfiguration(int levelid)
+    {
+        string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + levelid;
+        WWW badge_www = new WWW(HittingUrl);
+        yield return badge_www;
+        if (badge_www.text != null)
+        {
+            //Debug.Log(" badge infp " + badge_www.text);
+            List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);
+            HighScoreBadgeid = badgemodel.FirstOrDefault(x => x.badge_name == Highscorename).id_badge;
+            ActivebadgeId = badgemodel.FirstOrDefault(x => x.badge_name == mostActiveName).id_badge;
+            MostObservantid = badgemodel.FirstOrDefault(x => x.badge_name == MostObervantName).id_badge;
+            StartCoroutine(checkMostActivePTask());
+            StartCoroutine(CheckforMoseObservant());
+        }
+    }
+
+
+    IEnumerator checkMostActivePTask()
+    {
+        string HittingUrl = MainUrl + MostActivePlayerApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 1;
+        WWW activeplayer_www = new WWW(HittingUrl);
+        yield return activeplayer_www;
+        if(activeplayer_www.text != null)
+        {
+            //Debug.Log(" mose active usrer data " + activeplayer_www.text);
+            MostActiveModel activeplayer_data = Newtonsoft.Json.JsonConvert.DeserializeObject<MostActiveModel>(activeplayer_www.text);
+            if(activeplayer_data.play_count == "1")
+            {
+                Debug.Log("  USER IS A MOST ACTIVE PLATYER ");
+                StartCoroutine(PostActiveBadge());
+            }
+            else
+            {
+                Debug.Log(" USER IS NOT A MOST ACTIVE PLATYER");
+            }
+        }
+    }
+
+    IEnumerator PostActiveBadge()
+    {
+      
+        string HittingUrl = MainUrl + PostBadgeUserApi;
+        var BadgeModel = new PostBadgeModel()
+        {
+            id_user = PlayerPrefs.GetInt("UID").ToString(),
+            id_level = "1",
+            id_zone = "0",
+            id_room = "0",
+            id_special_game = "0",
+            id_badge = ActivebadgeId.ToString()
+        };
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
+        Debug.Log("data log " + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                string status = Request.downloadHandler.text;
+                if (status.ToLower() == "success")
+                {
+                    Debug.Log("MOST ACTIVE badge uploaded " + status);
+                }
+                else
+                {
+                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
+                }
+
+            }
+
+        }
+
+    }
+
+
+    IEnumerator CheckforMoseObservant()
+    {
+        string HittingUrl = MainUrl + MostObservantApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
+        WWW observant_www = new WWW(HittingUrl);
+        yield return observant_www;
+        if(observant_www.text != null)
+        {
+            MostObservantModel observantdata = Newtonsoft.Json.JsonConvert.DeserializeObject<MostObservantModel>(observant_www.text);
+            if(observantdata.is_eligible == 1)
+            {
+                StartCoroutine(PostMostObservantbadge());
+            }
+        }
+    }
+
+    IEnumerator PostMostObservantbadge()
+    {
+
+        string HittingUrl = MainUrl + PostBadgeUserApi;
+        var BadgeModel = new PostBadgeModel()
+        {
+            id_user = PlayerPrefs.GetInt("UID").ToString(),
+            id_level = "1",
+            id_zone = "0",
+            id_room = "0",
+            id_special_game = "0",
+            id_badge = MostObservantid.ToString()
+        };
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
+        Debug.Log("data log " + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                string status = Request.downloadHandler.text;
+                if (status.ToLower() == "success")
+                {
+                    Debug.Log("MOST ACTIVE badge uploaded " + status);
+                }
+                else
+                {
+                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
+                }
+
+            }
+
+        }
+
+    }
+
+    //====================================== GAME BADGE UPDATE TASK ================================
+    IEnumerator CheckForGameBadge()
+    {
+        string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + 1;
+        WWW badge_www = new WWW(HittingUrl);
+        yield return badge_www;
+        if (badge_www.text != null)                                                      
+        {
+            Debug.Log(" badge info " + badge_www.text);
+            List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);
+            level1GameBadgeId = badgemodel.FirstOrDefault(x => x.badge_name == Level1BadgeName).id_badge;
+            StartCoroutine(CheckForStage2());
+        }
+    }
+    IEnumerator CheckForStage2()
+    {
+        string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + Levelnumber;
+        WWW dashboard_res = new WWW(Response_url);
+        yield return dashboard_res;
+        if (dashboard_res.text != null)
+        {
+            Debug.Log(" log data  " + dashboard_res.text);
+            List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
+            totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == Levelnumber)?.completion_score ?? 0;
+        }
+        Debug.Log(" user score  " + totalscoreOfUser);
+        Stage2unlocked = MyTotalScore >= Stage2UnlockScore;
+        if (Stage2unlocked)
+        {
+            StartCoroutine(PostGameBadgeLevelWise());
+        }
+    }
+    IEnumerator PostGameBadgeLevelWise()
+    {
+
+        string HittingUrl = MainUrl + PostBadgeUserApi;
+        var BadgeModel = new PostBadgeModel()
+        {
+            id_user = PlayerPrefs.GetInt("UID").ToString(),
+            id_level = "1",
+            id_zone = "0",
+            id_room = "0",
+            id_special_game = "0",
+            id_badge = level1GameBadgeId.ToString()
+        };
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
+        Debug.Log("data log " + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                string status = Request.downloadHandler.text;
+                if (status.ToLower() == "success")
+                {
+                    Debug.Log("MOST ACTIVE badge uploaded " + status);
+                }
+                else
+                {
+                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
+                }
+
+            }
+
+        }
+
+    }
 
 }

@@ -126,7 +126,7 @@ public class LoadImageFromServer : MonoBehaviour
                     {
                         gm.transform.GetChild(3).gameObject.transform.GetChild(0).GetComponent<Text>().text = ll[i].id_lati + "," + ll[i].id_long;
                     }
-                   
+
                     if (ll[i].id_level == 1)
                     {
                         gm.transform.GetChild(4).gameObject.transform.GetChild(0).GetComponent<Text>().text = "Residential";
@@ -174,7 +174,10 @@ public class LoadImageFromServer : MonoBehaviour
                 if (www.isDone)
                     if (texture2d.LoadImage(www.downloadHandler.data))
                     {
-                        if(texture2d.height == 8 && texture2d.width == 8)
+
+                        //sprite = Sprite.Create(texture2d, new Rect(0, 0, texture2d.width, texture2d.height), Vector2.zero);
+                        Debug.Log(" Image size " + texture2d.height + " " + texture2d.width);
+                        if (texture2d.height <= 12 && texture2d.width <= 12)
                         {
                             sprite = defaultSprite;
                         }
@@ -182,7 +185,7 @@ public class LoadImageFromServer : MonoBehaviour
                         {
                             sprite = Sprite.Create(texture2d, new Rect(0, 0, texture2d.width, texture2d.height), Vector2.zero);
                         }
-                       
+
                     }
 
                 if (sprite != null)
