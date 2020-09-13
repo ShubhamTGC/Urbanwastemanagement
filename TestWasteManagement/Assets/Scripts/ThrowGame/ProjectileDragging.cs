@@ -112,31 +112,31 @@ public class ProjectileDragging : MonoBehaviour
 
     void OnMouseDown()
     {
-        clickedOn = true;
-        //LineRendererUpdate();
-        
-        throwwaste.gameSound.clip = throwwaste.Stretching;
-        throwwaste.gameSound.Play();
-        spring.enabled = false;
-        startPos = gameObject.transform.position;
         for (int a = 0; a < DotsNumber; a++)
         {
             projectionDots[a] = Instantiate(dots, this.gameObject.transform);
         }
+        clickedOn = true;
+        throwwaste.gameSound.clip = throwwaste.Stretching;
+        throwwaste.gameSound.Play();
+        spring.enabled = false;
+        startPos = gameObject.transform.position;
+        
     }
 
     void OnMouseUp()
     {
+        for (int a = 0; a < DotsNumber; a++)
+        {
+            Destroy(projectionDots[a]);
+        }
         clickedOn = false;
         Destroy(spring);
         rigidbody2d.gravityScale = 1f;
         throwwaste.gameSound.clip = throwwaste.Shoot;
         throwwaste.gameSound.Play();
         rigidbody2d.velocity = new Vector2(-forceAtplayer.x * Forcefactor, -forceAtplayer.y * Forcefactor);
-        for (int a = 0; a < DotsNumber; a++)
-        {
-            Destroy(projectionDots[a]);
-        }
+       
     }
 
     void Dragging()
@@ -156,7 +156,7 @@ public class ProjectileDragging : MonoBehaviour
         Endpos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 10f);
 
         forceAtplayer = Endpos - startPos;
-        if(Mathf.Sign(forceAtplayer.x) == 1)
+        if(Mathf.Sign(forceAtplayer.x) == 1 || Mathf.Sign(forceAtplayer.y) ==1)
         {
             for (int a = 0; a < DotsNumber; a++)
             {
@@ -170,7 +170,6 @@ public class ProjectileDragging : MonoBehaviour
                 projectionDots[a].SetActive(true);
             }
         }
-        //Debug.Log("force at player " + forceAtplayer);
         forceAtplayer.x = Mathf.Min(0f, forceAtplayer.x);
         forceAtplayer.y = Mathf.Min(0f, forceAtplayer.y);
         float radius = 8f;
@@ -180,8 +179,6 @@ public class ProjectileDragging : MonoBehaviour
             projectionDots[a].transform.position = ProjectCalculate(a * Timedata);
         }
 
-
-        //Debug.Log("force value " + forceAtplayer);
 
         mouseWorldPoint.z = 0f;
         transform.position = mouseWorldPoint;

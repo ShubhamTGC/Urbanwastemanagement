@@ -11,6 +11,7 @@ TagManager:
   - Waste
   - Groud
   - Border
+  - Truck
   layers:
   - Default
   - TransparentFX

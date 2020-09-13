@@ -9,11 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/wasteManagementUpdate.unity
     guid: e903193087d79ba4abf441066e562571
   - enabled: 1
-    path: Assets/Scenes/Stage1Games.unity
-    guid: b30d21ede3ededd4d809bef2d49ac2fd
+    path: Assets/Scenes/Stage1Games 1.unity
+    guid: 5fc86b464518f6346a56c6f4c2d88957
   - enabled: 1
     path: Assets/Scenes/Stage2Games.unity
     guid: 0516c79866b1a984da555c5723f09cb0
+  - enabled: 1
+    path: Assets/Scenes/Stage3Games.unity
+    guid: 15bdb909488d55546a5dedc4da2c0955
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 4a8b6752c78d61e4689842de04242828,
       type: 2}

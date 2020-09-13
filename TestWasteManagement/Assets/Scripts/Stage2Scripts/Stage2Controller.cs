@@ -26,6 +26,7 @@ public class Stage2Controller : MonoBehaviour
         {
             if (OnboradingVideo.GetComponent<VideoPlayer>().isPlaying)
             {
+                SkipButton.SetActive(true);
                 checkforEnd = true;
             }
             if (checkforEnd)
@@ -42,16 +43,8 @@ public class Stage2Controller : MonoBehaviour
     
     IEnumerator sceneAppear()
     {
-        //float shadevalue = HomepageObject.GetComponent<Image>().color.a;
-        //while (shadevalue < 1)
-        //{
-        //    HomepageObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, shadevalue);
-        //    shadevalue += 0.1f;
-        //    yield return new WaitForSeconds(0.05f);
-        //}
-
+     
         yield return new WaitForSeconds(0.5f);
-        //SkipButton.SetActive(true);
         OnboradingVideo.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
         TriviaPage.SetActive(true);
@@ -88,7 +81,7 @@ public class Stage2Controller : MonoBehaviour
         OnboradingVideo.SetActive(false);
         TriviaPage.SetActive(false);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
-        if (!PlayerPrefs.HasKey("Stage2Avatar"))
+        if (PlayerPrefs.GetInt("PlayerBody") < 5)
         {
             USername.text = PlayerPrefs.GetString("username");
             AvatarUpdatePage.SetActive(true);

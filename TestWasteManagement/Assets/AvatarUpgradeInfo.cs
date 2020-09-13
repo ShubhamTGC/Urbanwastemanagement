@@ -12,6 +12,7 @@ public class AvatarUpgradeInfo : MonoBehaviour
     public GameObject stars;
     public string Mainurl, Userdata_API;
     public int BodyType;
+    [SerializeField] private int stage3AvatarType;
     void Start()
     {
         stars.SetActive(true);
@@ -27,7 +28,7 @@ public class AvatarUpgradeInfo : MonoBehaviour
             GirlObject.SetActive(true);
             SetFaceImage(GirlFaces, GirlFace);
         }
-       StartCoroutine(PostUserData());
+        StartCoroutine(PostUserData());
     }
 
     // Update is called once per frame
@@ -50,15 +51,16 @@ public class AvatarUpgradeInfo : MonoBehaviour
 
     IEnumerator PostUserData()
     {
+        int avatar_updated = stage3AvatarType + PlayerPrefs.GetInt("characterType");
         yield return new WaitForSeconds(1f);
         string avatar_url = Mainurl + Userdata_API;
 
         WWWForm userdata_form = new WWWForm();
         userdata_form.AddField("UID", PlayerPrefs.GetInt("UID"));
         userdata_form.AddField("OID", PlayerPrefs.GetInt("OID"));
-        userdata_form.AddField("avatar_type", PlayerPrefs.GetInt("characterType"));
+        userdata_form.AddField("avatar_type", avatar_updated);
         userdata_form.AddField("body_type", BodyType);
-
+        Debug.Log("avatra data " + avatar_updated);
         WWW avatar_www = new WWW(avatar_url, userdata_form);
         yield return avatar_www;
         if (avatar_www.text != null)
@@ -66,7 +68,9 @@ public class AvatarUpgradeInfo : MonoBehaviour
             Debug.Log(avatar_www.text);
             // intro_panel.SetActive(true);
             PlayerPrefs.SetString("Stage2Avatar", "done");
-            PlayerPrefs.SetInt("avatar_type", PlayerPrefs.GetInt("characterType"));
+            PlayerPrefs.SetString("Stage3Avatar", "done");
+            PlayerPrefs.SetInt("characterType", avatar_updated);
+            PlayerPrefs.SetInt("avatar_type", avatar_updated);
             PlayerPrefs.SetInt("PlayerBody", BodyType);
 
         }

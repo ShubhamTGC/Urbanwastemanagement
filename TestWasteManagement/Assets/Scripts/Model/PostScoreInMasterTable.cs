@@ -11,7 +11,7 @@ public class PostScoreInMasterTable  :MonoBehaviour
     bool response = false;
 
    
-    public IEnumerator GameScorePosting(int Score,int Game_content,string Time_taken,int Completed)
+    public IEnumerator GameScorePosting(int Score,int Game_content,string Time_taken,int Completed,int attemptno,int id_level)
     {
         string hittingUrl = Mainurl + UserScorePosting;
         ScorePostModel postField = new ScorePostModel();
@@ -26,11 +26,12 @@ public class PostScoreInMasterTable  :MonoBehaviour
         postField.score_unit = "points";
         postField.status = "A";
         postField.updated_date_time = DateTime.Now.ToString();
-        postField.id_level = 0;
+        postField.id_level = id_level;
         postField.id_org_game = 1;
-        postField.attempt_no = 1;
+        postField.attempt_no = attemptno+1;
         postField.timetaken_to_complete = Time_taken;
         postField.is_completed = Completed;
+        postField.game_type = 2;
 
 
         string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(postField);

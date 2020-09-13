@@ -30,9 +30,9 @@ public class Stage2OervallDashbaord : MonoBehaviour
     private List<string> CorrectOptL1 = new List<string>();
     private List<string> CorrectOptL2 = new List<string>();
     private string correct_option;
-    private List<GameObject> WasteObjectL1 = new List<GameObject>();
+    private List<GameObject> WasteObjectL1= new List<GameObject>();
     private List<GameObject> WasteObjectL2 = new List<GameObject>();
-
+    public Stage2Menu Stage2data;
 
 
     void Start()
@@ -43,7 +43,8 @@ public class Stage2OervallDashbaord : MonoBehaviour
     private void OnEnable()
     {
         correct_option = "";
-        WasteObjectL2 = new List<GameObject>();
+        //WasteObjectL1 = new List<GameObject>();
+        //WasteObjectL2 = new List<GameObject>();
         RoomIds = new List<int>();
         StartCoroutine(GetGamesIDactivity());
     }
@@ -93,6 +94,7 @@ public class Stage2OervallDashbaord : MonoBehaviour
 
     IEnumerator GetDashboardData()
     {
+        int MaxAttemptNum = 0;
         string Response_url = MainUrl + DashBoard_Api + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") +
          "&id_org_game=" + 1;
         WWW dashboardRes = new WWW(Response_url);
@@ -103,11 +105,19 @@ public class Stage2OervallDashbaord : MonoBehaviour
             List<DashboardItem> DashboardHandler = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashboardItem>>(dashboardRes.text);
             var Contentlist = DashboardHandler.Where(x => x.id_level == Gamelevel).Select(x => x.ContentList).FirstOrDefault();
             var GotZoneData = Contentlist?.Where(x => x.id_game_content == id_game_content).Select(x => x.UserLog).FirstOrDefault();
-            if(GotZoneData.Count > 0)
+            var listUserLog = Contentlist?.Where(x => x.id_game_content == id_game_content).SelectMany(x => x.UserLog).ToList();
+        
+            if(listUserLog.Count > 0)
+            {
+                var data = listUserLog.Max(x => x.attempt_no);
+                MaxAttemptNum = data;
+                Debug.Log("got the final data for stage 2 " + data);
+            }
+            if (GotZoneData.Count > 0)
             {
                 GotZoneData.ForEach(x =>
                 {
-                    if (x.id_room == RoomIds[0])
+                    if (x.id_room == RoomIds[0] && x.attempt_no == MaxAttemptNum)
                     {
                         ObjectnameL1.Add(x.item_collected);
                         ObjectSCoreL1.Add(x.score);
@@ -116,7 +126,7 @@ public class Stage2OervallDashbaord : MonoBehaviour
                         CorrectOptL1.Add(correct_option);
                         dustbinL1.Add(x.dustbin);
                     }
-                    if (x.id_room == RoomIds[1])
+                    if (x.id_room == RoomIds[1] && x.attempt_no == MaxAttemptNum)
                     {
                         ObjectnameL2.Add(x.item_collected);
                         ObjectSCoreL2.Add(x.score);

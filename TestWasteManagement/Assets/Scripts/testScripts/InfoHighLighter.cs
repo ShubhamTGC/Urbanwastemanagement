@@ -23,7 +23,6 @@ public class InfoHighLighter : MonoBehaviour
             {
                 zoneinfo.gameObject.SetActive(true);
                 zoneinfo.text = zonemsg;
-                //this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
             }
 
         }
@@ -34,7 +33,6 @@ public class InfoHighLighter : MonoBehaviour
             {
                 zoneinfo.gameObject.SetActive(false);
                 zoneinfo.text = "";
-                //this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
             }
         }
     }

@@ -19,6 +19,7 @@ public class ScorePostModel
     public int attempt_no { get; set; }
     public string timetaken_to_complete { get; set; }
     public int is_completed { get; set; }
+    public int game_type { get; set; }
 
 }
 

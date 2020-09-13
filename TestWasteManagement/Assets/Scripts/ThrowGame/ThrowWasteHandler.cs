@@ -23,6 +23,7 @@ public class ThrowWasteHandler : MonoBehaviour
    
     private List<GameObject> GeneratedObj;
     public Image Previewimage1, Previewimage2, Previewimage3, Previewimage4;
+    public GameObject FirstObjectName;
     private int Objectlive = 0;
     private Vector3 timerPanelPos;
     public GameObject TimerPanel;
@@ -30,7 +31,7 @@ public class ThrowWasteHandler : MonoBehaviour
     public Button closeButton;
     public AudioSource gameSound;
     public AudioClip RightAns, WrongAns;
-    public AudioClip Shoot, wrong,Stretching;
+    public AudioClip Shoot, Outside,Stretching;
     public GameObject PreviewCard;
     //============== COMPLETE GAME SCORE VARIABLE AND HELPING VARIABLE======================
     [Header("Time portion and score ")]
@@ -108,6 +109,8 @@ public class ThrowWasteHandler : MonoBehaviour
     private List<GameObject> dashboardL1Rows = new List<GameObject>(), dashboardL2Rows = new List<GameObject>();
     public GameObject DotPrefeb;
     public Transform Dotparent;
+    public GameObject MudInWater;
+    public GameObject MudInWater2;
     private void Awake()
     {
 
@@ -161,7 +164,8 @@ public class ThrowWasteHandler : MonoBehaviour
     }
     void initialsetup()
     {
-
+        MudInWater.SetActive(false);
+        MudInWater2.SetActive(false);
         ScoreKnob.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, 0);
         helpingbool = true;
         closeGame = false;
@@ -203,7 +207,7 @@ public class ThrowWasteHandler : MonoBehaviour
         gameclose = false;
         correctGoal = 0;
         SCore = 0;
-        Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = true;
+        Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = false;
         Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = true;
         Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = true;
         Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = true;
@@ -214,7 +218,9 @@ public class ThrowWasteHandler : MonoBehaviour
         SpriteUpdator(0);
         GeneratedObj[Objectlive].SetActive(true);
         PreviewCard.GetComponent<PreviewPageHandler>().CheckBar();
-        TimePaused = false; 
+        TimePaused = false;
+        FirstObjectName.SetActive(true);
+        FirstObjectName.transform.GetChild(0).gameObject.GetComponent<Text>().text = GeneratedObj[Objectlive].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
 
     }
 
@@ -268,8 +274,19 @@ public class ThrowWasteHandler : MonoBehaviour
             }
             else if (helpingbool)
             {
+                string Showmsg = "";
                 helpingbool = false;
-                StartCoroutine(GameEndProcess());
+                if (level1)
+                {
+                     Showmsg = "Opps ! Times Up for level 1 Please continue with Level 2.";
+                }
+                else
+                {
+                   
+                    Showmsg = "Opps ! Times Up for level 2. ";
+                }
+               
+                StartCoroutine(GameEndProcess(Showmsg));
 
             }
         }
@@ -312,7 +329,8 @@ public class ThrowWasteHandler : MonoBehaviour
                     if (Objectlive < GeneratedObj.Count)
                     {
                         Previewimage1.GetComponent<Image>().sprite = GeneratedObj[Objectlive].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-
+                        //FirstObjectName.SetActive(true);
+                        FirstObjectName.transform.GetChild(0).gameObject.GetComponent<Text>().text = Previewimage1.GetComponent<Image>().sprite.name;
                         if (Objectlive < GeneratedObj.Count - 1)
                         {
                             
@@ -352,21 +370,32 @@ public class ThrowWasteHandler : MonoBehaviour
         }
         if (Objectlive == GeneratedObj.Count && !gameend)
         {
+            string Showmsg = "";
             closeGame = true;
             Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = false;
             Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
             Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
             Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
+            FirstObjectName.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
+            FirstObjectName.SetActive(false);
             Previewimage3.gameObject.SetActive(false);
             Previewimage2.gameObject.SetActive(false);
             Previewimage1.gameObject.SetActive(false);
             Previewimage4.gameObject.SetActive(false);
             gameend = true;
-            StartCoroutine(GameEndProcess());
+            if (level1)
+            {
+               Showmsg = "Congratulations! You have successfully completed Level 1\nPlease click on Level 2 to play!";
+            }
+            else
+            {
+                Showmsg = "Congratulations! You have successfully completed ";
+            }
+            StartCoroutine(GameEndProcess(Showmsg));
         }
     }
 
-    IEnumerator GameEndProcess()
+    IEnumerator GameEndProcess(string msg)
     {
         TimePaused = true;
         gameclose = true;
@@ -380,7 +409,7 @@ public class ThrowWasteHandler : MonoBehaviour
         });
         yield return new WaitForSeconds(0.1f);
         LevelCompleted = true;
-        stage2handler.checkLevelStatus();
+        stage2handler.checkLevelStatus(msg);
 
     }
 
@@ -403,6 +432,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     checkScore = true;
                     is_correct.Add(1);
                     ObjectScore.Add(10);
+                    stage2handler.VibrateDevice();
                     CorrectOption.Add(dustbin);
                 }
                 else
@@ -417,6 +447,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     is_correct.Add(0);
                     ObjectScore.Add(0);
                     wrongans++;
+                    stage2handler.VibrateDevice();
                     StartCoroutine(WrongObjectTask(collidername));
 
                 }
@@ -426,13 +457,14 @@ public class ThrowWasteHandler : MonoBehaviour
             {
                 string RelatedDustbin = "null";
                 CorrectOption.Add(RelatedDustbin);
-                gameSound.clip = WrongAns;
+                gameSound.clip = Outside;
                 gameSound.Play();
                 is_correct.Add(0);
                 ObjectScore.Add(0);
                 string nullDustbin = "null";
                 Dustbins.Add(nullDustbin);
                 wrongans++;
+                stage2handler.VibrateDevice();
                 StartCoroutine(WrongObjectTask(collidername));
             }
             correctGoal++;
@@ -458,6 +490,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     checkScore = true;
                     is_correctL2.Add(1);
                     ObjectScoreL2.Add(10);
+                    stage2handler.VibrateDevice();
                     CorrectOptionL2.Add(dustbin);
                 }
                 else
@@ -472,6 +505,7 @@ public class ThrowWasteHandler : MonoBehaviour
                     is_correctL2.Add(0);
                     ObjectScoreL2.Add(0);
                     wrongans++;
+                    stage2handler.VibrateDevice();
                     StartCoroutine(WrongObjectTask(collidername));
 
                 }
@@ -481,12 +515,13 @@ public class ThrowWasteHandler : MonoBehaviour
             {
                 string RelatedDustbin = "null";
                 CorrectOptionL2.Add(RelatedDustbin);
-                gameSound.clip = WrongAns;
+                gameSound.clip = Outside;
                 gameSound.Play();
                 is_correctL2.Add(0);
                 ObjectScoreL2.Add(0);
                 string nullDustbin = "null";
                 wrongans++;
+                stage2handler.VibrateDevice();
                 DustbinsL2.Add(nullDustbin);
                 StartCoroutine(WrongObjectTask(collidername));
             }
@@ -512,10 +547,12 @@ public class ThrowWasteHandler : MonoBehaviour
         });
         if(wrongans == 2)
         {
+            MudInWater.SetActive(true);
             initialSmoke.SetActive(true);
         }
         if(wrongans == 5)
         {
+            MudInWater2.SetActive(true);
             moderateSmoke.SetActive(true);
         }
         if(wrongans == 7)
@@ -533,6 +570,10 @@ public class ThrowWasteHandler : MonoBehaviour
 
     public void CloseGame()
     {
+        Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = false;
+        Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
+        Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
+        Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
         closeGame = true;
         gameclose = true;
         StartCoroutine(CloserGame());
@@ -718,17 +759,28 @@ public class ThrowWasteHandler : MonoBehaviour
             }
             else
             {
+
+                
                 Dustbins.Add("null");
                 ObjectScore.Add(0);
                 is_correct.Add(0);
                 CorrectOption.Add("null");
-                ItemColleted.Add(distinctElements[a1]);
-                RowsLevel1[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements[a1];
+                if(distinctElements.Count > 0)
+                {
+                    ItemColleted.Add(distinctElements[a1]);
+                    RowsLevel1[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements[a1];
+                    a1++;
+                }
+                else
+                {
+                    ItemColleted.Add(WasteObejctSprites[a].name);
+                    RowsLevel1[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = WasteObejctSprites[a].name;
+                }
                 RowsLevel1[a].transform.GetChild(1).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel1[a].transform.GetChild(2).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel1[a].transform.GetChild(3).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel1[a].transform.GetChild(4).gameObject.GetComponent<Text>().text = "0";
-                a1++;
+                
             }
         }
 
@@ -759,7 +811,9 @@ public class ThrowWasteHandler : MonoBehaviour
                     updated_date_time = DateTime.Now,
                     id_user = PlayerPrefs.GetInt("UID"),
                     dustbin = Dustbins[l],
-                    id_room = stage2handler.RoomIds[0]
+                    id_room = stage2handler.RoomIds[0],
+                    attempt_no = stage2handler.GameAttemptNumber + 1
+                    
                 };
                 l = l + 1;
                 stage2handler.logs.Add(Loglevel1);
@@ -782,7 +836,8 @@ public class ThrowWasteHandler : MonoBehaviour
                     updated_date_time = DateTime.Now,
                     id_user = PlayerPrefs.GetInt("UID"),
                     dustbin = Dustbins[l],
-                    id_room = stage2handler.RoomIds[0]
+                    id_room = stage2handler.RoomIds[0],
+                    attempt_no = stage2handler.GameAttemptNumber + 1
                 };
                 l = l + 1;
                 stage2handler.logs.Add(Loglevel1);
@@ -814,7 +869,8 @@ public class ThrowWasteHandler : MonoBehaviour
                     updated_date_time = DateTime.Now,
                     id_user = PlayerPrefs.GetInt("UID"),
                     dustbin = DustbinsL2[l],
-                    id_room = stage2handler.RoomIds[1]
+                    id_room = stage2handler.RoomIds[1],
+                    attempt_no = stage2handler.GameAttemptNumber + 1
                 };
                 l = l + 1;
                 stage2handler.logs.Add(LogLevel2);
@@ -838,7 +894,8 @@ public class ThrowWasteHandler : MonoBehaviour
                     updated_date_time = DateTime.Now,
                     id_user = PlayerPrefs.GetInt("UID"),
                     dustbin = DustbinsL2[l],
-                    id_room = stage2handler.RoomIds[1]
+                    id_room = stage2handler.RoomIds[1],
+                    attempt_no = stage2handler.GameAttemptNumber + 1
                 };
                 l = l + 1;
                 stage2handler.logs.Add(LogLevel2);
@@ -1033,14 +1090,24 @@ public class ThrowWasteHandler : MonoBehaviour
                 ObjectScoreL2.Add(0);
                 is_correctL2.Add(0);
                 CorrectOptionL2.Add("null");
-                ItemColletedL2.Add(distinctElements[a1]);
-                RowsLevel2[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements[a1];
+                if(distinctElements.Count > 0)
+                {
+                    ItemColletedL2.Add(distinctElements[a1]);
+                    RowsLevel2[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements[a1];
+                    a1++;
+                }
+                else
+                {
+                    ItemColletedL2.Add(WasteObejctSprites[a].name);
+                    RowsLevel2[a].transform.GetChild(0).gameObject.GetComponent<Text>().text = WasteObejctSprites[a].name;
+                }
+           
                 RowsLevel2[a].transform.GetChild(1).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel2[a].transform.GetChild(2).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel2[a].transform.GetChild(3).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel2[a].transform.GetChild(4).gameObject.GetComponent<Text>().text = "----";
                 RowsLevel2[a].transform.GetChild(5).gameObject.GetComponent<Text>().text = "0";
-                a1++;
+               
 
             }
         }

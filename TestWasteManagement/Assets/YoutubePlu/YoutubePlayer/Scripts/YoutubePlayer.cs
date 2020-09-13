@@ -78,7 +78,7 @@ namespace YoutubePlayer
                 videoPlayer.Play();
                 videoplayed = true;
                 youtubeUrl = videoUrl;
-                Skipbutton.SetActive(true);
+                //Skipbutton.SetActive(true);
                 YoutubeVideoStarting?.Invoke(youtubeUrl);
                 double timelength = videoPlayer.frameCount / videoPlayer.frameRate;
                

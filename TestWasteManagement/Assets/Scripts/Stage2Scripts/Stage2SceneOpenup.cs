@@ -15,7 +15,7 @@ public class Stage2SceneOpenup : MonoBehaviour
     private Vector3 rotateTarget1 = Vector3.zero, rotateTarget2 = Vector3.zero;
     [Space(40)]
     public string MainUrl;
-    public string levelClearnessApi;
+    public string levelClearnessApi, StageUnlockApi;
     public int ZoneNo, Stage2UnlockScore;
     public GameObject TriviaPage, GameClearedPopup;
     private int totalscoreOfUser;
@@ -25,6 +25,11 @@ public class Stage2SceneOpenup : MonoBehaviour
     public GameObject GameGuidePage;
     private GameObject selectedZone;
     public List<GameObject> PopupinGameGuide;
+    public List<Stage2ZoneHandler> Zones;
+    public List<GameObject> MainZones;
+    public Color PlayedColor;
+
+    public GameObject Stage2LeaderBoardPage, DeberifingPage;
     void Start()
     {
 
@@ -35,47 +40,68 @@ public class Stage2SceneOpenup : MonoBehaviour
     {
         
         StartCoroutine(CheckForStage3());
-    
-   
     }
 
 
     IEnumerator ShowBaords()
     {
-        iTween.RotateTo(SideBoardsZoneA, iTween.Hash("rotation", rotateTarget1, "easeType", iTween.EaseType.linear, "isLocal", true, "time", 0.4f));
-        iTween.RotateTo(SideBoardsZoneB, iTween.Hash("rotation", rotateTarget2, "easeType", iTween.EaseType.linear, "isLocal", true, "time", 0.4f));
-        yield return new WaitForSeconds(1);
+        iTween.ScaleTo(LandingPage, Vector3.one, 0.4f);
+        yield return new WaitForSeconds(0.5f);
     }
 
     IEnumerator CheckForStage3()
     {
         TriviaPage.SetActive(true);
-        string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
-        WWW dashboard_res = new WWW(Response_url);
-        yield return dashboard_res;
-        if (dashboard_res.text != null)
+        //string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
+        //WWW dashboard_res = new WWW(Response_url);
+        //yield return dashboard_res;
+        //if (dashboard_res.text != null)
+        //{
+        //    List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
+        //    totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
+        //}
+
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
         {
-            List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
-            totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
+            Debug.Log(" user score  " + StageModel.ConsolidatedScore);
         }
 
-        Debug.Log("user score " + totalscoreOfUser);
-        Stage3unlocked = totalscoreOfUser >= Stage2UnlockScore;
-        yield return new WaitForSeconds(0.5f);
+       
+        yield return new WaitForSeconds(0.5f);  
         TriviaPage.SetActive(false);
         LandingPage.SetActive(true);
+        Zones.ForEach(x =>
+        {
+            if (x.ZoneCleared)
+            {
+                MainZones.ForEach(y =>
+                {
+                    if (y.name == x.name)
+                    {
+                        y.gameObject.transform.GetChild(3).gameObject.GetComponent<Image>().color = PlayedColor;
+                        y.gameObject.transform.GetChild(4).gameObject.GetComponent<Image>().color = PlayedColor;
+                    }
+                });
+            }
+        });
         if (!BonusGamePLay && Stage3unlocked)
         {
             GameClearedPopup.SetActive(Stage3unlocked);
         }
         else
         {
+
             CommonTask();
         }
       
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         
@@ -148,12 +174,26 @@ public class Stage2SceneOpenup : MonoBehaviour
 
     IEnumerator GameActiveTask()
     {
+        iTween.ScaleTo(LandingPage, Vector3.zero, 0.4f);
         iTween.ScaleTo(GameClearedPopup, Vector3.zero, 0.4f);
         yield return new WaitForSeconds(0.5f);
         GameClearedPopup.SetActive(false);
         MatchThetileGame.SetActive(true);
     }
 
+    public void CancelBonusGAme()
+    {
+        StartCoroutine(cancelGame());
+    }
+
+    IEnumerator cancelGame()
+    {
+        iTween.ScaleTo(MatchThetileGame, Vector3.zero, 0.4f);
+        yield return new WaitForSeconds(0.5f);
+        MatchThetileGame.SetActive(false);
+        CommonTask();
+
+    }
     public void CloseBonusGame()
     {
         StartCoroutine(CloseGame());
@@ -170,6 +210,20 @@ public class Stage2SceneOpenup : MonoBehaviour
     {
         CanvasMainPage.SetActive(true);
         StartCoroutine(ShowBaords());
+    }
+
+    public void CloseStageLeaderBoard()
+    {
+        Stage2LeaderBoardPage.SetActive(false);
+        DeberifingPage.SetActive(true);
+
+    }
+
+
+    public void CloseDeberifingPage()
+    {
+        DeberifingPage.SetActive(false);
+        CommonTask();
     }
 
 

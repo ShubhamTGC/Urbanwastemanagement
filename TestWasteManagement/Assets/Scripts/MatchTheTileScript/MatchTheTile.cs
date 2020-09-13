@@ -51,11 +51,15 @@ public class MatchTheTile : MonoBehaviour
     public Text ScoreText;
     private int ScoreConuter;
     public GameObject ZoneA, ZoneB;
-    public string MainUrl, UserScorePosting;
+    public string MainUrl, UserScorePosting, GetlevelWisedataApi;
     private PostScoreInMasterTable PostMasterTable;
     public GameObject SCorePanel;
     public Stage2SceneOpenup Stage2objects;
     public GameObject Stage2LeaderBaord;
+    public int Gamelevel;
+    private int GameAttemptNumber;
+    public GameObject WinPage,MainPage;
+    private bool TimeBool = true;
     void Start()
     {
      
@@ -65,6 +69,7 @@ public class MatchTheTile : MonoBehaviour
 
      void OnEnable()
     {
+        TimeBool = true;
         helpingbool = true;
         totalTimercount = Timercount * 60  + second;
         //second = 60;
@@ -85,6 +90,7 @@ public class MatchTheTile : MonoBehaviour
             new KeyValuePair<string, List<Sprite>>("Organic", organic),
             new KeyValuePair<string, List<Sprite>>("Metal", metal)
         };
+        StartCoroutine(GetGameAttemptNoTask());
     }
     private void OnDisable()
     {
@@ -94,41 +100,63 @@ public class MatchTheTile : MonoBehaviour
         RunningTimeCount = 0f;
     }
 
-    // Update is called once per frame
-    void Update()
+
+    IEnumerator GetGameAttemptNoTask()
     {
-        //if (second.ToString("0") == "0" && Timercount == 0 && helpingbool)
-        //{
-        //    helpingbool = false;
-        //    TimesUp.SetActive(true);
-        //    //colorglow.isdone = true;
-        //}
-        if (second >= 0.0f && Timercount >= 0 && helpingbool)
+        string HittingUrl = $"{MainUrl}{GetlevelWisedataApi}?UID={PlayerPrefs.GetInt("UID")}&OID={PlayerPrefs.GetInt("OID")}&id_level={Gamelevel}&game_type={2}";
+        WWW Attempt_res = new WWW(HittingUrl);
+        yield return Attempt_res;
+        if (Attempt_res.text != null)
         {
-            second = second - Time.deltaTime;
-            RunningTimeCount = RunningTimeCount - Time.deltaTime;
-            TimerImage.fillAmount = RunningTimeCount / totalTimercount;
-            if (second.ToString("0").Length > 1)
+            if (Attempt_res.text != "[]")
             {
-                TimerText.text = "0" + Timercount.ToString("0") + ":" + second.ToString("0");
+                List<LevelUserdataModel> leveldata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelUserdataModel>>(Attempt_res.text);
+                GameAttemptNumber = leveldata.Count;
             }
             else
             {
-                TimerText.text = "0" + Timercount.ToString("0") + ":" + "0" + second.ToString("0");
+                GameAttemptNumber = 0;
             }
-           
-            if(second.ToString("0") ==  "0" && Timercount >=0)
-            {
-                second = 60;
-                Timercount = Timercount - 1;
-            }     
-        }else if (helpingbool)
-        {
-            Debug.Log(" done timer");
-            helpingbool = false;
-            StartCoroutine(TimeUpTask());
+
 
         }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (TimeBool)
+        {
+            if (second >= 0.0f && Timercount >= 0 && helpingbool)
+            {
+                second = second - Time.deltaTime;
+                RunningTimeCount = RunningTimeCount - Time.deltaTime;
+                TimerImage.fillAmount = RunningTimeCount / totalTimercount;
+                if (second.ToString("0").Length > 1)
+                {
+                    TimerText.text = "0" + Timercount.ToString("0") + ":" + second.ToString("0");
+                }
+                else
+                {
+                    TimerText.text = "0" + Timercount.ToString("0") + ":" + "0" + second.ToString("0");
+                }
+
+                if (second.ToString("0") == "0" && Timercount >= 0)
+                {
+                    second = 60;
+                    Timercount = Timercount - 1;
+                }
+            }
+            else if (helpingbool)
+            {
+                Debug.Log(" done timer");
+                helpingbool = false;
+                StartCoroutine(TimeUpTask());
+
+            }
+        }
+       
 
         if (ScoreCheckNow)
         {
@@ -154,13 +182,21 @@ public class MatchTheTile : MonoBehaviour
         CorrectGuess = 0;
         CorrectTiles.text = "0";
         yield return new WaitForSeconds(0.5f);
+        WinPage.transform.GetChild(0).gameObject.GetComponent<Text>().text = "TIMES UP!!";
+        WinPage.transform.GetChild(1).gameObject.GetComponent<Text>().text = "You have scored "+ScoreConuter.ToString() + " points.";
+        WinPage.SetActive(true);
         TimesUp.SetActive(false);
-        yield return StartCoroutine(PostMasterTable.GameScorePosting(ScoreConuter,0,"00:00",1));
+        yield return StartCoroutine(PostMasterTable.GameScorePosting(ScoreConuter,0,"00:00",1, GameAttemptNumber, Gamelevel));
+        yield return new WaitForSeconds(3f);
+        iTween.ScaleTo(WinPage, Vector3.zero, 0.3f);
+        yield return new WaitForSeconds(0.5f);
+        WinPage.SetActive(false);
         Stage2objects.BonusGamePLay = true;
         ScoreConuter = 0;
         //Stage2objects.CommonTask();
         Stage2LeaderBaord.SetActive(true);
         this.gameObject.SetActive(false);
+        MainPage.SetActive(false);
 
     }
 
@@ -323,7 +359,7 @@ public class MatchTheTile : MonoBehaviour
         }
         if (CorrectGuess == TileCount)
         {
-            Debug.Log("wind");
+            StartCoroutine(GameWinTssk());
         }
 
         SCorePanel.GetComponent<shakeeffect>().enabled = true;
@@ -341,6 +377,34 @@ public class MatchTheTile : MonoBehaviour
         FirstGuess = SecondGuess = false;
     }
 
+    IEnumerator GameWinTssk()
+    {
+        TimeBool = false;
+        WinPage.SetActive(true);
+        WinPage.transform.GetChild(0).gameObject.GetComponent<Text>().text = "YIPPIE!";
+        WinPage.transform.GetChild(1).gameObject.GetComponent<Text>().text = "You have scored " + ScoreConuter.ToString() + " points.";
+        yield return new WaitForSeconds(0.5f);
+        yield return StartCoroutine(PostMasterTable.GameScorePosting(ScoreConuter, 0, "00:00", 1, GameAttemptNumber, Gamelevel));
+        GeneratedTiles.ForEach(DestroyImmediate);
+        yield return new WaitForSeconds(5f);
+        iTween.ScaleTo(WinPage, Vector3.zero, 0.5f);
+        GeneratedSprite.Clear();
+        Array.Clear(DustbinSprite, 0, DustbinSprite.Length);
+        Array.Clear(WasteSprite, 0, WasteSprite.Length);
+        totalTimercount = 0f;
+        CorrectGuess = 0;
+        CorrectTiles.text = "0";
+        yield return new WaitForSeconds(0.5f);
+        WinPage.SetActive(false);
+        Stage2objects.BonusGamePLay = true;
+        ScoreConuter = 0;
+        //Stage2objects.CommonTask();
+        Stage2LeaderBaord.SetActive(true);
+        this.gameObject.SetActive(false);
+        MainPage.SetActive(false);
+    }
 
-  
+
+
+
 }

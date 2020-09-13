@@ -54,9 +54,11 @@ public class AnagrameController : MonoBehaviour
     private AudioSource AudioObject;
     public AudioClip CorrectSound, WrongSound;
 
-    public string MainUrl, AnagramApi,PostDataApi,UserScorePosting;
+    public string MainUrl, AnagramApi,PostDataApi,UserScorePosting, GetlevelWisedataApi;
     private AnagramPostData anagramePostdata;
     private ZoneShowHandler ZoneHandlers;
+    public int Gamelevel;
+    private int GameAttemptNumber;
     void Start()
     {
         ZoneHandlers = new ZoneShowHandler();
@@ -72,14 +74,34 @@ public class AnagrameController : MonoBehaviour
 
     private void OnEnable()
     {
-       
+        StartCoroutine(GetGameAttemptNoTask());
+    }
+
+    IEnumerator GetGameAttemptNoTask()
+    {
+        string HittingUrl = $"{MainUrl}{GetlevelWisedataApi}?UID={PlayerPrefs.GetInt("UID")}&OID={PlayerPrefs.GetInt("OID")}&id_level={Gamelevel}&game_type={2}";
+        WWW Attempt_res = new WWW(HittingUrl);
+        yield return Attempt_res;
+        if (Attempt_res.text != null)
+        {
+            if (Attempt_res.text != "[]")
+            {
+                List<LevelUserdataModel> leveldata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelUserdataModel>>(Attempt_res.text);
+                GameAttemptNumber = leveldata.Count;
+            }
+            else
+            {
+                GameAttemptNumber = 0;
+            }
+
+
+        }
     }
 
     void Mainsetup()
     {
         
         int maxLength = 0;
-        
         while (maxLength < Answordlist.Length)
         {
             int num = UnityEngine.Random.Range(1, Answordlist.Length + 1);
@@ -118,6 +140,7 @@ public class AnagrameController : MonoBehaviour
         yield return Anagrame_www;
         if(Anagrame_www.text != null)
         {
+            Debug.Log("anagrame question " + Anagrame_www.text);
             List<AnagramModel> AnagramResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AnagramModel>>(Anagrame_www.text);
             int arrayindex =0;
             Answordlist = new string[AnagramResponse.Count];
@@ -353,11 +376,12 @@ public class AnagrameController : MonoBehaviour
         postField.score_unit = "points";
         postField.status = "a";
         postField.updated_date_time = DateTime.Now.ToString();
-        postField.id_level = 0;
+        postField.id_level = 1;
         postField.id_org_game = 1;
-        postField.attempt_no = 0;
+        postField.attempt_no = GameAttemptNumber +1;
         postField.timetaken_to_complete = "00:00";
         postField.is_completed = 1;
+        postField.game_type = 2;
 
 
         string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(postField);

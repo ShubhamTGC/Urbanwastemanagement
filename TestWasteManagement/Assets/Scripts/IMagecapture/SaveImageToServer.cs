@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class SaveImageToServer : MonoBehaviour
 {
     string URL;
-    public string Mainurl, upload_image_API;
+    public string Mainurl, upload_image_API, PostGamefeedApi;
     public GameObject closebtn, capturebtn, camera_preview;
     public GameObject capturebtn1;
     public Sprite default_sprite;
@@ -23,22 +23,17 @@ public class SaveImageToServer : MonoBehaviour
     private string image_path;
     public Button save;
     public Text statusmsg;
+    public GameObject statusObj;
     Texture2D test;
     private GameObject zone_data;
-    private Zonehandler zone_handle;
-    public Sprite boy, girl;
-    public Image characater;
-    public Text player_name, zone_name;
-    public GameObject posting_msg;
     private GameObject show_img_obj;
-    public Button skipbtn, nextbutton;
     private string zone;
     private int level_zone =0;
-    public int Bigger_count;
     public List<byte[]> post_image_byte = new List<byte[]>(3);
-    private List<string> User_plan = new List<string>(3), User_text = new List<string>(3);
     public static SaveImageToServer instance;
     public GameObject loadingAnim;
+    public Button CaptureButton;
+    private int id_tag_photo;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,37 +54,11 @@ public class SaveImageToServer : MonoBehaviour
 
     void Initialtask()
     {
-        //player_name.text = PlayerPrefs.GetString("username");
-
-        //zone_name.text = PlayerPrefs.GetString("zonename");
-        //zone = PlayerPrefs.GetString("zonename");
-        //zone_data = GameObject.Find(zone_name.text);
-        //if (zone.ToLower() == "homezone")
-        //{
-        //    level_zone = 1;
-        //}
-        //else if (zone.ToLower() == "schoolzone")
-        //{
-        //    level_zone = 2;
-        //}
-        PlayerPrefs.SetInt("level_value", level_zone);
-        zone_handle = zone_data.GetComponent<Zonehandler>();
-        Debug.Log("zone obejct " + zone_data.name);
-        int character_data = PlayerPrefs.GetInt("characterType");
-        if (character_data == 1)
-        {
-            characater.sprite = boy;
-        }
-        else if (character_data == 2)
-        {
-            characater.sprite = girl;
-        }
-        skipbtn.onClick.AddListener(delegate { zone_handle.zonedone(zone_handle.active_room_end); });
-        nextbutton.onClick.AddListener(delegate { zone_handle.zonedone(zone_handle.active_room_end); });
+        
     }
     void OnDisable()
     {
-        //posting_msg.SetActive(false);
+       
         camera_preview.SetActive(false);
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
         user_text.text = "";
@@ -111,6 +80,7 @@ public class SaveImageToServer : MonoBehaviour
     }
 
 
+    //================******************** Camera image capture Portion ***********************8============================//
     public IEnumerator SaveToServer(GameObject captureimage)
     {
         post_image_byte.Clear();
@@ -119,6 +89,8 @@ public class SaveImageToServer : MonoBehaviour
         yield return new WaitForSeconds(0.1f);      
         int width = Screen.width;
         int height = Screen.height;
+
+        
         Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, true);
         // Read screen contents into the texture
         tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
@@ -138,10 +110,6 @@ public class SaveImageToServer : MonoBehaviour
         tex.name = "test.Png";
         imageBytes = bytes;
         test = tex;
-        closebtn.SetActive(true);
-        capturebtn.SetActive(true);
-
-
     }
 
     private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
@@ -173,9 +141,7 @@ public class SaveImageToServer : MonoBehaviour
         capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
     }
 
-    /// <summary>
-    /// //capture image and while sending just check that input filed should not be blank
-    /// </summary>
+
     public void Capture_data_post()
     {
 
@@ -205,13 +171,10 @@ public class SaveImageToServer : MonoBehaviour
         string imagestr = Convert.ToBase64String(bytes);
         Texture2D tex = new Texture2D(1, 1);
         tex.LoadImage(Convert.FromBase64String(imagestr));
-
-
-
         if (selected_btn.name == "Pic")
         {
             post_image_byte.Add(bytes);
-            Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height),Vector2.zero);
             selected_btn.GetComponent<Image>().sprite = btn_sprite;
         }
      
@@ -220,22 +183,21 @@ public class SaveImageToServer : MonoBehaviour
 
     IEnumerator statusmsgshow(string msg)
     {
-        statusmsg.gameObject.SetActive(true);
-        yield return new WaitForSeconds(0.1f);
         statusmsg.text = msg;
-        yield return new WaitForSeconds(2f);
+        statusObj.SetActive(true);
+        yield return new WaitForSeconds(2.5f);
         statusmsg.text = "";
-        statusmsg.gameObject.SetActive(false);
+        iTween.ScaleTo(statusObj, Vector3.zero, 0.3f);
+        yield return new WaitForSeconds(0.5f);
+        statusObj.SetActive(false);
 
     }
 
     public IEnumerator Upload()
     {
-        //loadingAnim.SetActive(true);
-        //posting_msg.SetActive(true);
-        //string post_url = Mainurl + upload_image_API;
+       
         string post_url = "https://www.skillmuni.in/wsmapi/api/PostPhotoUpload/TagPhotoUpload";
-        //Debug.Log(BitConverter.ToString(imageBytes));
+        CaptureButton.interactable = false;
         string usertext = user_text.text;
         string plan = plan_title.text;
         string level = PlayerPrefs.GetInt("game_id").ToString();
@@ -264,35 +226,72 @@ public class SaveImageToServer : MonoBehaviour
         {
             Debug.Log(www.error);
             respose_text.text = www.downloadHandler.text;
-            //posting_msg.SetActive(false);
-            statusmsg.text = "PLEASE TRY LATER!";
-            yield return new WaitForSeconds(3f);
-            statusmsg.text = "";
-            imageBytes = null;
-            statusmsg.gameObject.SetActive(false);
+
+            string msg = "PLEASE TRY LATER!";
+            StartCoroutine(statusmsgshow(msg));
+            yield return new WaitForSeconds(2.5f);
+            CaptureButton.interactable = true;
+            user_text.text = "";
+            plan_title.text = "";
+            post_image_byte.Clear();
+            capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
+            formData.Clear();
         }
         else
         {
            
             Debug.Log(www.downloadHandler.text);
+            ActionPlanResModel actionModelRes = Newtonsoft.Json.JsonConvert.DeserializeObject<ActionPlanResModel>(www.downloadHandler.text);
+            id_tag_photo = actionModelRes.id_tag_photo;
+            StartCoroutine(PostThisToGameFeed());
             yield return new WaitForSeconds(0.5f);
+            string msg = "PLAN SUCCESSFULLY GENERATED!";
+            StartCoroutine(statusmsgshow(msg));
+            yield return new WaitForSeconds(2.5f);
+            CaptureButton.interactable = true;
+            user_text.text = "";
+            plan_title.text = "";
+            post_image_byte.Clear();
+            capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
             formData.Clear();
-            ////zone_handle.actionplan_score += 25;
                
         }
         
-        //posting_msg.SetActive(false);
-        //loadingAnim.SetActive(false);
-        statusmsg.gameObject.SetActive(true);
-        statusmsg.text = "PLAN SUCCESSFULLY GENERATED!";
-        yield return new WaitForSeconds(2.5f);
-        statusmsg.text = "";
-        statusmsg.gameObject.SetActive(false);
-        user_text.text = "";
-        plan_title.text = "";
-        Bigger_count = 0;
-        post_image_byte.Clear();
-        capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
+    
+    }
+    IEnumerator PostThisToGameFeed()
+    {
+        string HittingUrl = Mainurl + PostGamefeedApi;
+        PostImagesGameFeedModel PostModel = new PostImagesGameFeedModel();
+        PostModel.id_user = PlayerPrefs.GetInt("UID");
+        PostModel.id_org = PlayerPrefs.GetInt("OID");
+        PostModel.id_data = 0;
+        PostModel.id_DIY = 0;
+        PostModel.id_tag_photo = id_tag_photo;
+        PostModel.feed_type = 2;
+
+        string data_log = Newtonsoft.Json.JsonConvert.SerializeObject(PostModel);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                Debug.Log(Request.downloadHandler.text);
+
+                //MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
+
+            }
+            else
+            {
+                Debug.Log(Request.downloadHandler.text);
+
+                Debug.Log("data not done" + Request.error);
+            }
+
+        }
     }
 
 }

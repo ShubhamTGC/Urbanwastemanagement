@@ -9,7 +9,7 @@ using UnityEngine.Android;
 public class GetLocation : MonoBehaviour
 {
 
-    public Text statusTxt;
+    //public Text statusTxt;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +35,7 @@ public class GetLocation : MonoBehaviour
         {
             if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
             {
-                statusTxt.text = "No Permission please allow to access the location";
+                //statusTxt.text = "No Permission please allow to access the location";
                 Permission.RequestUserPermission(Permission.FineLocation);
             }
             Permission.RequestUserPermission(Permission.Camera);
@@ -48,7 +48,7 @@ public class GetLocation : MonoBehaviour
         if (UnityEngine.Application.platform == RuntimePlatform.Android)
         {
             CheckLocationPermission();
-            statusTxt.text = "Ok Permission";
+            //statusTxt.text = "Ok Permission";
             StartCoroutine("GetLatLonUsingGPS");
         }
 
@@ -65,17 +65,17 @@ public class GetLocation : MonoBehaviour
         }
         if (maxWait < 1)
         {
-            statusTxt.text = "Failed To Iniyilize in 10 seconds";
+            //statusTxt.text = "Failed To Iniyilize in 10 seconds";
             yield break;
         }
         if (Input.location.status == LocationServiceStatus.Failed)
         {
-            statusTxt.text = "Failed To Initialize";
+            //statusTxt.text = "Failed To Initialize";
             yield break;
         }
         else
         {
-            statusTxt.text = "waiting before getting lat and lon";
+           // statusTxt.text = "waiting before getting lat and lon";
             yield return new WaitForSeconds(5);
             // Access granted and location value could be retrieve
             double longitude = Input.location.lastData.longitude;
@@ -83,7 +83,7 @@ public class GetLocation : MonoBehaviour
             if (Input.location.status == LocationServiceStatus.Running)
             {
                 //Get the location data here
-                statusTxt.text = "" + Input.location.status + "  lat:" + latitude + "  long:" + longitude;
+                //statusTxt.text = "" + Input.location.status + "  lat:" + latitude + "  long:" + longitude;
                 PlayerPrefs.SetFloat("LAT", (float)latitude);
                 PlayerPrefs.SetFloat("LONG", (float)longitude);
             }

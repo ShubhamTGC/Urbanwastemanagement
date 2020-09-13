@@ -37,7 +37,7 @@ public class Stage2ZoneHandler : MonoBehaviour
 
     //============= achivement shelf api task========================
     public string GetBadgeConfigApi;
-    public string MostActivePlayerApi, PostBadgeUserApi, LeaderBoardApi, CheckHighscoreApi,MostObservantApi, levelClearnessApi;
+    public string MostActivePlayerApi, PostBadgeUserApi, LeaderBoardApi, CheckHighscoreApi,MostObservantApi, levelClearnessApi, GetlevelWisedataApi, StageUnlockApi;
     [SerializeField] private string Highscorename;
     [SerializeField] private string mostActiveName;
     [SerializeField] private string MostobservantName;
@@ -48,6 +48,9 @@ public class Stage2ZoneHandler : MonoBehaviour
     private int totalscoreOfUser;
     private bool Stage2unlocked;
     [SerializeField] private int Stage2UnlockScore;
+    public bool ZoneCleared;
+    public int GameAttemptNumber =0;
+    public string Zonenumber;
     void Start()
     {
         
@@ -62,6 +65,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         logs.Clear();
         RoomIds = new List<int>();
         StartCoroutine(getGameContentid());
+        StartCoroutine(GetGameAttemptNoTask());
         level1.SetActive(true);
         level1Mainpage.SetActive(true);
         Level1Controller.level1 = true;
@@ -74,6 +78,27 @@ public class Stage2ZoneHandler : MonoBehaviour
     void Update()
     {
         
+    }
+
+    IEnumerator GetGameAttemptNoTask()
+    {
+        string HittingUrl = $"{MainUrl}{GetlevelWisedataApi}?UID={PlayerPrefs.GetInt("UID")}&OID={PlayerPrefs.GetInt("OID")}&id_level={Gamelevel}&game_type={1}";
+        WWW Attempt_res = new WWW(HittingUrl);
+        yield return Attempt_res;
+        if (Attempt_res.text != null)
+        {
+            if (Attempt_res.text != "[]")
+            {
+                List<LevelUserdataModel> leveldata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelUserdataModel>>(Attempt_res.text);
+                GameAttemptNumber = leveldata.Count;
+            }
+            else
+            {
+                GameAttemptNumber = 0;
+            }
+            
+
+        }
     }
 
 
@@ -111,19 +136,19 @@ public class Stage2ZoneHandler : MonoBehaviour
         }
     }
 
-    public void checkLevelStatus()
+    public void checkLevelStatus(String msg)
     {
         if (Level1Controller.LevelCompleted && !Level2Controller.LevelCompleted)
         {
-            StartCoroutine(Level1clear());
+            StartCoroutine(Level1clear(msg));
         }
         if(Level1Controller.LevelCompleted && Level2Controller.LevelCompleted)
         {
-            StartCoroutine(getBadgeConfiguration(0));
+          
             StartCoroutine(MAsterTablePosting());
             Level1Controller.generateDashboardL1();
             Level2Controller.generateDashboardL2();
-            StartCoroutine(clearLevel());
+            StartCoroutine(clearLevel(msg));
             Level1Controller.LevelCompleted = false;
             Level2Controller.LevelCompleted = false;
             int TotalScore = Level1Controller.SCore + Level2Controller.SCore;
@@ -131,12 +156,14 @@ public class Stage2ZoneHandler : MonoBehaviour
             totalScoreText.text = TotalScore.ToString();
             GreenscoreFiller.fillAmount = (float)TotalScore / GameScoretotal;
             totalScorefiller.fillAmount = (float)TotalScore / GameScoretotal;
+            ZoneCleared = true;
         }
     }
 
-    IEnumerator Level1clear()
+    IEnumerator Level1clear(string msg)
     {
-        PopupMsg.text = "Congratulations! You have successfully completed Level 1\nPlease click on Level 2 to play!";
+        PopupMsg.text = msg;
+        //PopupMsg.text = "Congratulations! You have successfully completed Level 1\nPlease click on Level 2 to play!";
         PopUpstatus.SetActive(true);
         LevelButton.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Level 2";
         LevelButton.onClick.RemoveAllListeners();
@@ -164,9 +191,9 @@ public class Stage2ZoneHandler : MonoBehaviour
         Debug.Log(Level2Controller.level2 + " name " + Level2Controller.gameObject.name);
     }
 
-    IEnumerator clearLevel()
+    IEnumerator clearLevel(string msg)
     {
-        PopupMsg.text = "Congratulations! You have successfully completed Zone A";
+        PopupMsg.text = msg + Zonenumber;// "Congratulations! You have successfully completed " + Zonenumber;
         LevelButton.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Next";
         PopUpstatus.SetActive(true);
         LevelButton.onClick.RemoveAllListeners();
@@ -203,11 +230,6 @@ public class Stage2ZoneHandler : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Dashboard.SetActive(false);
         Gamecanvas.SetActive(false);
-        //ZonePag.SetActive(true);
-        ////ZoneselectionPage.SetActive(true);
-        ////Startpage.SetActive(true);
-        //Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
-        //MainZone.SetActive(false);
 
     }
 
@@ -246,11 +268,12 @@ public class Stage2ZoneHandler : MonoBehaviour
         PostModel.score_unit = "points";
         PostModel.status = "A";
         PostModel.updated_date_time = DateTime.Now.ToString();
-        PostModel.id_level = 0;
+        PostModel.id_level = 2;
         PostModel.id_org_game = 1;
-        PostModel.attempt_no = 0;
+        PostModel.attempt_no = GameAttemptNumber+1;
         PostModel.timetaken_to_complete = "00:00";
         PostModel.is_completed = 1;
+        PostModel.game_type = 1;
 
         string Postdata = Newtonsoft.Json.JsonConvert.SerializeObject(PostModel);
         using(UnityWebRequest Master_request = UnityWebRequest.Put(HittingUrl, Postdata))
@@ -265,8 +288,10 @@ public class Stage2ZoneHandler : MonoBehaviour
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Master_request.downloadHandler.text);
                 if (masterRes.STATUS.ToLower() == "success")
                 {
+                    StartCoroutine(getBadgeConfiguration(0));
                     StartCoroutine(getHighScore());
-                   // StartCoroutine(CheckForGameBadge());
+                    yield return new WaitForSeconds(2);
+                   StartCoroutine(CheckForGameBadge());
                 }
                 else
                 {
@@ -294,7 +319,7 @@ public class Stage2ZoneHandler : MonoBehaviour
             MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(zone_www.text);
             if (masterRes.STATUS.ToLower() == "success")
             {
-                StartCoroutine(checkMostActivePTask());
+                
             }
             else
             {
@@ -315,7 +340,6 @@ public class Stage2ZoneHandler : MonoBehaviour
         {
             List<LeaderBoardmodel> LeaderBoardData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LeaderBoardmodel>>(Userscore_www.text);
             MyTotalScore = LeaderBoardData.FirstOrDefault(x => x.id_user == PlayerPrefs.GetInt("UID")).Score;
-            StartCoroutine(CheckHighScoreTask());
 
         }
         else
@@ -400,7 +424,9 @@ public class Stage2ZoneHandler : MonoBehaviour
             HighScoreBadgeid = badgemodel.FirstOrDefault(x => x.badge_name == Highscorename).id_badge;
             ActivebadgeId = badgemodel.FirstOrDefault(x => x.badge_name == mostActiveName).id_badge;
             MostObservantBadgeId = badgemodel.FirstOrDefault(x => x.badge_name == MostobservantName).id_badge;
+            StartCoroutine(CheckHighScoreTask());
             StartCoroutine(CheckforMoseObservant());
+            StartCoroutine(checkMostActivePTask());
 
         }
     }
@@ -542,22 +568,24 @@ public class Stage2ZoneHandler : MonoBehaviour
     }
     IEnumerator CheckForStage2()
     {
-        string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + Leve2number;
-        WWW dashboard_res = new WWW(Response_url);
-        yield return dashboard_res;
-        if (dashboard_res.text != null)
+       
+
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
         {
-            Debug.Log(" log data  " + dashboard_res.text);
-            List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
-            totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == Leve2number)?.completion_score ?? 0;
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
         }
-        Debug.Log(" user score  " + totalscoreOfUser);
-        Stage2unlocked = MyTotalScore >= Stage2UnlockScore;
+
         if (Stage2unlocked)
         {
             StartCoroutine(PostGameBadgeLevelWise());
         }
     }
+
+
     IEnumerator PostGameBadgeLevelWise()
     {
 
@@ -596,6 +624,25 @@ public class Stage2ZoneHandler : MonoBehaviour
 
         }
 
+    }
+
+    public void VibrateDevice()
+    {
+        if (!PlayerPrefs.HasKey("VibrationEnable"))
+        {
+            Vibration.Vibrate(400);
+            Debug.Log("vibration");
+        }
+        else
+        {
+            string vibration = PlayerPrefs.GetString("VibrationEnable");
+
+            if (vibration == "true")
+            {
+                Vibration.Vibrate(400);
+                Debug.Log("vibration");
+            }
+        }
     }
 
 

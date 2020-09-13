@@ -25,6 +25,9 @@ public class UserLog
     public int id_user { get; set; }
     public string dustbin { get; set; }
     public int id_room { get; set; }
+    public int attempt_no { get; set; }
+
+
 
 }
 

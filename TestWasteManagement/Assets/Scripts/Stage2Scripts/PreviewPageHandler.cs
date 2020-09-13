@@ -10,6 +10,7 @@ public class PreviewPageHandler : MonoBehaviour
     [HideInInspector]public Vector3 initialpos, Targetpos;
     [SerializeField]
     private float moveTime;
+    public GameObject FisrtObject;
 
 
     private void Awake()
@@ -41,12 +42,14 @@ public class PreviewPageHandler : MonoBehaviour
             ShowButtonLeft.GetComponent<Image>().sprite = downArrow;
             ShowButtonRight.GetComponent<Image>().sprite = downArrow;
             StartCoroutine(MoveBar(Targetpos));
+            FisrtObject.SetActive(false);
         }
         else
         {
             ShowButtonLeft.GetComponent<Image>().sprite = UpArrow;
             ShowButtonRight.GetComponent<Image>().sprite = UpArrow;
             StartCoroutine(MoveBar(initialpos));
+            FisrtObject.SetActive(true);
         }
     }
 
@@ -64,12 +67,7 @@ public class PreviewPageHandler : MonoBehaviour
             ShowButtonLeft.GetComponent<Image>().sprite = UpArrow;
             ShowButtonRight.GetComponent<Image>().sprite = UpArrow;
             StartCoroutine(MoveBar(initialpos));
+            FisrtObject.SetActive(true);
         }
-        //else
-        //{
-        //    ShowButtonLeft.GetComponent<Image>().sprite = UpArrow;
-        //    ShowButtonRight.GetComponent<Image>().sprite = UpArrow;
-        //    StartCoroutine(MoveBar(Targetpos));
-        //}
     }
 }
