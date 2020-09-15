@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using System.Linq;
+using SimpleSQL;
 
 public class ZoneShowHandler : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class ZoneShowHandler : MonoBehaviour
 
 
     //==================== API's======================
-    public string MainUrl, levelClearnessApi,WMSBadgeLogUserApi,PostBadgeUserApi,GetBadgeConfigApi, StageUnlockApi;
+    public string MainUrl, levelClearnessApi,WMSBadgeLogUserApi,PostBadgeUserApi,GetBadgeConfigApi, StageUnlockApi,GetRoomDataCMsApi;
     public int ZoneNo;
     private int totalscoreOfUser;
     bool Stage2unlocked;
@@ -52,10 +53,12 @@ public class ZoneShowHandler : MonoBehaviour
     public List<GameObject> ZoneCards;
     public Color playedColor, NormalColor;
     public GameObject DeberfingPage;
+    public SimpleSQLManager dbmanager;
     void Start()
     {
 
         AnagramPlayed = false;
+        StartCoroutine(GetZoneCMSdata());
     }
     private void OnEnable()
     {
@@ -396,4 +399,46 @@ public class ZoneShowHandler : MonoBehaviour
 
     }
 
+
+
+    IEnumerator GetZoneCMSdata()
+    {
+        string HittingUrl = $"{MainUrl}{GetRoomDataCMsApi}?id_level={1}";
+        WWW GetCmsdata = new WWW(HittingUrl);
+        yield return GetCmsdata;
+        if(GetCmsdata.text != null)
+        {
+            if(GetCmsdata.text != "[]")
+            {
+                List<Stage1CMSModel> CmsLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Stage1CMSModel>>(GetCmsdata.text);
+                Debug.Log("list of cms log" + CmsLog.Count);
+                CmsLog.ForEach(x =>
+                {
+                    var LocalCmsLog = dbmanager.Table<WasteGeneration>().FirstOrDefault(y => y.ItemId == x.item_Id);
+                    if (LocalCmsLog == null)
+                    {
+                        WasteGeneration WasteLog = new WasteGeneration
+                        {
+                            ItemId = x.item_Id,
+                            ItemName = x.item_Name,
+                            PCscore = x.partialcorrect_point,
+                            Cscore = x.correct_point,
+                            RoomId = x.id_room
+                        };
+                        dbmanager.Insert(WasteLog);
+                    }
+                    else
+                    {
+                        LocalCmsLog.ItemId = x.item_Id;
+                        LocalCmsLog.ItemName = x.item_Name;
+                        LocalCmsLog.PCscore = x.partialcorrect_point;
+                        LocalCmsLog.Cscore = x.correct_point;
+                        LocalCmsLog.RoomId = x.id_room;
+                        dbmanager.UpdateTable(LocalCmsLog);
+
+                    }
+                });
+            }
+        }
+    }
 }

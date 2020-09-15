@@ -6,6 +6,8 @@ using LitJson;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using System.Linq;
+using UnityEngine.Networking;
+using System;
 
 public class StartpageController : MonoBehaviour 
 {
@@ -88,7 +90,7 @@ public class StartpageController : MonoBehaviour
         Debug.Log(Application.persistentDataPath);
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
         homebuttonpos = homebuttonpage.GetComponent<RectTransform>().localPosition;
-        StartCoroutine(CheckUpdatedApk());
+        //StartCoroutine(CheckUpdatedApk());
     }
 
     IEnumerator CheckUpdatedApk()
@@ -603,17 +605,12 @@ public class StartpageController : MonoBehaviour
 
     IEnumerator login_action()
     {
-        //iTween.MoveTo(loginpage, iTween.Hash("position", loginpage_pos, "easeType", iTween.EaseType.linear, "isLocal", true,
-        //"time", 0.5f));
         iTween.ScaleTo(UpdatedLoginPage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
-        //UpdatedLoginPage.SetActive(false);
         var username = username_input.text;
         var password = password_input.text;
         string encryptedpassword1 = asealgorithm.getEncryptedString(password);
         Debug.Log("encrypred password " + encryptedpassword1);
-        //string encryptedpassword = "OCuU2qF/DMRcrDqvEWur6w==";
-        //Debug.Log("regular password " + password + " encrypted passwoed " + encryptedpassword1.ToString() + " encrypted 1 passwoed " + encryptedpassword);
 
         UpdatedLoginPage.SetActive(false);
         if (username != "" && password != "")
@@ -625,111 +622,75 @@ public class StartpageController : MonoBehaviour
 
             //----------------------api integration -------------//
             string loginlink = Mainurl + login_API;
-            Debug.Log(loginlink);
-            WWWForm loginForm = new WWWForm();
-            loginForm.AddField("IMEI", "");
-            loginForm.AddField("USERID", username);
-            loginForm.AddField("PASSWORD", encryptedpassword1);
-            loginForm.AddField("OS", "");
-            loginForm.AddField("Network", "");
-            loginForm.AddField("OSVersion", "");
-            loginForm.AddField("Details", "");
-            loginForm.AddField("REURL", "");
-
-            WWW loginurl = new WWW(loginlink, loginForm);
-            yield return loginurl;
-            if (loginurl.text != null)
+            var Loginlog = new LoginModel
             {
-                Debug.Log(loginurl.text);
-                login_json = JsonMapper.ToObject(loginurl.text);
-                string status = login_json["AuthStatus"].ToString();
-                int UID = int.Parse(login_json["IDUSER"].ToString());
-                int OID = int.Parse(login_json["OID"].ToString());
-                int game_id = int.Parse(login_json["id_org_game_unit"].ToString());
-                PlayerPrefs.SetInt("game_id", game_id);
-              
-                if(status.ToLower() == "success")
+                IMEI = "",
+                USERID = username,
+                PASSWORD = encryptedpassword1,
+                OS = "",
+                Network = "",
+                OSVersion = "",
+                Details = "",
+                REURL = ""
+            };
+
+            string LoginLogdata = Newtonsoft.Json.JsonConvert.SerializeObject(Loginlog);
+            Debug.Log("Login data " + LoginLogdata);
+
+
+            using (UnityWebRequest Request = UnityWebRequest.Put(loginlink, LoginLogdata))
+            {
+                Request.method = UnityWebRequest.kHttpVerbPOST;
+                Request.SetRequestHeader("Content-Type", "application/json");
+                Request.SetRequestHeader("Accept", "application/json");
+                yield return Request.SendWebRequest();
+                if (!Request.isNetworkError && !Request.isHttpError)
                 {
-
-                    if (UID == PlayerPrefs.GetInt("UID"))
+                    Debug.Log(Request.downloadHandler.text);
+                    if (Request.downloadHandler.text != null)
                     {
-                        PlayerPrefs.SetInt("UID", UID);
-                        PlayerPrefs.SetInt("OID", OID);
-                        PlayerPrefs.SetInt("game_id", game_id);
-                        PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
-                        if (login_json["FIRST_NAME"].ToString() != null)
+                        UserAuthenticationModel UserdataLog = Newtonsoft.Json.JsonConvert.DeserializeObject<UserAuthenticationModel>(Request.downloadHandler.text);
+                        if (UserdataLog.AuthStatus.Equals("success", System.StringComparison.OrdinalIgnoreCase))
                         {
-                            PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
+                            PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
+                            PlayerPrefs.SetInt("OID", UserdataLog.OID);
+                            PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
+                            PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER));
+                            PlayerPrefs.SetString("username", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
+                            PlayerPrefs.SetString("User_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() :"0");
+                            PlayerPrefs.SetInt("id_school", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
+                            PlayerPrefs.SetInt("characterType", UserdataLog.avatar_type != null ? UserdataLog.avatar_type : 0);
+                            PlayerPrefs.SetInt("PlayerBody", UserdataLog.body_type != null ? UserdataLog.body_type : 0); 
+                            PlayerPrefs.SetString("profile_done", UserdataLog.avatar_type != null ? "done" :"false");
+                            settingpanelbtn.gameObject.SetActive(true);
+                            username_leftdashboard.text = PlayerPrefs.GetString("username");
+                            username_input.GetComponent<InputField>().enabled = true;
+                            password_input.GetComponent<InputField>().enabled = true;
+                            loginbutton.GetComponent<Button>().enabled = true;
+                            homebutton.SetActive(false);
+                            loadinganim.SetActive(false);
+                            string msg = "Logged In Successfully!";
+                            StartCoroutine(Messagedisplay(msg));
+                            yield return new WaitForSeconds(3.6f);
+                            loginpage.SetActive(false);
+                            videoPlayed = true;
+                            YoutubeVideopage.SetActive(true);
+                            TriviaPage.SetActive(true);
+                            Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+
                         }
-                        if (login_json["UserGrade"] != null)
+                        else
                         {
-                            PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
-                        }
-                        if(login_json["id_school"] != null)
-                        {
-                            PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
-                        }
-                        PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-                        PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
-                        PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
-                        if (login_json["avatar_type"] != null)
-                        {
-                            PlayerPrefs.SetString("profile_done", "done");
-                           
+                            username_input.GetComponent<InputField>().enabled = true;
+                            password_input.GetComponent<InputField>().enabled = true;
+                            loginbutton.GetComponent<Button>().enabled = true;
+                            loadinganim.SetActive(false);
+                            string msg = "Login In Failed!!";
+                            StartCoroutine(Messagedisplay(msg));
+                            yield return new WaitForSeconds(3.5f);
+                            UpdatedLoginPage.SetActive(true);
                         }
                     }
-                    else
-                    {
-                        PlayerPrefs.SetInt("UID", UID);
-                        PlayerPrefs.SetInt("OID", OID);
-                        PlayerPrefs.SetInt("game_id", game_id);
-                        PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
-                        if (login_json["FIRST_NAME"] != null)
-                        {
-                            PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
-                        }
-                        if (login_json["UserGrade"] != null)
-                        {
-                            PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
-                        }
-                        if (login_json["id_school"] != null)
-                        {
-                            PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
-                        }
-                        PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-                        PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
-                        PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
-                        if (login_json["avatar_type"] != null)
-                        {
-                            PlayerPrefs.SetString("profile_done", "done");
-                        }
-                        //else
-                        //{
-                        //    PlayerPrefs.DeleteKey("profile_done");
-                        //    PlayerPrefs.DeleteKey("username");
-                        //    PlayerPrefs.DeleteKey("User_grade");
-                        //    PlayerPrefs.DeleteKey("characterType");
-                        //    PlayerPrefs.DeleteKey("PlayerBody");
-
-                        //}
-                    }
-                    //===============================================================//
-                    settingpanelbtn.gameObject.SetActive(true);
-                    username_leftdashboard.text = PlayerPrefs.GetString("username");
-                    username_input.GetComponent<InputField>().enabled = true;
-                    password_input.GetComponent<InputField>().enabled = true;
-                    loginbutton.GetComponent<Button>().enabled = true;
-                    homebutton.SetActive(false);
-                    loadinganim.SetActive(false);
-                    string msg = "Logged In Successfully!";
-                    StartCoroutine(Messagedisplay(msg));
-                    yield return new WaitForSeconds(3.6f);
-                    loginpage.SetActive(false);
-                    videoPlayed = true;
-                    YoutubeVideopage.SetActive(true);
-                    TriviaPage.SetActive(true);
-                    Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
-                  
                 }
                 else
                 {
@@ -737,12 +698,133 @@ public class StartpageController : MonoBehaviour
                     password_input.GetComponent<InputField>().enabled = true;
                     loginbutton.GetComponent<Button>().enabled = true;
                     loadinganim.SetActive(false);
-                    string msg = "Login In Failed!!";
+                    string msg = "Check your internet Connection !!!";
                     StartCoroutine(Messagedisplay(msg));
                     yield return new WaitForSeconds(3.5f);
                     UpdatedLoginPage.SetActive(true);
                 }
+
             }
+
+
+            //Debug.Log(loginlink);
+            //WWWForm loginForm = new WWWForm();
+            //loginForm.AddField("IMEI", "");
+            //loginForm.AddField("USERID", username);
+            //loginForm.AddField("PASSWORD", encryptedpassword1);
+            //loginForm.AddField("OS", "");
+            //loginForm.AddField("Network", "");
+            //loginForm.AddField("OSVersion", "");
+            //loginForm.AddField("Details", "");
+            //loginForm.AddField("REURL", "");
+
+            //WWW loginurl = new WWW(loginlink, loginForm);
+            //yield return loginurl;
+            //if (loginurl.text != null)
+            //{
+            //    Debug.Log(loginurl.text);
+            //    login_json = JsonMapper.ToObject(loginurl.text);
+            //    string status = login_json["AuthStatus"].ToString();
+            //    int UID = int.Parse(login_json["IDUSER"].ToString());
+            //    int OID = int.Parse(login_json["OID"].ToString());
+            //    int game_id = int.Parse(login_json["id_org_game_unit"].ToString());
+            //    PlayerPrefs.SetInt("game_id", game_id);
+              
+            //    if(status.ToLower() == "success")
+            //    {
+
+            //        if (UID == PlayerPrefs.GetInt("UID"))
+            //        {
+            //            PlayerPrefs.SetInt("UID", UID);
+            //            PlayerPrefs.SetInt("OID", OID);
+            //            PlayerPrefs.SetInt("game_id", game_id);
+            //            PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
+            //            if (login_json["FIRST_NAME"].ToString() != null)
+            //            {
+            //                PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
+            //            }
+            //            if (login_json["UserGrade"] != null)
+            //            {
+            //                PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
+            //            }
+            //            if(login_json["id_school"] != null)
+            //            {
+            //                PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
+            //            }
+            //            PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
+            //            PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
+            //            PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
+            //            if (login_json["avatar_type"] != null)
+            //            {
+            //                PlayerPrefs.SetString("profile_done", "done");
+                           
+            //            }
+            //        }
+            //        else
+            //        {
+            //            PlayerPrefs.SetInt("UID", UID);
+            //            PlayerPrefs.SetInt("OID", OID);
+            //            PlayerPrefs.SetInt("game_id", game_id);
+            //            PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
+            //            if (login_json["FIRST_NAME"] != null)
+            //            {
+            //                PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
+            //            }
+            //            if (login_json["UserGrade"] != null)
+            //            {
+            //                PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
+            //            }
+            //            if (login_json["id_school"] != null)
+            //            {
+            //                PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
+            //            }
+            //            PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
+            //            PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
+            //            PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
+            //            if (login_json["avatar_type"] != null)
+            //            {
+            //                PlayerPrefs.SetString("profile_done", "done");
+            //            }
+            //            //else
+            //            //{
+            //            //    PlayerPrefs.DeleteKey("profile_done");
+            //            //    PlayerPrefs.DeleteKey("username");
+            //            //    PlayerPrefs.DeleteKey("User_grade");
+            //            //    PlayerPrefs.DeleteKey("characterType");
+            //            //    PlayerPrefs.DeleteKey("PlayerBody");
+
+            //            //}
+            //        }
+            //        //===============================================================//
+            //        settingpanelbtn.gameObject.SetActive(true);
+            //        username_leftdashboard.text = PlayerPrefs.GetString("username");
+            //        username_input.GetComponent<InputField>().enabled = true;
+            //        password_input.GetComponent<InputField>().enabled = true;
+            //        loginbutton.GetComponent<Button>().enabled = true;
+            //        homebutton.SetActive(false);
+            //        loadinganim.SetActive(false);
+            //        string msg = "Logged In Successfully!";
+            //        StartCoroutine(Messagedisplay(msg));
+            //        yield return new WaitForSeconds(3.6f);
+            //        loginpage.SetActive(false);
+            //        videoPlayed = true;
+            //        YoutubeVideopage.SetActive(true);
+            //        TriviaPage.SetActive(true);
+            //        Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+                  
+            //    }
+            //    else
+            //    {
+            //        username_input.GetComponent<InputField>().enabled = true;
+            //        password_input.GetComponent<InputField>().enabled = true;
+            //        loginbutton.GetComponent<Button>().enabled = true;
+            //        loadinganim.SetActive(false);
+            //        string msg = "Login In Failed!!";
+            //        StartCoroutine(Messagedisplay(msg));
+            //        yield return new WaitForSeconds(3.5f);
+            //        UpdatedLoginPage.SetActive(true);
+            //    }
+            //}
 
         }
     }

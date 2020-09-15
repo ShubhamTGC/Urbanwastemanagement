@@ -46,6 +46,7 @@ public class GameFeedPage : MonoBehaviour
     public GameObject Activitymsg;
     public Text MsgBox;
     public Text InterNetTxt;
+    private int ImagePrefebNum;
     void Start()
     {
         
@@ -254,6 +255,7 @@ public class GameFeedPage : MonoBehaviour
     IEnumerator GenerateFeedPage()
     {
         int feedCounter = 0;
+        ImagePrefebNum = 0;
         string HittingUrl = MainUrl + getFeedPageApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
         WWW GameFeeddata = new WWW(HittingUrl);
         yield return GameFeeddata;
@@ -286,7 +288,7 @@ public class GameFeedPage : MonoBehaviour
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = x.user_name;
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Grade " + x.Grade;
                 FeedBars[feedCounter].name = x.id_log.ToString();
-                Parentobj = FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(4).transform.GetChild(0).transform.GetChild(0).gameObject.transform;
+                Parentobj = FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(5).gameObject.transform;
                 FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(10).transform.GetChild(1)
                 .transform.GetChild(0).transform.GetChild(1).gameObject.GetComponent<Text>().text = x.like_count.ToString();
 
@@ -381,6 +383,9 @@ public class GameFeedPage : MonoBehaviour
     IEnumerator GetUserPostImage(Transform Parent,string Url,string Titlename,String Description )
     {
         GameObject gb = Instantiate(UserImagePrefeb, Parent, false);
+        gb.name = "UserPic" + ImagePrefebNum;
+        gb.GetComponent<ImageLargerScript>().canvas = this.gameObject.transform;
+        ImagePrefebNum++;
         Debug.Log("strarted");
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(Url, true);
         yield return www.SendWebRequest();

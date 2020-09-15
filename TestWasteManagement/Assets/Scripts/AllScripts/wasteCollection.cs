@@ -165,29 +165,31 @@ public class wasteCollection : MonoBehaviour
                     {
                         if (zonewaste.partially_reduce.Contains(this.gameObject))
                         {
-                            zonewaste.level1score += partiallycorrectpoint;
+                            int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name,System.StringComparison.OrdinalIgnoreCase));
+                            int PCscore = zonewaste.CurrentPCscore[index];
+                            zonewaste.level1score += PCscore;
                             if (zonewaste.room1_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 5 +",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + PCscore + ",";
                                 zonewaste.room1_data_collected.Add(dashboard_data);
                                 zonewaste.room1_data.Add(hit.collider.gameObject.name, "Correct");
                             }
                             if (zonewaste.room2_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + PCscore + ",";
                                 zonewaste.room2_data_collected.Add(dashboard_data);
                                 zonewaste.room2_data.Add(hit.collider.gameObject.name, "Correct");
                             }
                             if (zonewaste.room3_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + PCscore + ",";
                                 zonewaste.room3_data_collected.Add(dashboard_data);
                                 zonewaste.room3_data.Add(hit.collider.gameObject.name, "Correct");
                             }
                             collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                             collidedDustbin.GetComponent<AudioSource>().Play();
                             collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+5";
+                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+" + PCscore;
                             collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                             collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Nice try!";
                             collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);
@@ -196,31 +198,32 @@ public class wasteCollection : MonoBehaviour
                         else
                         {
                             if (zonewaste.reduce.Contains(this.gameObject))
-
                             {
-                                zonewaste.level1score += correctpoint;
+                                int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name, System.StringComparison.OrdinalIgnoreCase));
+                                int Cscore = zonewaste.CurrentCscore[index];
+                                zonewaste.level1score += Cscore;
                                 if (zonewaste.room1_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + Cscore + ",";
                                     zonewaste.room1_data_collected.Add(dashboard_data);
                                     zonewaste.room1_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room2_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + Cscore + ",";
                                     zonewaste.room2_data_collected.Add(dashboard_data);
                                     zonewaste.room2_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room3_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reduce" + "," + Cscore + ",";
                                     zonewaste.room3_data_collected.Add(dashboard_data);
                                     zonewaste.room3_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                                 collidedDustbin.GetComponent<AudioSource>().Play();
                                 collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+10";
+                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+" + Cscore.ToString();
                                 collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                                 collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Wow!";
                                 collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);
@@ -229,6 +232,7 @@ public class wasteCollection : MonoBehaviour
                             }
                             else
                             {
+
                                 zonewaste.level1score -= wrongpoint;
                                 if (zonewaste.room1_check)
                                 {
@@ -259,37 +263,37 @@ public class wasteCollection : MonoBehaviour
                                 collidedDustbin.GetComponent<dustbineffect>().enabled = true;
                                 Invoke("scaledownObject", 1.5f);
                             }
-
-
                         }
                     }
                     if (reuse)
                     {
                         if (zonewaste.partially_reuse.Contains(this.gameObject))
                         {
-                            zonewaste.level1score += partiallycorrectpoint;
+                            int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name, System.StringComparison.OrdinalIgnoreCase));
+                            int PCscore = zonewaste.CurrentPCscore[index];
+                            zonewaste.level1score += PCscore;
                             if (zonewaste.room1_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + PCscore + ",";
                                 zonewaste.room1_data_collected.Add(dashboard_data);
                                 zonewaste.room1_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             if (zonewaste.room2_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + PCscore + ",";
                                 zonewaste.room2_data_collected.Add(dashboard_data);
                                 zonewaste.room2_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             if (zonewaste.room3_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + PCscore + ",";
                                 zonewaste.room3_data_collected.Add(dashboard_data);
                                 zonewaste.room3_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                             collidedDustbin.GetComponent<AudioSource>().Play();
                             collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+5";
+                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+" +PCscore.ToString();
                             collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                             collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Nice try!";
                             collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);
@@ -300,29 +304,31 @@ public class wasteCollection : MonoBehaviour
                             if (zonewaste.reuse.Contains(this.gameObject))
 
                             {
-                                zonewaste.level1score += correctpoint;
+                                int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name, System.StringComparison.OrdinalIgnoreCase));
+                                int Cscore = zonewaste.CurrentCscore[index];
+                                zonewaste.level1score += Cscore;
                                 if (zonewaste.room1_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + Cscore + ",";
                                     zonewaste.room1_data_collected.Add(dashboard_data);
                                     zonewaste.room1_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room2_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + Cscore + ",";
                                     zonewaste.room2_data_collected.Add(dashboard_data);
                                     zonewaste.room2_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room3_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Reuse" + "," + Cscore + ",";
                                     zonewaste.room3_data_collected.Add(dashboard_data);
                                     zonewaste.room3_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                                 collidedDustbin.GetComponent<AudioSource>().Play();
                                 collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+10";
+                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+" + Cscore;
                                 collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                                 collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Wow!";
                                 collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);
@@ -368,29 +374,31 @@ public class wasteCollection : MonoBehaviour
                     {
                         if (zonewaste.partially_recycle.Contains(this.gameObject))
                         {
-                            zonewaste.level1score += partiallycorrectpoint;
+                            int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name, System.StringComparison.OrdinalIgnoreCase));
+                            int PCscore = zonewaste.CurrentPCscore[index];
+                            zonewaste.level1score += PCscore;
                             if (zonewaste.room1_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + PCscore + ",";
                                 zonewaste.room1_data_collected.Add(dashboard_data);
                                 zonewaste.room1_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             if (zonewaste.room2_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + PCscore + ",";
                                 zonewaste.room2_data_collected.Add(dashboard_data);
                                 zonewaste.room2_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             if (zonewaste.room3_check)
                             {
-                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 5 + ",";
+                                string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + PCscore + ",";
                                 zonewaste.room3_data_collected.Add(dashboard_data);
                                 zonewaste.room3_data.Add(hit.collider.gameObject.name, "Partially");
                             }
                             collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                             collidedDustbin.GetComponent<AudioSource>().Play();
                             collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+5";
+                            collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+" + PCscore;
                             collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                             collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Nice try!";
                             collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);
@@ -399,31 +407,33 @@ public class wasteCollection : MonoBehaviour
                         else
                         {
                             if (zonewaste.recycle.Contains(this.gameObject))
-
                             {
-                                zonewaste.level1score += correctpoint;
+
+                                int index = zonewaste.CurrentItemList.FindIndex(x => x.Equals(this.gameObject.name, System.StringComparison.OrdinalIgnoreCase));
+                                int Cscore = zonewaste.CurrentCscore[index];
+                                zonewaste.level1score += Cscore;
                                 if (zonewaste.room1_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + Cscore + ",";
                                     zonewaste.room1_data_collected.Add(dashboard_data);
                                     zonewaste.room1_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room2_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + Cscore + ",";
                                     zonewaste.room2_data_collected.Add(dashboard_data);
                                     zonewaste.room2_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 if (zonewaste.room3_check)
                                 {
-                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + 10 + ",";
+                                    string dashboard_data = hit.collider.gameObject.name + "," + "Recycle" + "," + Cscore + ",";
                                     zonewaste.room3_data_collected.Add(dashboard_data);
                                     zonewaste.room3_data.Add(hit.collider.gameObject.name, "Correct");
                                 }
                                 collidedDustbin.GetComponent<AudioSource>().clip = correct_clip;
                                 collidedDustbin.GetComponent<AudioSource>().Play();
                                 collidedDustbin.transform.GetChild(3).gameObject.SetActive(true);
-                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+10";
+                                collidedDustbin.transform.GetChild(3).gameObject.GetComponent<Text>().text = "+"+ Cscore;
                                 collidedDustbin.transform.GetChild(6).gameObject.SetActive(true);
                                 collidedDustbin.transform.GetChild(6).gameObject.GetComponent<Text>().text = "Wow!";
                                 collidedDustbin.transform.GetChild(4).gameObject.SetActive(true);

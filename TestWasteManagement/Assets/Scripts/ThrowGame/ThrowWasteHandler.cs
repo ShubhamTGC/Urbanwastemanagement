@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleSQL;
 
 public class ThrowWasteHandler : MonoBehaviour
 {
@@ -111,6 +112,10 @@ public class ThrowWasteHandler : MonoBehaviour
     public Transform Dotparent;
     public GameObject MudInWater;
     public GameObject MudInWater2;
+    public int LevelRoomid;
+    public List<string> ObjectName = new List<string>();
+    public List<int> Cscore = new List<int>();
+    public SimpleSQLManager dbmanager;
     private void Awake()
     {
 
@@ -145,6 +150,7 @@ public class ThrowWasteHandler : MonoBehaviour
        
         StartCoroutine(initialdestory());
         initialsetup();
+       
     }
     IEnumerator initialdestory()
     {
@@ -221,6 +227,17 @@ public class ThrowWasteHandler : MonoBehaviour
         TimePaused = false;
         FirstObjectName.SetActive(true);
         FirstObjectName.transform.GetChild(0).gameObject.GetComponent<Text>().text = GeneratedObj[Objectlive].transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
+        StartCoroutine(GetObjectdata());
+    }
+
+    IEnumerator GetObjectdata()
+    {
+        yield return new WaitForSeconds(0.5f);
+        var Cmslog = dbmanager.Table<WasteSeperation>().ToList();
+        var ObjectLog = Cmslog.Where(x => x.RoomId == LevelRoomid).Select(y => y.ItemName).ToList();
+        var Cscorelog = Cmslog.Where(a => a.RoomId == LevelRoomid).Select(b => b.Cscore).ToList();
+        ObjectName = ObjectLog;
+        Cscore = Cscorelog;
 
     }
 
@@ -425,13 +442,15 @@ public class ThrowWasteHandler : MonoBehaviour
 
                 if (iscorrectWaste)
                 {
+                    int index = ObjectName.FindIndex(x => x.Equals(collidername,System.StringComparison.OrdinalIgnoreCase));
+                    int TempScore = Cscore[index];
                     gameSound.clip = RightAns;
                     gameSound.Play();
-                    SCore += 10;
+                    SCore += TempScore;
                     TotalscoreText.text = SCore.ToString();
                     checkScore = true;
                     is_correct.Add(1);
-                    ObjectScore.Add(10);
+                    ObjectScore.Add(TempScore);
                     stage2handler.VibrateDevice();
                     CorrectOption.Add(dustbin);
                 }
@@ -483,13 +502,15 @@ public class ThrowWasteHandler : MonoBehaviour
 
                 if (iscorrectWaste)
                 {
+                    int index = ObjectName.FindIndex(x => x.Equals(collidername, System.StringComparison.OrdinalIgnoreCase));
+                    int TempScore = Cscore[index];
                     gameSound.clip = RightAns;
                     gameSound.Play();
-                    SCore += 10;
+                    SCore += TempScore;
                     TotalscoreText.text = SCore.ToString();
                     checkScore = true;
                     is_correctL2.Add(1);
-                    ObjectScoreL2.Add(10);
+                    ObjectScoreL2.Add(TempScore);
                     stage2handler.VibrateDevice();
                     CorrectOptionL2.Add(dustbin);
                 }

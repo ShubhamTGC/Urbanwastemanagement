@@ -106,7 +106,7 @@ public class GameBoard : MonoBehaviour
 
     [Header("All Api Section")]
     public string MainUrl;
-    public string MasterTabelPostApi, GetlevelWisedataApi, GetGamesIDApi, RoomData_api, PostPriorityLogApi, PostdrivingLogApi;
+    public string MasterTabelPostApi, GetlevelWisedataApi, GetGamesIDApi, RoomData_api, PostPriorityLogApi, PostdrivingLogApi, GetAssessmentQuesApi;
     private int TotaltruckScore, GameAttemptNumber;
     public int Gamelevel;
     [SerializeField] private List<int> game_content = new List<int>();
@@ -180,7 +180,7 @@ public class GameBoard : MonoBehaviour
     void OnEnable()
     {
         textRect = ScoreText.GetComponent<RectTransform>();
-      
+        StartCoroutine(GetAssessmentQues());
         AllCommonTask();
     }
 
@@ -690,11 +690,15 @@ public class GameBoard : MonoBehaviour
          OverallScore = 0;
 
         // Truck Priority Game data handler =============================
-        for (int a = 0; a < CorrectSequence.Count + 1; a++)
+        for (int a = 0; a < CorrectSequence.Count ; a++)
         {
             GameObject gb = Instantiate(PriorityPrefeb, PriorityTable, false);
-            GameObject Gb2 = Instantiate(AlignPrefeb, AlignTable, false);
             PriorityObj.Add(gb);
+        }
+
+        for(int a = 0; a < CorrectSequence.Count + 1; a++)
+        {
+            GameObject Gb2 = Instantiate(AlignPrefeb, AlignTable, false);
             AlignObj.Add(Gb2);
         }
 
@@ -708,9 +712,9 @@ public class GameBoard : MonoBehaviour
                 {
                     if (StationaryTrucks[b].name == tableSequence[c].name)
                     {
-                        PriorityObj[b + 1].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                        PriorityObj[b + 1].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctans;
-                        PriorityObj[b + 1].transform.GetChild(4).gameObject.GetComponent<Text>().text = CorrectPoint.ToString();
+                        PriorityObj[b].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        PriorityObj[b].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctans;
+                        PriorityObj[b].transform.GetChild(4).gameObject.GetComponent<Text>().text = CorrectPoint.ToString();
                         is_correct_PR[b] = 1;
                         Truckscorevalue[b] = CorrectPoint;
                         UserselectedTruck[b] = StationaryTrucks[b].name;
@@ -723,14 +727,14 @@ public class GameBoard : MonoBehaviour
             {
 
                 int indexWrong = tableSequence.FindIndex(x => x.name == StationaryTrucks[b].name);
-                PriorityObj[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                PriorityObj[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                PriorityObj[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectSequence[b].name;
-                PriorityObj[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = WrongAns;
-                PriorityObj[b + 1].transform.GetChild(4).gameObject.GetComponent<Text>().text = WrongPoint.ToString();
+                PriorityObj[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                PriorityObj[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                PriorityObj[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = CorrectSequence[b].name;
+                PriorityObj[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = WrongAns;
+                PriorityObj[b].transform.GetChild(4).gameObject.GetComponent<Text>().text = WrongPoint.ToString();
                 int correctIndex = tableSequence.FindIndex(x => x.name == CorrectSequence[b].name);
-                PriorityObj[b + 1].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                PriorityObj[b + 1].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectOption;
+                PriorityObj[b].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                PriorityObj[b].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectOption;
                 is_correct_PR[b] = 0;
                 Truckscorevalue[b] = WrongPoint;
                 UserselectedTruck[b] = StationaryTrucks[b].name;
@@ -833,14 +837,14 @@ public class GameBoard : MonoBehaviour
         });
 
 
-       // POstdashBoarddata();     //local database entry method
+        // POstdashBoarddata();     //local database entry method
         //PosttruckGamedata();     //local database entry method
 
-        //**************************************************************************** ENABLE THIS AFTER GAME LOGIC*********************************
-        //StartCoroutine(PostPriorityGamedata());
-        //StartCoroutine(PostDrivingGamedata());
-        //StartCoroutine(PostScorePriorityTask());
-        //StartCoroutine(PostScoreDriveTask());
+       
+        StartCoroutine(PostPriorityGamedata());
+        StartCoroutine(PostDrivingGamedata());
+        StartCoroutine(PostScorePriorityTask());
+        StartCoroutine(PostScoreDriveTask());
 
 
     }
@@ -949,15 +953,7 @@ public class GameBoard : MonoBehaviour
             if (!Request.isNetworkError && !Request.isHttpError)
             {
                 Debug.Log("Response of Priority post " + Request.downloadHandler.text);
-                //MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
-                //if (masterRes.STATUS.ToLower() == "success")
-                //{
-
-                //}
-                //else
-                //{
-                //    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
-                //}
+              
             }
 
         }
@@ -1001,15 +997,7 @@ public class GameBoard : MonoBehaviour
             if (!Request.isNetworkError && !Request.isHttpError)
             {
                 Debug.Log("Reponse for Driving game " + Request.downloadHandler.text);
-                //MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
-                //if (masterRes.STATUS.ToLower() == "success")
-                //{
-
-                //}
-                //else
-                //{
-                //    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
-                //}
+              
             }
 
         }
@@ -1188,6 +1176,51 @@ public class GameBoard : MonoBehaviour
                 }
             }
 
+        }
+    }
+
+
+    IEnumerator GetAssessmentQues()
+    {
+        string HittingUrl = $"{MainUrl}{GetAssessmentQuesApi}?UID={PlayerPrefs.GetInt("UID")}&OID={PlayerPrefs.GetInt("OID")}";
+        WWW GetQuestion = new WWW(HittingUrl);
+        yield return GetQuestion;
+        if (GetQuestion.text != null)
+        {
+            if (GetQuestion.text != "[]")
+            {
+                List<FinalAssessmentLog> AssessmentLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FinalAssessmentLog>>(GetQuestion.text);
+                //Extract all question, answer, Correct ans , Options
+                AssessmentLog.ForEach(x =>
+                {
+
+                    var AssessmentLogDB = dbmanager.Table<FinalAssessment>().FirstOrDefault(y => y.Question == x.brief_question);
+                    if(AssessmentLogDB == null)
+                    {
+                        FinalAssessment log = new FinalAssessment
+                        {
+                            QuesId = x.id_brief_question,
+                            Question = x.brief_question,
+                            Options = string.Join("@", x.answer.Select(y => y.brief_answer).ToArray()),
+                            OptionsID = string.Join("@", x.answer.Select(c => c.id_brief_answer).ToArray()),
+                            CorrectAns = x.answer.FirstOrDefault(t => t.is_correct_answer ==1).brief_answer,
+                            Levelid = x.id_level
+                        };
+                        dbmanager.Insert(log);
+                    }
+                    else
+                    {
+                        AssessmentLogDB.QuesId = x.id_brief_question;
+                        AssessmentLogDB.Question = x.brief_question;
+                        AssessmentLogDB.Options = string.Join("@", x.answer.Select(y => y.brief_answer).ToArray());
+                        AssessmentLogDB.OptionsID = string.Join("@", x.answer.Select(c => c.id_brief_answer).ToArray());
+                        AssessmentLogDB.CorrectAns = x.answer.FirstOrDefault(t => t.is_correct_answer == 1).brief_answer;
+                        AssessmentLogDB.Levelid = x.id_level;
+                        dbmanager.UpdateTable(AssessmentLogDB);
+                    }
+
+                });
+            }
         }
     }
 }

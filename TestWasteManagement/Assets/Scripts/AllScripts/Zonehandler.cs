@@ -1,4 +1,4 @@
-﻿
+﻿using SimpleSQL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,30 +21,30 @@ public class Zonehandler : MonoBehaviour
     public Generationlevel startpage;
     public GameObject startpageobj;
     public GameObject dustbin, dustbintarget;
-    private Vector3 initailpos_dusbin,initial_pos_timer;
+    private Vector3 initailpos_dusbin, initial_pos_timer;
     public int level1score = 0;
-    public GameObject timerpanel,scoreknob;
+    public GameObject timerpanel, scoreknob;
     public Text scoretext;
-    public Button backbtn,nextroombtn,yesbtn;
-    public List< List<GameObject>> test;
-    public bool room1_check = false,room2_check = false,room3_check= false;
+    public Button backbtn, nextroombtn, yesbtn;
+    public List<List<GameObject>> test;
+    public bool room1_check = false, room2_check = false, room3_check = false;
     public bool room1_clear = false, room2_clear = false, room3_clear = false;
     public int waste_count = 0;
-    public GameObject Done_msg_panel,exit_panel;                               
+    public GameObject Done_msg_panel, exit_panel;
     private GameObject gb;
-   // private List<Vector2> objectpos;
+    // private List<Vector2> objectpos;
     [Header("====extra elements====")]
     public GameObject fridge;
-    public GameObject tubelight,selectionpage;
+    public GameObject tubelight, selectionpage;
     public List<GameObject> rooms;
     //public GameFrameHandler gameframe;
     private float totalobjs, totalscore, knobangle;
     public bool score_check = false;
-    private bool timerstart,timerwarining = true;
-    public GameObject timesuppage,timer;
+    private bool timerstart, timerwarining = true;
+    public GameObject timesuppage, timer;
     public Button timesupbtn;
     public int countDown_mint;
-    public bool zone_completed,final_completed;
+    public bool zone_completed, final_completed;
 
     [Header("======For count down time====")]
     public float mint;
@@ -53,16 +53,16 @@ public class Zonehandler : MonoBehaviour
     private float totalsecond, TotalSec;
     public Image timerimage;
     public GameObject scorepanel;
-    private bool timerstop =false;
+    private bool timerstop = false;
 
-    
+
     public Dictionary<string, string> room1_data = new Dictionary<string, string>();
     public Dictionary<string, string> room2_data = new Dictionary<string, string>();
     public Dictionary<string, string> room3_data = new Dictionary<string, string>();
     [Header("-====for dashbaord====")]
     public Sprite right_ans;
-    public Sprite wrong_ans,Correctoption,Partiallycorrect;
-    public Text overall_score_r1,overall_score_r2,overall_score_r3;
+    public Sprite wrong_ans, Correctoption, Partiallycorrect;
+    public Text overall_score_r1, overall_score_r2, overall_score_r3;
     public Image player_image;
     public Sprite boy_image, girl_image;
     public Image scored_image, action_plan_image, total_score_img;
@@ -70,25 +70,25 @@ public class Zonehandler : MonoBehaviour
     private int total_score_game = 280;
     public int actionplan_score;
     public Text username;
-    public GameObject dashboard_parent,dashboard_panel;
+    public GameObject dashboard_parent, dashboard_panel;
     public List<string> room1_data_collected = new List<string>(8);
     public List<string> room2_data_collected = new List<string>(8);
     public List<string> room3_data_collected = new List<string>(8);
     public List<GameObject> tabs;
     public GameObject tab_prefeb, data_row_prefeb;
-    private List<GameObject> tab1_object,tab2_object,tab3_object;
+    private List<GameObject> tab1_object, tab2_object, tab3_object;
     private string room1name, room2name, room3name;
     public List<GameObject> tab_obj;
-    public Button next_Zone,kitch_btn,bedrom_btn,livingbtn;
+    public Button next_Zone, kitch_btn, bedrom_btn, livingbtn;
     private bool is_win = false;
     private GameObject tabs_obj;
     public GameObject collected_text;
     public int collected_count;
     public Coloreffect timer_color_object;
     public GameObject action_plan_page;
-    private bool action_check =  true;
+    private bool action_check = true;
     public List<GameObject> rowhandler_parent;
-    private int room1_score =0, room2_score = 0, room3_score=0;
+    private int room1_score = 0, room2_score = 0, room3_score = 0;
     public Text User_grade_field;
     [HideInInspector]
     public int active_room_end;
@@ -101,14 +101,14 @@ public class Zonehandler : MonoBehaviour
     public string Zone_name;
     public int id_content;
     public bool is_zome_completed;
-    public string MainUrl, dashboard_api,ScorePostApi, GetGamesIDApi;
+    public string MainUrl, dashboard_api, ScorePostApi, GetGamesIDApi;
     public Button home_btn;
 
 
 
     [Header("For leaderboard Data")]
     [Space(10)]
-   
+
     public string RoomData_api;
     public string GetlevelWisedataApi;
     [SerializeField]
@@ -131,7 +131,7 @@ public class Zonehandler : MonoBehaviour
     public int TabHolderCount;
     public Text RoomName;
     public List<string> RoomNames;
-    private int RoomPageCounter = 0,CurrentPagecounter;
+    private int RoomPageCounter = 0, CurrentPagecounter;
     public Button LeftPage, RightPage;
     public Text UpdatedOverallscore;
 
@@ -142,7 +142,7 @@ public class Zonehandler : MonoBehaviour
     private int GameLevelId;
     private bool Game_over_time = false;
     //======================TIME TAKEN TO COMPLETE THE ONE ZONE VARIABLERS===================
-    private float pri_sec,pri_time;
+    private float pri_sec, pri_time;
     [SerializeField]
     private int Gamelevel;
     [SerializeField]
@@ -152,9 +152,9 @@ public class Zonehandler : MonoBehaviour
 
 
     //===================== ABILITY BADGE DATA HANDLING ======================
-    public string LeaderBoardApi,CheckHighscoreApi, PostBadgeUserApi, GetBadgeConfigApi,MostActivePlayerApi, MostObservantApi, levelClearnessApi, StageUnlockApi;
+    public string LeaderBoardApi, CheckHighscoreApi, PostBadgeUserApi, GetBadgeConfigApi, MostActivePlayerApi, MostObservantApi, levelClearnessApi, StageUnlockApi;
     private int MyTotalScore;
-    private int HighScoreBadgeid, ActivebadgeId,MostObservantid,level1GameBadgeId;
+    private int HighScoreBadgeid, ActivebadgeId, MostObservantid, level1GameBadgeId;
     [SerializeField] private string Highscorename;
     [SerializeField] private string mostActiveName;
     [SerializeField] private string MostObervantName;
@@ -163,13 +163,29 @@ public class Zonehandler : MonoBehaviour
     private int totalscoreOfUser;
     public int Stage2UnlockScore;
     private bool Stage2unlocked;
-    private int GameAttemptNumber =0;
+    private int GameAttemptNumber = 0;
 
 
     public Button NextPAge, backPAge;
     public Text ZoneNameDashBoard;
     public string HeadingName;
 
+    //========================== CMS CONFIGURABLE SCORE OF OBJECTS ======================================
+     [HideInInspector]public List<string> CMsobjectRoom1 = new List<string>();
+     [HideInInspector]public List<string> CMsobjectRoom2 = new List<string>();
+     [HideInInspector]public List<string> CMsobjectRoom3 = new List<string>();
+     [HideInInspector]public List<int> CMsObjectCscore1 = new List<int>();
+     [HideInInspector]public List<int> CMsObjectCscore2 = new List<int>();
+     [HideInInspector]public List<int> CMsObjectCscore3 = new List<int>();
+     [HideInInspector]public List<int> CMsObjectPCscore1 = new List<int>();
+     [HideInInspector]public List<int> CMsObjectPCscore2 = new List<int>();
+     [HideInInspector]public List<int> CMsObjectPCscore3 = new List<int>();
+
+     public List<string> CurrentItemList = new List<string>();
+     public List<int> CurrentPCscore = new List<int>();
+     public List<int> CurrentCscore = new List<int>();
+    public Dictionary<string, string> MasterList = new Dictionary<string, string>();
+    public SimpleSQLManager dbmanager;
 
     void Start()
     {
@@ -186,10 +202,10 @@ public class Zonehandler : MonoBehaviour
         selectionpage.SetActive(true);
         //Initialtask(0);
     }
-     void OnEnable()
+    void OnEnable()
     {
-        
-        RoomIds  = new List<int>();
+
+        RoomIds = new List<int>();
         StartCoroutine(GetGamesIDactivity());
         StartCoroutine(GetGameAttemptNoTask());
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
@@ -210,14 +226,14 @@ public class Zonehandler : MonoBehaviour
         NextPAge.onClick.AddListener(delegate { RightPageEnable(); });
         backPAge.onClick.RemoveAllListeners();
         backPAge.onClick.AddListener(delegate { LeftPageEnable(); });
-        
+
         //Initialtask(0);
 
     }
     IEnumerator CollectRoomdata()
     {
 
-        string Hittingurl = MainUrl + RoomData_api + "?id_user=" + PlayerPrefs.GetInt("UID") + "&id_org_content=" + game_content;   
+        string Hittingurl = MainUrl + RoomData_api + "?id_user=" + PlayerPrefs.GetInt("UID") + "&id_org_content=" + game_content;
         Debug.Log("main Url " + Hittingurl);
         WWW roominfo = new WWW(Hittingurl);
         yield return roominfo;
@@ -225,11 +241,50 @@ public class Zonehandler : MonoBehaviour
         {
             Debug.Log("rooom id " + roominfo.text);
             JsonData RoomrRes = JsonMapper.ToObject(roominfo.text);
-            for(int a = 0; a < RoomrRes.Count; a++)
+            for (int a = 0; a < RoomrRes.Count; a++)
             {
                 RoomIds.Add(int.Parse(RoomrRes[a]["id_room"].ToString()));
-            }
 
+            }
+            StartCoroutine(GetLocalRoomsdata());
+
+        }
+    }
+
+    IEnumerator GetLocalRoomsdata()
+    {
+        yield return new WaitForSeconds(0.1f);
+        var wasteCollection = dbmanager.Table<WasteGeneration>().ToList();
+        for (int a = 0; a < RoomIds.Count; a++)
+        {
+            if (a == 0)
+            {
+                var roomidLog = wasteCollection.Where(x => x.RoomId == RoomIds[0]).Select(y => y.ItemName).ToList();
+                var RoomPcscore = wasteCollection.Where(x => x.RoomId == RoomIds[0]).Select(y => y.PCscore).ToList();
+                var RoomCscore = wasteCollection.Where(x => x.RoomId == RoomIds[0]).Select(y => y.Cscore).ToList();
+                CMsobjectRoom1 = roomidLog;
+                CMsObjectPCscore1 = RoomPcscore;
+                CMsObjectCscore1 = RoomCscore;
+
+            }
+            if (a == 1)
+            {
+                var roomidLog = wasteCollection.Where(x => x.RoomId == RoomIds[1]).Select(y => y.ItemName).ToList();
+                var RoomPcscore = wasteCollection.Where(x => x.RoomId == RoomIds[1]).Select(y => y.PCscore).ToList();
+                var RoomCscore = wasteCollection.Where(x => x.RoomId == RoomIds[1]).Select(y => y.Cscore).ToList();
+                CMsobjectRoom2 = roomidLog;
+                CMsObjectPCscore2 = RoomPcscore;
+                CMsObjectCscore2 = RoomCscore;
+            }
+            if (a == 2)
+            {
+                var roomidLog = wasteCollection.Where(x => x.RoomId == RoomIds[2]).Select(y => y.ItemName).ToList();
+                var RoomPcscore = wasteCollection.Where(x => x.RoomId == RoomIds[2]).Select(y => y.PCscore).ToList();
+                var RoomCscore = wasteCollection.Where(x => x.RoomId == RoomIds[2]).Select(y => y.Cscore).ToList();
+                CMsobjectRoom3 = roomidLog;
+                CMsObjectPCscore3 = RoomPcscore;
+                CMsObjectCscore3 = RoomCscore;
+            }
         }
     }
 
@@ -255,9 +310,9 @@ public class Zonehandler : MonoBehaviour
         string HittingUrl = $"{MainUrl}{GetlevelWisedataApi}?UID={PlayerPrefs.GetInt("UID")}&OID={PlayerPrefs.GetInt("OID")}&id_level={Gamelevel}&game_type={1}";
         WWW Attempt_res = new WWW(HittingUrl);
         yield return Attempt_res;
-        if(Attempt_res.text != null)
+        if (Attempt_res.text != null)
         {
-            if(Attempt_res.text != "[]")
+            if (Attempt_res.text != "[]")
             {
                 List<LevelUserdataModel> leveldata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelUserdataModel>>(Attempt_res.text);
                 GameAttemptNumber = leveldata.Count;
@@ -266,16 +321,16 @@ public class Zonehandler : MonoBehaviour
             {
                 GameAttemptNumber = 0;
             }
-          
+
 
         }
     }
 
     public void Initialtask(int roomno)
     {
-        
+
         StartCoroutine(Initialactivity(roomno));
-        
+
     }
 
     IEnumerator Initialactivity(int roomno)
@@ -305,24 +360,31 @@ public class Zonehandler : MonoBehaviour
         yesbtn.onClick.AddListener(delegate { yesclose(roomno); });
         if (roomno == 0)
         {
+            CurrentItemList = CMsobjectRoom1;
+            CurrentPCscore = CMsObjectPCscore1;
+            CurrentCscore = CMsObjectCscore1;
             room1_check = true;
-            
             rooms = room1;
         }
         else if (roomno == 1)
         {
             rooms = room2;
-            
+            CurrentItemList = CMsobjectRoom2;
+            CurrentPCscore = CMsObjectPCscore2;
+            CurrentCscore = CMsObjectCscore2;
             room2_check = true;
         }
-        else if(roomno == 2)
+        else if (roomno == 2)
         {
             rooms = room3;
-           
+            CurrentItemList = CMsobjectRoom3;
+            CurrentPCscore = CMsObjectPCscore3;
+            CurrentCscore = CMsObjectCscore3;
             room3_check = true;
         }
         backbtn.onClick.RemoveAllListeners();
         backbtn.onClick.AddListener(delegate { backtozonepage(rooms); });
+       
     }
 
     void Timeraction()
@@ -354,13 +416,13 @@ public class Zonehandler : MonoBehaviour
     void Update()
     {
         //---------------------------------------timer section with 30 sec warning condition--------------//
-        if(mint == 0 && sec == 59 && timerwarining)
+        if (mint == 0 && sec == 59 && timerwarining)
         {
             timerwarining = false;
             timer_color_object.timertask();
         }
-        
-        if(mint == 0 && sec == 0 && timerstart)
+
+        if (mint == 0 && sec == 0 && timerstart)
         {
             timer.GetComponent<Coloreffect>().isdone = true;
             if (!is_win)
@@ -370,7 +432,7 @@ public class Zonehandler : MonoBehaviour
                     room1_check = false;
                     timerstart = false;
                     room1_clear = true;
-                    room1_score = level1score - (room2_score +room3_score);
+                    room1_score = level1score - (room2_score + room3_score);
                     //Bonusscore_room1 = 0;
                     timer.GetComponent<AudioSource>().enabled = false;
                     if (!room2_clear)
@@ -386,6 +448,9 @@ public class Zonehandler : MonoBehaviour
                                 subzones[a].SetActive(false);
                             }
                         }
+                        CurrentItemList = CMsobjectRoom2;
+                        CurrentPCscore = CMsObjectPCscore2;
+                        CurrentCscore = CMsObjectCscore2;
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(1); });
@@ -405,6 +470,9 @@ public class Zonehandler : MonoBehaviour
                                 subzones[a].SetActive(false);
                             }
                         }
+                        CurrentItemList = CMsobjectRoom3;
+                        CurrentPCscore = CMsObjectPCscore3;
+                        CurrentCscore = CMsObjectCscore3;
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(2); });
@@ -425,17 +493,17 @@ public class Zonehandler : MonoBehaviour
                         }
                         timer.GetComponent<Coloreffect>().isdone = true;
                         timesupbtn.onClick.AddListener(delegate { timesup_action(); });
-                   }
+                    }
 
                 }
-                 else if (room2_check)
+                else if (room2_check)
                 {
                     room2_check = false;
                     timerstart = false;
                     room2_clear = true;
                     timer.GetComponent<AudioSource>().enabled = false;
                     room2_score = level1score - (room1_score + room3_score);
-                   // Bonusscore_room2 = 0;
+                    // Bonusscore_room2 = 0;
                     if (!room3_clear)
                     {
                         nextroombtn.onClick.RemoveAllListeners();
@@ -449,6 +517,9 @@ public class Zonehandler : MonoBehaviour
                                 subzones[a].SetActive(false);
                             }
                         }
+                        CurrentItemList = CMsobjectRoom3;
+                        CurrentPCscore = CMsObjectPCscore3;
+                        CurrentCscore = CMsObjectCscore3;
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(2); });
@@ -493,6 +564,9 @@ public class Zonehandler : MonoBehaviour
                                 subzones[a].SetActive(false);
                             }
                         }
+                        CurrentItemList = CMsobjectRoom1;
+                        CurrentPCscore = CMsObjectPCscore1;
+                        CurrentCscore = CMsObjectCscore1;
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(0); });
@@ -517,15 +591,15 @@ public class Zonehandler : MonoBehaviour
 
                 }
 
-                
-  
+
+
             }
-           
-         
+
+
 
         }
-     //-==========================================================================================//
-        if(waste_count == room1.Count && room1_check)
+        //-==========================================================================================//
+        if (waste_count == room1.Count && room1_check)
         {
             room1_check = false;
             room1name = "Kitchen";
@@ -533,7 +607,7 @@ public class Zonehandler : MonoBehaviour
             room1_score = level1score - (room2_score + room3_score);
             if (room1_clear && room2_clear && room3_clear)
             {
-               // Bonusscore_room1 = Bonus_Score;
+                // Bonusscore_room1 = Bonus_Score;
                 StartCoroutine(zone_completiontask(0));
             }
             else
@@ -549,7 +623,10 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(1); });
                     yesbtn.onClick.AddListener(delegate { yesclose(1); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(1,0, 1); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(1, 0, 1); });
+                    CurrentItemList = CMsobjectRoom2;
+                    CurrentPCscore = CMsObjectPCscore2;
+                    CurrentCscore = CMsObjectCscore2;
                 }
                 else if (!room3_clear)
                 {
@@ -557,13 +634,16 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(2); });
                     yesbtn.onClick.AddListener(delegate { yesclose(2); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(2,0, 2); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(2, 0, 2); });
+                    CurrentItemList = CMsobjectRoom3;
+                    CurrentPCscore = CMsObjectPCscore3;
+                    CurrentCscore = CMsObjectCscore3;
                 }
-               
+
             }
-           
+
         }
-        if(waste_count == room2.Count && room2_check)
+        if (waste_count == room2.Count && room2_check)
         {
             room2_check = false;
             room2_clear = true;
@@ -571,7 +651,7 @@ public class Zonehandler : MonoBehaviour
             room2_score = level1score - (room1_score + room3_score);
             if (room1_clear && room2_clear && room3_clear)
             {
-               // Bonusscore_room2 = Bonus_Score;
+                // Bonusscore_room2 = Bonus_Score;
                 StartCoroutine(zone_completiontask(1));
             }
             else
@@ -588,7 +668,10 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(0); });
                     yesbtn.onClick.AddListener(delegate { yesclose(0); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(0,1, 0); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(0, 1, 0); });
+                    CurrentItemList = CMsobjectRoom1;
+                    CurrentPCscore = CMsObjectPCscore1;
+                    CurrentCscore = CMsObjectCscore1;
                 }
                 else if (!room3_clear)
                 {
@@ -596,10 +679,13 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(2); });
                     yesbtn.onClick.AddListener(delegate { yesclose(2); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(2,1, 2); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(2, 1, 2); });
+                    CurrentItemList = CMsobjectRoom3;
+                    CurrentPCscore = CMsObjectPCscore3;
+                    CurrentCscore = CMsObjectCscore3;
                 }
             }
-         
+
         }
         if (waste_count == room3.Count && room3_check)
         {
@@ -609,8 +695,8 @@ public class Zonehandler : MonoBehaviour
             room3_score = level1score - (room2_score + room1_score);
             if (room1_clear && room2_clear && room3_clear)
             {
-               // Bonusscore_room3 = Bonus_Score; 
-               StartCoroutine(zone_completiontask(2));
+                // Bonusscore_room3 = Bonus_Score; 
+                StartCoroutine(zone_completiontask(2));
             }
             else
             {
@@ -625,7 +711,10 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(0); });
                     yesbtn.onClick.AddListener(delegate { yesclose(0); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(0,2, 0); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(0, 2, 0); });
+                    CurrentItemList = CMsobjectRoom1;
+                    CurrentPCscore = CMsObjectPCscore1;
+                    CurrentCscore = CMsObjectCscore1;
                 }
                 else if (!room2_clear)
                 {
@@ -633,10 +722,13 @@ public class Zonehandler : MonoBehaviour
                     home_btn.onClick.RemoveAllListeners();
                     home_btn.onClick.AddListener(delegate { yesclose(1); });
                     yesbtn.onClick.AddListener(delegate { yesclose(1); });
-                    nextroombtn.onClick.AddListener(delegate { movetonext(1,2, 1); });
+                    nextroombtn.onClick.AddListener(delegate { movetonext(1, 2, 1); });
+                    CurrentItemList = CMsobjectRoom2;
+                    CurrentPCscore = CMsObjectPCscore2;
+                    CurrentCscore = CMsObjectCscore2;
                 }
             }
-       
+
         }
 
         if (score_check)
@@ -648,7 +740,7 @@ public class Zonehandler : MonoBehaviour
             scoretext.text = level1score.ToString();
             knobangle = (level1score / totalscore) * 200;
             //scoreknob.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, -knobangle);
-            
+
         }
         var rotationangle = Quaternion.Euler(0f, 0f, -knobangle);
         scoreknob.GetComponent<RectTransform>().rotation = Quaternion.Lerp(scoreknob.GetComponent<RectTransform>().rotation, rotationangle, 10 * 1 * Time.deltaTime);
@@ -686,7 +778,8 @@ public class Zonehandler : MonoBehaviour
         {
             LeftPage.gameObject.SetActive(true);
             RightPage.gameObject.SetActive(true);
-        }else if(RoomPageCounter < RoomNames.Count)
+        }
+        else if (RoomPageCounter < RoomNames.Count)
         {
             RightPage.gameObject.SetActive(false);
         }
@@ -694,18 +787,18 @@ public class Zonehandler : MonoBehaviour
         {
             Time_taken();
         }
-        
+
     }
 
     private void Time_taken()
     {
         pri_sec += pri_sec + Time.deltaTime;
-        if(pri_sec > 59.00)
+        if (pri_sec > 59.00)
         {
             pri_time += 1;
             pri_sec = 0.0f;
         }
-    } 
+    }
 
 
     void stopshake()
@@ -727,9 +820,9 @@ public class Zonehandler : MonoBehaviour
         iTween.ScaleTo(Done_msg_panel, Vector3.one, 1f);
     }
 
-     void movetonext(int roomsprite,int lastroom, int zoneactive)
+    void movetonext(int roomsprite, int lastroom, int zoneactive)
     {
-        
+
         timer.GetComponent<Coloreffect>().isdone = true;
         if (zoneactive == 0)
         {
@@ -738,27 +831,27 @@ public class Zonehandler : MonoBehaviour
             backbtn.onClick.AddListener(delegate { backtozonepage(room1); });
             room1_check = true;
         }
-        else if(zoneactive == 1)
+        else if (zoneactive == 1)
         {
             collected_count = 0;
             backbtn.onClick.RemoveAllListeners();
             backbtn.onClick.AddListener(delegate { backtozonepage(room2); });
             room2_check = true;
         }
-        else if(zoneactive == 2)
+        else if (zoneactive == 2)
         {
             collected_count = 0;
             room3_check = true;
             backbtn.onClick.RemoveAllListeners();
             backbtn.onClick.AddListener(delegate { backtozonepage(room3); });
         }
-        
+
         iTween.ScaleTo(Done_msg_panel, Vector3.zero, 1f);
         Done_msg_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
-        StartCoroutine(nextroom( roomsprite, lastroom, zoneactive));
+        StartCoroutine(nextroom(roomsprite, lastroom, zoneactive));
     }
 
-    IEnumerator nextroom(int roomsprite,int lastroom,int zoneactive)
+    IEnumerator nextroom(int roomsprite, int lastroom, int zoneactive)
     {
         subzones[lastroom].SetActive(false);
         yield return new WaitForSeconds(0.1f);
@@ -778,11 +871,11 @@ public class Zonehandler : MonoBehaviour
             sec = 60;
             TotalSec = totalsecond;
         }
-        
+
         timerwarining = true;
         timer.GetComponent<AudioSource>().enabled = true;
         timerstart = true;
-        collected_text.GetComponent<Text>().text ="0";
+        collected_text.GetComponent<Text>().text = "0";
         Vector3 dustbinpos = dustbintarget.GetComponent<RectTransform>().localPosition;
         iTween.MoveTo(dustbin, iTween.Hash("position", dustbinpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 1f));
 
@@ -791,13 +884,13 @@ public class Zonehandler : MonoBehaviour
     {
         if (waste_count == roomobject.Count)
         {
-           
+
         }
         else
         {
             exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "You have not found all the waste, Do you really want to exit!";
             iTween.ScaleTo(exit_panel, Vector3.one, 1f);
-        
+
         }
     }
 
@@ -829,10 +922,10 @@ public class Zonehandler : MonoBehaviour
     public void noclose()
     {
         iTween.ScaleTo(exit_panel, Vector3.zero, 1f);
-        exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = ""; 
-        
+        exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
+
     }
-    
+
     public void zonedone(int lastroom)
     {
         StartCoroutine(zonecomplete(lastroom));
@@ -865,7 +958,7 @@ public class Zonehandler : MonoBehaviour
         }
         for (int a = 0; a < tabs.Count; a++)
         {
-           
+
             Destroy(tabs[a].gameObject);
             yield return new WaitForSeconds(0.2f);
         }
@@ -914,7 +1007,7 @@ public class Zonehandler : MonoBehaviour
         yield return new WaitForSeconds(0.8f);
         timerpanel.SetActive(false);
         timer.GetComponent<Coloreffect>().enabled = false;
-        for(int i = 0;i < tab1_object.Count; i++)
+        for (int i = 0; i < tab1_object.Count; i++)
         {
             Destroy(tab1_object[i].gameObject);
             yield return new WaitForSeconds(0.1f);
@@ -928,7 +1021,7 @@ public class Zonehandler : MonoBehaviour
         {
             Destroy(tab3_object[i].gameObject);
             yield return new WaitForSeconds(0.1f);
-        }   
+        }
         collected_text.GetComponent<Text>().text = "0";
         room1_data_collected.Clear();
         room2_data_collected.Clear();
@@ -976,7 +1069,7 @@ public class Zonehandler : MonoBehaviour
         {
             StartCoroutine(Countdowntimer());
         }
-       
+
     }
 
     void Timefilling()
@@ -989,7 +1082,7 @@ public class Zonehandler : MonoBehaviour
     void initialback()
     {
         StartCoroutine(initialback_task());
-       
+
     }
     IEnumerator initialback_task()
     {
@@ -1032,14 +1125,15 @@ public class Zonehandler : MonoBehaviour
 
     }
 
- 
+
 
     //--------------------------------latest dashboard word ============================//
+
 
     void Final_dashboard()
     {
         dashboard_panel.SetActive(true);
-       
+
         List<string> room1_elements = new List<string>(new string[room1.Count]);
         List<string> room2_elements = new List<string>(new string[room2.Count]);
         List<string> room3_elements = new List<string>(new string[room3.Count]);
@@ -1051,8 +1145,8 @@ public class Zonehandler : MonoBehaviour
         List<string> item_name_list2 = new List<string>();// new string[room2_data_collected.Count];
         List<string> item_name_list3 = new List<string>();// new string[room3_data_collected.Count];
         List<string> dropped_bin1 = new List<string>();// new string[room1_data_collected.Count];
-        List<string> dropped_bin2 = new List<string>(); 
-        List<string> dropped_bin3 = new List<string>(); 
+        List<string> dropped_bin2 = new List<string>();
+        List<string> dropped_bin3 = new List<string>();
         List<string> score_room1 = new List<string>();// new string[room1.Count];
         List<string> score_room2 = new List<string>();// new string[room2.Count];
         List<string> score_room3 = new List<string>();
@@ -1064,11 +1158,11 @@ public class Zonehandler : MonoBehaviour
         List<int> room3_is_right = new List<int>();
         int charater_type = PlayerPrefs.GetInt("characterType");
         //List<string> room1_misssed = new List<string>();
-        int r1 = 0, r2=0, r3=0;
+        int r1 = 0, r2 = 0, r3 = 0;
         int correctansroom1 = 0;
         int correctansroom2 = 0;
         int correctansroom3 = 0;
-    
+
         for (int a = 0; a < room1_data_collected.Count; a++)
         {
             string get_data = room1_data_collected[a];
@@ -1077,7 +1171,7 @@ public class Zonehandler : MonoBehaviour
             dropped_bin1.Add(room1_item_name[1]);
             score_room1.Add(room1_item_name[2]);
 
-           // Debug.Log("here is the data " + item_name_list1[a] + " " + dropped_bin1[a] + " " + score_room1[a]);
+            // Debug.Log("here is the data " + item_name_list1[a] + " " + dropped_bin1[a] + " " + score_room1[a]);
             Array.Clear(room1_item_name, 0, room1_item_name.Length);
         }
 
@@ -1088,7 +1182,7 @@ public class Zonehandler : MonoBehaviour
             item_name_list2.Add(room2_item_name[0]);
             dropped_bin2.Add(room2_item_name[1]);
             score_room2.Add(room2_item_name[2]);
-          //  Debug.Log("here is the data 2 " + item_name_list2[a] + " " + dropped_bin2[a] + " " + score_room2[a]);
+            //  Debug.Log("here is the data 2 " + item_name_list2[a] + " " + dropped_bin2[a] + " " + score_room2[a]);
             Array.Clear(room2_item_name, 0, room1_item_name.Length);
         }
         for (int a = 0; a < room3_data_collected.Count; a++)
@@ -1098,7 +1192,7 @@ public class Zonehandler : MonoBehaviour
             item_name_list3.Add(room3_item_name[0]);
             dropped_bin3.Add(room3_item_name[1]);
             score_room3.Add(room3_item_name[2]);
-           // Debug.Log("here is the data " + item_name_list3[a] + " " + dropped_bin3[a] + " " + score_room3[a]);
+            // Debug.Log("here is the data " + item_name_list3[a] + " " + dropped_bin3[a] + " " + score_room3[a]);
             Array.Clear(room3_item_name, 0, room1_item_name.Length);
         }
 
@@ -1120,7 +1214,7 @@ public class Zonehandler : MonoBehaviour
             {
                 correctansroom2++;
             }
-           
+
         }
         if (correctansroom2 == room2.Count)
         {
@@ -1132,7 +1226,7 @@ public class Zonehandler : MonoBehaviour
             {
                 correctansroom3++;
             }
-           
+
         }
         if (correctansroom3 == room3.Count)
         {
@@ -1176,9 +1270,9 @@ public class Zonehandler : MonoBehaviour
         var distinctElements_room1 = item_name_list1 != null && item_name_list1.Count > 0 ? room1.Where(x => !item_name_list1.Contains(x.name)).Select(x => x.name).ToList() : new List<string>();
         var distinctElements_room2 = item_name_list2 != null && item_name_list2.Count > 0 ? room2.Where(x => !item_name_list2.Contains(x.name)).Select(x => x.name).ToList() : new List<string>();
         var distinctElements_room3 = item_name_list3 != null && item_name_list3.Count > 0 ? room3.Where(x => !item_name_list3.Contains(x.name)).Select(x => x.name).ToList() : new List<string>();
-       // Debug.Log("got object name: " + string.Join(", ", distinctElements));
+        // Debug.Log("got object name: " + string.Join(", ", distinctElements));
 
-       
+
         for (int i = 0; i < room1.Count; i++)
         {
             GameObject row = Instantiate(UpdatedTabDataBar, tabs[0].gameObject.transform, false);
@@ -1191,7 +1285,7 @@ public class Zonehandler : MonoBehaviour
 
         for (int b = 0; b < tab1_object.Count; b++)
         {
-            if(b < item_name_list1.Count)
+            if (b < item_name_list1.Count)
             {
                 tab1_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = item_name_list1[b];
                 if (score_room1[b] != "0")
@@ -1205,18 +1299,18 @@ public class Zonehandler : MonoBehaviour
 
                 if (dropped_bin1[b].ToLower() == "reduce")
                 {
-                    if (score_room1[b] == "10" )    
+                    if (score_room1[b] == "10")
                     {
                         room1_is_right.Add(1);
                         tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                         tab1_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = right_ans;
 
                     }
-                    else 
+                    else
                     {
                         if (score_room1[b] == "5")
                         {
-                           
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1255,7 +1349,7 @@ public class Zonehandler : MonoBehaviour
                             room1_is_right.Add(1);
                             tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                            
+
                             tab1_object[b].gameObject.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Partiallycorrect;
 
                         }
@@ -1303,7 +1397,7 @@ public class Zonehandler : MonoBehaviour
                         }
 
                     }
-                 
+
 
                 }
                 else if (dropped_bin1[b].ToLower() == "reuse")
@@ -1316,9 +1410,9 @@ public class Zonehandler : MonoBehaviour
                     }
                     else
                     {
-                        if(score_room1[b] == "5")
+                        if (score_room1[b] == "5")
                         {
-                      
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1402,7 +1496,7 @@ public class Zonehandler : MonoBehaviour
                             tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                       
+
                     }
                 }
                 else if (dropped_bin1[b].ToLower() == "recycle")
@@ -1415,9 +1509,9 @@ public class Zonehandler : MonoBehaviour
                     }
                     else
                     {
-                        if(score_room1[b] == "5")
+                        if (score_room1[b] == "5")
                         {
-                         
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1499,7 +1593,7 @@ public class Zonehandler : MonoBehaviour
                             tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                             tab1_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                      
+
                     }
                 }
             }
@@ -1518,8 +1612,8 @@ public class Zonehandler : MonoBehaviour
                 {
                     tab1_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = room1[b].name;
                 }
-               
-               
+
+
                 tab1_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
                 tab1_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
                 tab1_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
@@ -1527,10 +1621,10 @@ public class Zonehandler : MonoBehaviour
                 tab1_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
                 tab1_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
                 tab1_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
-               
+
                 correct_option1[b] = "null";
             }
-   
+
 
         }
 
@@ -1549,7 +1643,7 @@ public class Zonehandler : MonoBehaviour
         {
             if (b < item_name_list2.Count)
             {
-                
+
                 tab2_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = item_name_list2[b];
                 if (score_room2[b] != "0")
                 {
@@ -1562,7 +1656,7 @@ public class Zonehandler : MonoBehaviour
 
                 if (dropped_bin2[b].ToLower() == "reduce")
                 {
-                    if (score_room2[b] == "10"  )
+                    if (score_room2[b] == "10")
                     {
                         room2_is_right.Add(1);
                         tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
@@ -1571,9 +1665,9 @@ public class Zonehandler : MonoBehaviour
                     }
                     else
                     {
-                        if(score_room2[b] == "5")
+                        if (score_room2[b] == "5")
                         {
-                          
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1650,7 +1744,7 @@ public class Zonehandler : MonoBehaviour
                             tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                    
+
                     }
 
                 }
@@ -1664,9 +1758,9 @@ public class Zonehandler : MonoBehaviour
                     }
                     else
                     {
-                        if(score_room2[b] == "5")
+                        if (score_room2[b] == "5")
                         {
-                          
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1732,7 +1826,7 @@ public class Zonehandler : MonoBehaviour
                                 if (recycle[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Recycle";
-                                    correctOptionRoom2 = "Recycle"; 
+                                    correctOptionRoom2 = "Recycle";
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1743,12 +1837,12 @@ public class Zonehandler : MonoBehaviour
                             tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                     
+
                     }
                 }
                 else if (dropped_bin2[b].ToLower() == "recycle")
                 {
-                    if (score_room2[b] == "10" )
+                    if (score_room2[b] == "10")
                     {
                         room2_is_right.Add(1);
                         tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.SetActive(true);
@@ -1757,16 +1851,16 @@ public class Zonehandler : MonoBehaviour
                     else
                     {
 
-                        if(score_room2[b] == "5")
+                        if (score_room2[b] == "5")
                         {
-                         
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
                                 if (reduce[a].gameObject.name == item_name_list2[b])
                                 {
                                     correct_option2[b] = "Reduce";
-                                    correctOptionRoom2 = "Reduce"; 
+                                    correctOptionRoom2 = "Reduce";
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
                                     tab2_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correctoption;
                                 }
@@ -1836,8 +1930,8 @@ public class Zonehandler : MonoBehaviour
                             tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom2;
                             tab2_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                       
-                   
+
+
                     }
                 }
             }
@@ -1847,7 +1941,7 @@ public class Zonehandler : MonoBehaviour
                 room2_is_right.Add(2);
                 correct_option2[b] = "null";
                 dropped_bin2.Add("null");
-                if(distinctElements_room2.Count > 0)
+                if (distinctElements_room2.Count > 0)
                 {
                     item_name_list2.Add(distinctElements_room2[r2]);
                     tab2_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements_room2[r2];
@@ -1857,8 +1951,8 @@ public class Zonehandler : MonoBehaviour
                 {
                     tab2_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = room2[b].name;
                 }
-                
-               
+
+
                 tab2_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
                 tab2_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
                 tab2_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
@@ -1866,7 +1960,7 @@ public class Zonehandler : MonoBehaviour
                 tab2_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
                 tab2_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
                 tab2_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
-               
+
             }
 
         }
@@ -1899,7 +1993,7 @@ public class Zonehandler : MonoBehaviour
 
                 if (dropped_bin3[b].ToLower() == "reduce")
                 {
-                    if (score_room3[b] == "10" )
+                    if (score_room3[b] == "10")
                     {
                         room3_is_right.Add(1);
                         tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.SetActive(true);
@@ -1908,9 +2002,9 @@ public class Zonehandler : MonoBehaviour
                     }
                     else
                     {
-                        if(score_room3[b] == "5")
+                        if (score_room3[b] == "5")
                         {
-                      
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -1987,7 +2081,7 @@ public class Zonehandler : MonoBehaviour
                             tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                     
+
                     }
 
                 }
@@ -2002,9 +2096,9 @@ public class Zonehandler : MonoBehaviour
                     else
                     {
 
-                        if(score_room3[b] == "5")
+                        if (score_room3[b] == "5")
                         {
-                         
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -2081,7 +2175,7 @@ public class Zonehandler : MonoBehaviour
                             tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                    
+
                     }
                 }
                 else if (dropped_bin3[b].ToLower() == "recycle")
@@ -2096,7 +2190,7 @@ public class Zonehandler : MonoBehaviour
                     {
                         if (score_room3[b] == "5")
                         {
-                          
+
                             for (int a = 0; a < reduce.Count; a++)
                             {
 
@@ -2173,7 +2267,7 @@ public class Zonehandler : MonoBehaviour
                             tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = correctOptionRoom3;
                             tab3_object[b].gameObject.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = wrong_ans;
                         }
-                      
+
                     }
                 }
             }
@@ -2183,7 +2277,7 @@ public class Zonehandler : MonoBehaviour
                 room3_is_right.Add(2);
                 correct_option3[b] = "null";
                 dropped_bin3.Add("null");
-                if(distinctElements_room3.Count > 0)
+                if (distinctElements_room3.Count > 0)
                 {
                     item_name_list3.Add(distinctElements_room3[r3]);
                     tab3_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = distinctElements_room3[r3];
@@ -2193,8 +2287,8 @@ public class Zonehandler : MonoBehaviour
                 {
                     tab3_object[b].gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = room3[b].name;
                 }
-                
-            
+
+
                 tab3_object[b].gameObject.transform.GetChild(7).gameObject.GetComponent<Text>().text = "0";
                 tab3_object[b].gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = "--";
                 tab3_object[b].gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "--";
@@ -2202,7 +2296,7 @@ public class Zonehandler : MonoBehaviour
                 tab3_object[b].gameObject.transform.GetChild(4).gameObject.GetComponent<Text>().text = "--";
                 tab3_object[b].gameObject.transform.GetChild(5).gameObject.GetComponent<Text>().text = "--";
                 tab3_object[b].gameObject.transform.GetChild(6).gameObject.GetComponent<Text>().text = "--";
-              
+
             }
 
         }
@@ -2213,7 +2307,7 @@ public class Zonehandler : MonoBehaviour
 
         var logs = new List<ZoneDataPost>();
         int l = 0;
-        if(item_name_list1.Count > 0)
+        if (item_name_list1.Count > 0)
         {
             item_name_list1.ForEach(x =>
             {
@@ -2261,10 +2355,10 @@ public class Zonehandler : MonoBehaviour
 
             });
         }
-     
+
 
         int k = 0;
-        if(item_name_list2.Count > 0)
+        if (item_name_list2.Count > 0)
         {
             item_name_list2.ForEach(x =>
             {
@@ -2310,9 +2404,9 @@ public class Zonehandler : MonoBehaviour
                 logs.Add(log1);
             });
         }
-      
+
         int j = 0;
-        if(item_name_list3.Count > 0)
+        if (item_name_list3.Count > 0)
         {
             item_name_list3.ForEach(x =>
             {
@@ -2363,8 +2457,8 @@ public class Zonehandler : MonoBehaviour
         string data = JsonMapper.ToJson(logs);
         StartCoroutine(Post_data(data));
         StartCoroutine(ScorePostTask());
-     
-        
+
+
 
     }
 
@@ -2381,7 +2475,7 @@ public class Zonehandler : MonoBehaviour
 
     public void LeftPageEnable()
     {
-        
+
         CurrentPagecounter = RoomPageCounter;
         RoomPageCounter--;
         RoomName.text = RoomNames[RoomPageCounter];
@@ -2411,7 +2505,7 @@ public class Zonehandler : MonoBehaviour
             {
                 Debug.Log(" STATUS  ====  FAILED stage 1 zonehandler script ");
             }
-         
+
 
         }
 
@@ -2433,8 +2527,8 @@ public class Zonehandler : MonoBehaviour
         scorePost.updated_date_time = DateTime.Now.ToString();
         scorePost.id_level = 1;
         scorePost.id_org_game = 1;
-        scorePost.attempt_no = GameAttemptNumber +1;
-        scorePost.timetaken_to_complete =  "00:00";  
+        scorePost.attempt_no = GameAttemptNumber + 1;
+        scorePost.timetaken_to_complete = "00:00";
         scorePost.is_completed = 1;
         scorePost.game_type = 1;
 
@@ -2446,11 +2540,11 @@ public class Zonehandler : MonoBehaviour
             Request.SetRequestHeader("Content-Type", "application/json");
             Request.SetRequestHeader("Accept", "application/json");
             yield return Request.SendWebRequest();
-            if(!Request.isNetworkError && !Request.isHttpError)
+            if (!Request.isNetworkError && !Request.isHttpError)
             {
                 Debug.Log(Request.downloadHandler.text);
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
-                if(masterRes.STATUS.ToLower() == "success")
+                if (masterRes.STATUS.ToLower() == "success")
                 {
 
                     StartCoroutine(getBadgeConfiguration(0));
@@ -2476,10 +2570,10 @@ public class Zonehandler : MonoBehaviour
             HighScoreBadgeid = badgemodel.FirstOrDefault(x => x.badge_name == Highscorename).id_badge;
             ActivebadgeId = badgemodel.FirstOrDefault(x => x.badge_name == mostActiveName).id_badge;
             MostObservantid = badgemodel.FirstOrDefault(x => x.badge_name == MostObervantName).id_badge;
-            StartCoroutine(getHighScore());
-            StartCoroutine(checkMostActivePTask());
-            StartCoroutine(CheckforMoseObservant());
-            yield return new WaitForSeconds(2f);
+            //StartCoroutine(getHighScore());
+            //StartCoroutine(checkMostActivePTask());
+            //StartCoroutine(CheckforMoseObservant());
+            yield return new WaitForSeconds(1f);
             StartCoroutine(CheckForGameBadge());
         }
     }
@@ -2502,7 +2596,7 @@ public class Zonehandler : MonoBehaviour
             List<LeaderBoardmodel> LeaderBoardData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LeaderBoardmodel>>(Userscore_www.text);
             MyTotalScore = LeaderBoardData.FirstOrDefault(x => x.id_user == PlayerPrefs.GetInt("UID")).Score;
             StartCoroutine(CheckHighScoreTask());
-           
+
 
         }
         else
@@ -2518,11 +2612,11 @@ public class Zonehandler : MonoBehaviour
             + "&is_bonus_game=" + 0 + "&score=" + MyTotalScore;
         WWW highscorecheck = new WWW(HittingUrl);
         yield return highscorecheck;
-        if(highscorecheck.text != null)
+        if (highscorecheck.text != null)
         {
             //Debug.Log(" high score data " + highscorecheck.text);
             HighScoreBadgeModel HighscoreRes = Newtonsoft.Json.JsonConvert.DeserializeObject<HighScoreBadgeModel>(highscorecheck.text);
-            if(HighscoreRes.is_high_scorer == "1")
+            if (HighscoreRes.is_high_scorer == "1")
             {
                 Debug.Log("  USER IS A HIGH SCORER PLATYER ");
                 StartCoroutine(PostHighscoreBadge());
@@ -2558,7 +2652,7 @@ public class Zonehandler : MonoBehaviour
             if (!Request.isNetworkError && !Request.isHttpError)
             {
                 string status = Request.downloadHandler.text;
-                if(status.ToLower() == "success")
+                if (status.ToLower() == "success")
                 {
                     Debug.Log("High scorer badge uploaded " + status);
                 }
@@ -2566,14 +2660,14 @@ public class Zonehandler : MonoBehaviour
                 {
                     Debug.Log("High scorer badge Something went wrong " + status);
                 }
-               
+
             }
 
         }
 
     }
 
- 
+
 
 
     IEnumerator checkMostActivePTask()
@@ -2581,11 +2675,11 @@ public class Zonehandler : MonoBehaviour
         string HittingUrl = MainUrl + MostActivePlayerApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 1;
         WWW activeplayer_www = new WWW(HittingUrl);
         yield return activeplayer_www;
-        if(activeplayer_www.text != null)
+        if (activeplayer_www.text != null)
         {
             //Debug.Log(" mose active usrer data " + activeplayer_www.text);
             MostActiveModel activeplayer_data = Newtonsoft.Json.JsonConvert.DeserializeObject<MostActiveModel>(activeplayer_www.text);
-            if(activeplayer_data.play_count == "1")
+            if (activeplayer_data.play_count == "1")
             {
                 Debug.Log("  USER IS A MOST ACTIVE PLATYER ");
                 StartCoroutine(PostActiveBadge());
@@ -2599,7 +2693,7 @@ public class Zonehandler : MonoBehaviour
 
     IEnumerator PostActiveBadge()
     {
-      
+
         string HittingUrl = MainUrl + PostBadgeUserApi;
         var BadgeModel = new PostBadgeModel()
         {
@@ -2643,10 +2737,10 @@ public class Zonehandler : MonoBehaviour
         string HittingUrl = MainUrl + MostObservantApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
         WWW observant_www = new WWW(HittingUrl);
         yield return observant_www;
-        if(observant_www.text != null)
+        if (observant_www.text != null)
         {
             MostObservantModel observantdata = Newtonsoft.Json.JsonConvert.DeserializeObject<MostObservantModel>(observant_www.text);
-            if(observantdata.is_eligible == 1)
+            if (observantdata.is_eligible == 1)
             {
                 StartCoroutine(PostMostObservantbadge());
             }
@@ -2699,7 +2793,7 @@ public class Zonehandler : MonoBehaviour
         string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + 1;
         WWW badge_www = new WWW(HittingUrl);
         yield return badge_www;
-        if (badge_www.text != null)                                                      
+        if (badge_www.text != null)
         {
             Debug.Log(" badge info " + badge_www.text);
             List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);

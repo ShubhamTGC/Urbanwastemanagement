@@ -355,7 +355,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 225, y: 88}
-  m_SizeDelta: {x: 180, y: 180}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7251933081073181195
 CanvasRenderer:
@@ -384,7 +384,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e6c19ade0e2b67c44b97230679ff938b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79414987c557a2d45a1cf9ceaa899b66, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1085,7 +1085,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 05bf961cd87cc4748bd21b7a53e65dbc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 964bec4c96d402e43993a2422031df1e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2594,7 +2594,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: deb5330f5f0b4d742a0561b635057095, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 13c0d64520401af4cbdd6d0eed4ad2bb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3085,6 +3085,16 @@ MonoBehaviour:
   UnlockColor: {r: 1, g: 1, b: 1, a: 1}
   Msgpanel: {fileID: 2815973167110969017}
   ShareImageStatus: {fileID: 4875172244487318499}
+  HighScoreBadge: {fileID: 21300000, guid: 13c0d64520401af4cbdd6d0eed4ad2bb, type: 3}
+  MostActiveplayer: {fileID: 21300000, guid: 964bec4c96d402e43993a2422031df1e, type: 3}
+  EagleEyeBadge: {fileID: 21300000, guid: 79414987c557a2d45a1cf9ceaa899b66, type: 3}
+  FadeHighScoreBadge: {fileID: 21300000, guid: cd8cf6b6216d77f4a8fa57d5cea5ee16, type: 3}
+  FadeMostActiveplayer: {fileID: 21300000, guid: 753bc784297ee3c458624f81a327bdbd,
+    type: 3}
+  FadeEagleBadge: {fileID: 21300000, guid: aee0dae1acb47f94b94ba7f50491643d, type: 3}
+  Scorebadge: {fileID: 7251933082478723601}
+  ActiveBadge: {fileID: 7251933081332271602}
+  EagleBadge: {fileID: 7251933081073181194}
 --- !u!1 &7251933082828451645
 GameObject:
   m_ObjectHideFlags: 0

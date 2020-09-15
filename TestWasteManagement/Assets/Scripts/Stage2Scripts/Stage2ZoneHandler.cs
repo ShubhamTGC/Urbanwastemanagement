@@ -51,6 +51,7 @@ public class Stage2ZoneHandler : MonoBehaviour
     public bool ZoneCleared;
     public int GameAttemptNumber =0;
     public string Zonenumber;
+    public List<ThrowWasteHandler> ZonesLevelHolder;
     void Start()
     {
         
@@ -70,7 +71,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         level1Mainpage.SetActive(true);
         Level1Controller.level1 = true;
         skip.onClick.RemoveAllListeners();
-        skip.onClick.AddListener(delegate { Skiplevel(); });
+        skip.onClick.AddListener(delegate { Skiplevel();});
 
     }
 
@@ -131,6 +132,11 @@ public class Stage2ZoneHandler : MonoBehaviour
             for (int a = 0; a < RoomrRes.Count; a++)
             {
                 RoomIds.Add(int.Parse(RoomrRes[a]["id_room"].ToString()));
+                
+            }
+            for(int b = 0;b< RoomIds.Count; b++)
+            {
+                ZonesLevelHolder[b].LevelRoomid = RoomIds[b];
             }
 
         }
@@ -288,9 +294,9 @@ public class Stage2ZoneHandler : MonoBehaviour
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Master_request.downloadHandler.text);
                 if (masterRes.STATUS.ToLower() == "success")
                 {
-                    StartCoroutine(getBadgeConfiguration(0));
-                    StartCoroutine(getHighScore());
-                    yield return new WaitForSeconds(2);
+                    //StartCoroutine(getBadgeConfiguration(0));
+                    //StartCoroutine(getHighScore());   
+                    yield return new WaitForSeconds(1);
                    StartCoroutine(CheckForGameBadge());
                 }
                 else

@@ -473,30 +473,30 @@ public class AssessmentGameHandler : MonoBehaviour
         });
 
 
-        //string Datalog = Newtonsoft.Json.JsonConvert.SerializeObject(Logs);
-        //Debug.Log("data log for final assessment " + Datalog);
-        //using (UnityWebRequest request = UnityWebRequest.Put(HittingUrl, Datalog))
-        //{
-        //    Debug.Log(request);
-        //    request.method = UnityWebRequest.kHttpVerbPOST;
-        //    request.SetRequestHeader("Content-Type", "application/json");
-        //    request.SetRequestHeader("Accept", "application/json");
-        //    yield return request.SendWebRequest();
-        //    if (!request.isNetworkError && !request.isHttpError)
-        //    {
-        //        Debug.Log(request.downloadHandler.text);
-        //        JsonData post_res = JsonMapper.ToObject(request.downloadHandler.text);
-        //        string authstatus = post_res["STATUS"].ToString();
-        //        if (authstatus.ToLower() == "success")
-        //        {
-        //            Debug.Log("successfully posted ");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("prob : " + request.error);
-        //    }
-        //}
+        string Datalog = Newtonsoft.Json.JsonConvert.SerializeObject(Logs);
+        Debug.Log("data log for final assessment " + Datalog);
+        using (UnityWebRequest request = UnityWebRequest.Put(HittingUrl, Datalog))
+        {
+            Debug.Log(request);
+            request.method = UnityWebRequest.kHttpVerbPOST;
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+            yield return request.SendWebRequest();
+            if (!request.isNetworkError && !request.isHttpError)
+            {
+                Debug.Log(request.downloadHandler.text);
+                JsonData post_res = JsonMapper.ToObject(request.downloadHandler.text);
+                string authstatus = post_res["STATUS"].ToString();
+                if (authstatus.ToLower() == "success")
+                {
+                    Debug.Log("successfully posted ");
+                }
+            }
+            else
+            {
+                Debug.Log("prob : " + request.error);
+            }
+        }
 
     }
 
@@ -530,29 +530,29 @@ public class AssessmentGameHandler : MonoBehaviour
         scorePost.is_completed = 1;
         scorePost.game_type = 3;
 
-        //string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(scorePost);
-        //Debug.Log("data log for Drive Game" + Data_log);
-        //using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        //{
-        //    Request.method = UnityWebRequest.kHttpVerbPOST;
-        //    Request.SetRequestHeader("Content-Type", "application/json");
-        //    Request.SetRequestHeader("Accept", "application/json");
-        //    yield return Request.SendWebRequest();
-        //    if (!Request.isNetworkError && !Request.isHttpError)
-        //    {
-        //        Debug.Log(Request.downloadHandler.text);
-        //        MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
-        //        if (masterRes.STATUS.ToLower() == "success")
-        //        {
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(scorePost);
+        Debug.Log("data log for Drive Game" + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                Debug.Log(Request.downloadHandler.text);
+                MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
+                if (masterRes.STATUS.ToLower() == "success")
+                {
 
-        //        }
-        //        else
-        //        {
-        //            Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
-        //        }
-        //    }
+                }
+                else
+                {
+                    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
+                }
+            }
 
-        //}
+        }
     }
 
 

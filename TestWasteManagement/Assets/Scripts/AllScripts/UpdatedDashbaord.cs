@@ -39,7 +39,6 @@ public class UpdatedDashbaord : MonoBehaviour
 
     //Stage 3 dashboard data
     public SimpleSQLManager dbmanager;
-    private int stage3TotalScore;
     void Start()
     {
         
@@ -83,8 +82,8 @@ public class UpdatedDashbaord : MonoBehaviour
     }
     void initialSetup() 
     {
-        var Stage3data = dbmanager.Table<TruckGameModel>().ToList();
-        stage3TotalScore = Stage3data[0].TruckScore;
+        //var Stage3data = dbmanager.Table<TruckGameModel>().ToList();
+        //stage3TotalScore = Stage3data[0].TruckScore;
         Tabs[0].GetComponent<Image>().sprite = PresssedSprite;
         MainPages[0].SetActive(true);
         for(int a = 1; a < Tabs.Count; a++)
@@ -154,7 +153,7 @@ public class UpdatedDashbaord : MonoBehaviour
             OverallDashboardModel OverallModel = Newtonsoft.Json.JsonConvert.DeserializeObject<OverallDashboardModel>(response.text);
            
             GradeValue.text = OverallModel.Grade;
-            float GameScore = int.Parse(OverallModel.TotalGameScore) + stage3TotalScore;
+            float GameScore = int.Parse(OverallModel.TotalGameScore);
             float GreenJournal = int.Parse(OverallModel.GreenJournelScore);
             Gamescoretext.text = GameScore.ToString();
             GreenJournalText.text = GreenJournal.ToString();
@@ -162,17 +161,17 @@ public class UpdatedDashbaord : MonoBehaviour
             GameScorefiller.fillAmount = GameScore / TotalGameScore;
             GreenJournalFiller.fillAmount = GreenJournal / TotalGreenJScore;
             TotalScoreFiller.fillAmount = (GameScore) / TotalFinalScore;
-            OverallScore.text = (int.Parse(OverallModel.TotalAllLevelScore) + stage3TotalScore).ToString();
-            ZoneScore.text =(int.Parse(OverallModel.TotalZonesScore)+stage3TotalScore).ToString();
+            OverallScore.text = (int.Parse(OverallModel.TotalAllLevelScore)).ToString();
+            ZoneScore.text =(int.Parse(OverallModel.TotalZonesScore)).ToString();
             BonusScore.text = OverallModel.TotalBonusScore.ToString();
-            OverallScoreFiller.fillAmount = float.Parse(OverallModel.TotalGameScore + stage3TotalScore) / (float)Totalscore;
-            ZoneScorezfiller.fillAmount = float.Parse(OverallModel.TotalZonesScore + stage3TotalScore) / (float)Totalscore;
+            OverallScoreFiller.fillAmount = float.Parse(OverallModel.TotalGameScore) / (float)Totalscore;
+            ZoneScorezfiller.fillAmount = float.Parse(OverallModel.TotalZonesScore) / (float)Totalscore;
             BonusScoreFiller.fillAmount = float.Parse(OverallModel.TotalBonusScore) / (float)BonusTotalscore;
             PlayedStages.text = "Stage Played:"+ OverallModel.TotalStagesPlayed + "/3";
             PlayedZones.text = "Zone Played:" + OverallModel.TotalZonesPlayed ;
             PlayedBonusGames.text ="Bonus Game: " + OverallModel.TotalBonusPlayed;
-            StageText.text =(int.Parse(OverallModel.TotalGameScore) +stage3TotalScore).ToString();
-            ZoneText.text = (int.Parse(OverallModel.TotalZonesScore) + stage3TotalScore).ToString();
+            StageText.text =(int.Parse(OverallModel.TotalGameScore)).ToString();
+            ZoneText.text = (int.Parse(OverallModel.TotalZonesScore)).ToString();
             BonusText.text = OverallModel.TotalBonusScore.ToString();
         }
     }

@@ -59,30 +59,17 @@ public class PrioritizedDashboard : MonoBehaviour
             a++;
         });
 
-        for(int b = 0; b < Truckname.Count + 1; b++)
+        for(int b = 0; b < Truckname.Count; b++)
         {
             GameObject gb = Instantiate(dataPrefeb, TableParent, false);
             dataRows.Add(gb);
         }
 
-        GeneratedashBoard();
     }
 
     void GeneratedashBoard()
     {
         int allScore = 0;
-        for(int a = 0; a < dataRows.Count; a++)
-        {
-            if (a == 0)
-            {
-                for(int b = 0; b < dataRows[a].transform.childCount; b++)
-                {
-                    dataRows[a].transform.GetChild(b).GetComponent<Text>().color = new Color(1f, 1f, 1f, 0f);
-                }
-            }
-         
-        }
-
         for (int b = 0; b < Correctseq.Count; b++)
         {
             allScore += truckScore[b];
@@ -94,9 +81,9 @@ public class PrioritizedDashboard : MonoBehaviour
                 {
                     if (Truckname[b] == tableSequence[c])
                     {
-                        dataRows[b + 1].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                        dataRows[b + 1].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectAns;
-                        dataRows[b + 1].transform.GetChild(4).gameObject.GetComponent<Text>().text = truckScore[b].ToString();
+                        dataRows[b].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                        dataRows[b].transform.GetChild(c).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectAns;
+                        dataRows[b].transform.GetChild(4).gameObject.GetComponent<Text>().text = truckScore[b].ToString();
                       
                     }
                 }
@@ -105,14 +92,14 @@ public class PrioritizedDashboard : MonoBehaviour
             {
 
                 int indexWrong = tableSequence.FindIndex(x => x == Truckname[b]);
-                dataRows[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                dataRows[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                dataRows[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = Correctseq[b];
-                dataRows[b + 1].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = WrongAns;
-                dataRows[b + 1].transform.GetChild(4).gameObject.GetComponent<Text>().text = truckScore[b].ToString();
+                dataRows[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                dataRows[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                dataRows[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<HoverEffectDashboard>().CorrectAns = Correctseq[b];
+                dataRows[b].transform.GetChild(indexWrong).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = WrongAns;
+                dataRows[b].transform.GetChild(4).gameObject.GetComponent<Text>().text = truckScore[b].ToString();
                 int correctIndex = tableSequence.FindIndex(x => x == Correctseq[b]);
-                dataRows[b + 1].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.SetActive(true);
-                dataRows[b + 1].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectOpt;
+                dataRows[b].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.SetActive(true);
+                dataRows[b].transform.GetChild(correctIndex).gameObject.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = CorrectOpt;
            
             }
       
@@ -144,7 +131,7 @@ public class PrioritizedDashboard : MonoBehaviour
                     }
                
                 });
-                for (int b = 0; b < Truckname.Count + 1; b++)
+                for (int b = 0; b < Truckname.Count; b++)
                 {
                     GameObject gb = Instantiate(dataPrefeb, TableParent, false);
                     dataRows.Add(gb);

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using SimpleSQL;
+using System.Linq;
 
 public class Stage2Controller : MonoBehaviour
 {
@@ -14,9 +16,13 @@ public class Stage2Controller : MonoBehaviour
     public GameObject Zones;
     public Text USername;
     private bool videoPlayed, checkforEnd;
+    public string MainUrl, GetCmsConfigApi;
+    public SimpleSQLManager dbmanager;
     void Start()
     {
         StartCoroutine(sceneAppear());
+        StartCoroutine(getCmsdata());
+        
     }
 
     // Update is called once per frame
@@ -110,5 +116,45 @@ public class Stage2Controller : MonoBehaviour
     public void BacktoHome()
     {
         SceneManager.LoadScene(0);
+    }
+
+
+    IEnumerator getCmsdata()
+    {
+        string Hitting = $"{MainUrl}{GetCmsConfigApi}?id_level={2}";
+        WWW Cmswww = new WWW(Hitting);
+        yield return Cmswww;
+        if(Cmswww.text != null)
+        {
+            if(Cmswww.text != "[]")
+            {
+                List<Stage1CMSModel> StageCmsLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Stage1CMSModel>>(Cmswww.text);
+                StageCmsLog.ForEach(x =>
+                {
+                    var LocalCmsLog = dbmanager.Table<WasteSeperation>().FirstOrDefault(y => y.ItemId == x.item_Id);
+                    if (LocalCmsLog == null)
+                    {
+                        WasteSeperation WasteLog = new WasteSeperation
+                        {
+                            ItemId = x.item_Id,
+                            ItemName = x.item_Name,
+                            PCscore = x.partialcorrect_point,
+                            Cscore = x.correct_point,
+                            RoomId = x.id_room
+                        };
+                        dbmanager.Insert(WasteLog);
+                    }
+                    else
+                    {
+                        LocalCmsLog.ItemId = x.item_Id;
+                        LocalCmsLog.ItemName = x.item_Name;
+                        LocalCmsLog.PCscore = x.partialcorrect_point;
+                        LocalCmsLog.Cscore = x.correct_point;
+                        LocalCmsLog.RoomId = x.id_room;
+                        dbmanager.UpdateTable(LocalCmsLog);
+                    }
+                });
+            }
+        }
     }
 }

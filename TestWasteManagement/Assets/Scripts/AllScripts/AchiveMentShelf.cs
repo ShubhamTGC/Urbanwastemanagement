@@ -21,6 +21,9 @@ public class AchiveMentShelf : MonoBehaviour
     public Text ShareImageStatus;
     private  List<byte[]> post_image_byte = new List<byte[]>(1);
     private int id_post_image;
+    public Sprite HighScoreBadge, MostActiveplayer, EagleEyeBadge;
+    public Sprite FadeHighScoreBadge, FadeMostActiveplayer, FadeEagleBadge;
+    public Image Scorebadge, ActiveBadge, EagleBadge;
     void Start()
     {
         
@@ -74,6 +77,12 @@ public class AchiveMentShelf : MonoBehaviour
             Debug.Log(Achivement_www.text);
             AchivementModel AchivementLog = Newtonsoft.Json.JsonConvert.DeserializeObject<AchivementModel>(Achivement_www.text);
             Playername.text = AchivementLog.User_name;
+            Scorebadge.sprite =int.Parse(AchivementLog.HighscorerBadge_count) > 0 ? HighScoreBadge : FadeHighScoreBadge;
+            ActiveBadge.sprite = int.Parse(AchivementLog.MostactiveplayerBadge_count) > 0 ? MostActiveplayer : FadeMostActiveplayer;
+            EagleBadge.sprite =int.Parse(AchivementLog.MostObserventBadge_count) > 0 ? EagleEyeBadge : FadeEagleBadge;
+
+
+
             HighscoreBadgeCount.text = AchivementLog.HighscorerBadge_count;
             MostObsBadgeCount.text = AchivementLog.MostObserventBadge_count;
             MostActiveCount.text = AchivementLog.MostactiveplayerBadge_count;
