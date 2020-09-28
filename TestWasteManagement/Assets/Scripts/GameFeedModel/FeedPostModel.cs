@@ -75,5 +75,6 @@ public class TagLog
     public string detail_info { get; set; }
     public string key_info { get; set; }
     public string status { get; set; }
+    public int id_tag_photo { get; set; }
 }
 

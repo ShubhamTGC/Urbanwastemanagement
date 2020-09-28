@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GreenJournal : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class GreenJournal : MonoBehaviour
     public List<Sprite> BoyFace, GirlFace,BoyBody,Girlbody;
     public Image BoyFaceimg,BoyBodyimg,GirlFaceimg,GirlBodyimg;
     public GameObject BoyProfile, GirlProfile;
+    public string MainUrl, StageUnlockApi;
+    public int StageUnlockScore;
+    private bool Stage2unlocked;
+    [SerializeField] private int Stagelevel;
+    public GameObject Deberfingbtn;
     void Start()
     {
           
@@ -46,6 +52,11 @@ public class GreenJournal : MonoBehaviour
         ActionPlanPage.SetActive(true);
         GameFeedPage.SetActive(false);
         DiyPage.SetActive(false);
+        //if(SceneManager.GetActiveScene().buildIndex != 0)
+        //{
+        //    StartCoroutine(Getlevelclearnessdata());
+        //}
+       
     }
 
     void PlayerSetup(List<Sprite> Faces,List<Sprite> Body,Image FaceImage,Image BodyImage)
@@ -122,5 +133,20 @@ public class GreenJournal : MonoBehaviour
     public void ShowAllActionPlan()
     {
         GalleryPage.SetActive(true);
+    }
+
+
+    IEnumerator Getlevelclearnessdata()
+    {
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={Stagelevel}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
+        {
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Debug.Log(" score "+StageModel.ConsolidatedScore);
+            Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= StageUnlockScore;
+            Deberfingbtn.SetActive(Stage2unlocked);
+        }
     }
 }

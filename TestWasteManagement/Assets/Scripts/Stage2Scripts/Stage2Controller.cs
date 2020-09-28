@@ -18,11 +18,17 @@ public class Stage2Controller : MonoBehaviour
     private bool videoPlayed, checkforEnd;
     public string MainUrl, GetCmsConfigApi;
     public SimpleSQLManager dbmanager;
+    public Stage2ZoneGame Stage2Parent;
+    public List<Stage2ZoneHandler> stage2zones;
     void Start()
     {
-        StartCoroutine(sceneAppear());
+      
         StartCoroutine(getCmsdata());
         
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(sceneAppear());
     }
 
     // Update is called once per frame
@@ -49,7 +55,13 @@ public class Stage2Controller : MonoBehaviour
     
     IEnumerator sceneAppear()
     {
-     
+        float shadevalue = HomepageObject.GetComponent<Image>().color.a;
+        while (shadevalue < 1)
+        {
+            HomepageObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, shadevalue);
+            shadevalue += 0.1f;
+            yield return new WaitForSeconds(0.05f);
+        }
         yield return new WaitForSeconds(0.5f);
         OnboradingVideo.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
@@ -124,6 +136,7 @@ public class Stage2Controller : MonoBehaviour
         string Hitting = $"{MainUrl}{GetCmsConfigApi}?id_level={2}";
         WWW Cmswww = new WWW(Hitting);
         yield return Cmswww;
+        int Totalscore = 0;
         if(Cmswww.text != null)
         {
             if(Cmswww.text != "[]")
@@ -153,7 +166,40 @@ public class Stage2Controller : MonoBehaviour
                         LocalCmsLog.RoomId = x.id_room;
                         dbmanager.UpdateTable(LocalCmsLog);
                     }
+
+                    Totalscore += x.correct_point;
                 });
+
+                var percentlog = dbmanager.Table<LevelPercentageTable>().FirstOrDefault(c => c.LevelId == 2).LevelPercentage;
+                int FinalLevelScore = (Totalscore / 100) * percentlog;
+                stage2zones.ForEach(x =>
+                {
+                    x.Stage2UnlockScore = FinalLevelScore;
+                });
+                Stage2Parent.Stage2UnlockScore = FinalLevelScore;
+
+                var scoreconfig = dbmanager.Table<ScoreConfiguration>().FirstOrDefault(a => a.levelId == 2);
+
+                if (scoreconfig == null)
+                {
+                    ScoreConfiguration log = new ScoreConfiguration
+                    {
+                        levelId = 2,
+                        TotalScore = Totalscore,
+                        PercentScore = percentlog,
+                        UnlockScore = FinalLevelScore
+                    };
+                    dbmanager.Insert(log);
+                }
+                else
+                {
+                    scoreconfig.PercentScore = percentlog;
+                    scoreconfig.levelId = 2;
+                    scoreconfig.TotalScore = Totalscore;
+                    scoreconfig.UnlockScore = FinalLevelScore;
+                    dbmanager.UpdateTable(scoreconfig);
+                }
+
             }
         }
     }

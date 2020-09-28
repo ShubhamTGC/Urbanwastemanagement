@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleSQL;
+using System.Linq;
 public class BrightnessControl : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public Text valuetext;
-    private float brightnessvalue;
-    public Image brightnesspanel;
+    
 
-    public GameObject SoundBtn,VibrationBtn,MusicBtn;
     public Sprite OnSprite, OffSprite;
-    private string SoundStatus, VibrationStatus = "true";
-    public Slider MusicSlider;
+    public SimpleSQLManager dbmanager;
+    public Button Musicbtn, Soundbtn, vibrationbtn;
+    private int MusicValue,SoundValue,VibrationValue;
     void Start()
     {
      
@@ -20,86 +19,116 @@ public class BrightnessControl : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!PlayerPrefs.HasKey("volume"))
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if(SettingLog != null)
         {
-            MusicSlider.value = 1f;
+            Musicbtn.image.sprite = SettingLog.Music == 1 ? OnSprite : OffSprite;
+            Soundbtn.image.sprite = SettingLog.Sound == 1 ? OnSprite : OffSprite;
+            vibrationbtn.image.sprite = SettingLog.Vibration == 1 ? OnSprite : OffSprite;
+            Camera.main.gameObject.GetComponent<AudioSource>().volume = SettingLog.Music;
+            MusicValue = SettingLog.Music;
+            SoundValue = SettingLog.Sound;
+            VibrationValue = SettingLog.Vibration;
+
         }
         else
         {
-            MusicSlider.value = PlayerPrefs.GetFloat("volume");
+            Musicbtn.image.sprite = Soundbtn.image.sprite = vibrationbtn.image.sprite= OnSprite;
+            MusicValue = SoundValue = VibrationValue =1;
         }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        brightnesspanel.color = new Color(0, 0, 0, brightnessvalue);
+       
     }
 
-    public void SetVolume(float val)
-    {
-        brightnessvalue = 1- val;
-        float value = val * 100;
-        valuetext.text = value.ToString("F0");
-    }
+    //public void SetVolume(float val)
+    //{
+    //    brightnessvalue = 1- val;
+    //    float value = val * 100;
+    //    valuetext.text = value.ToString("F0");
+    //}
 
 
-    public void saveData()
-    {
-        //PlayerPrefs.SetFloat("brightness", brightnessvalue);
-        PlayerPrefs.SetString("Sound", SoundStatus);
-        PlayerPrefs.SetString("VibrationEnable", VibrationStatus);
-        this.gameObject.SetActive(false);
-    }
+   
 
     public void SoundControl()
     {
-        if(SoundBtn.GetComponent<Image>().sprite.name == "On")
+        if(Soundbtn.image.sprite.name == "On")
         {
-            SoundBtn.GetComponent<Image>().sprite = OffSprite;
-            SoundStatus = "false";
+            Soundbtn.image.sprite = OffSprite;
+            SoundValue = 0;
         }
         else
         {
-            SoundStatus = "true";
-            SoundBtn.GetComponent<Image>().sprite = OnSprite;
+            SoundValue = 1;
+
+            Soundbtn.image.sprite = OnSprite;
         }
     }
 
     public void VibrationControl()
     {
-        if (VibrationBtn.GetComponent<Image>().sprite.name == "On")
+        if (vibrationbtn.image.sprite.name == "On")
         {
-            VibrationStatus = "false";
-            VibrationBtn.GetComponent<Image>().sprite = OffSprite;
+            VibrationValue = 0;
+            vibrationbtn.image.sprite = OffSprite;
         }
         else
         {
-            VibrationStatus = "true";
-            VibrationBtn.GetComponent<Image>().sprite = OnSprite;
+            VibrationValue = 1;
+            vibrationbtn.image.sprite = OnSprite;
         }
     }
 
     public void MusicControl()
     {
-        if (MusicBtn.GetComponent<Image>().sprite.name == "On")
+        if (Musicbtn.image.sprite.name == "On")
         {
-            //SoundStatus = "false";
-            MusicBtn.GetComponent<Image>().sprite = OffSprite;
-            //Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
-            PlayerPrefs.SetFloat("volume", MusicSlider.value);
-            Debug.Log("val;ue " + MusicSlider.value);
-             MusicSlider.value = 0;
+            Musicbtn.image.sprite = OffSprite;
+            MusicValue = 0;
+            Camera.main.gameObject.GetComponent<AudioSource>().volume = MusicValue;
         }
         else
         {
-            //VibrationStatus = "true";
-            MusicBtn.GetComponent<Image>().sprite = OnSprite;
-            MusicSlider.value = 1;
-            // Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
-            //Camera.main.gameObject.GetComponent<VolumevalueChange>().SetVolume(PlayerPrefs.GetFloat("volume"));// = PlayerPrefs.GetFloat("volume");
+            Musicbtn.image.sprite = OnSprite;
+            MusicValue = 1;
+            Camera.main.gameObject.GetComponent<AudioSource>().volume = MusicValue;
 
         }
+    }
+
+    public void saveData()
+    {
+        StartCoroutine(SaveSettingdata());
+   
+    }
+
+    IEnumerator SaveSettingdata()
+    {
+        var Log = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (Log == null)
+        {
+            GameSetting Gamelog = new GameSetting
+            {
+                Music = MusicValue,
+                Sound = SoundValue,
+                Vibration = VibrationValue
+            };
+            dbmanager.Insert(Gamelog);
+        }
+        else
+        {
+            Log.Music = MusicValue;
+            Log.Sound = SoundValue;
+            Log.Vibration = VibrationValue;
+            dbmanager.UpdateTable(Log);
+        }
+        yield return new WaitForSeconds(0.4f);
+        this.gameObject.SetActive(false);
     }
 
 

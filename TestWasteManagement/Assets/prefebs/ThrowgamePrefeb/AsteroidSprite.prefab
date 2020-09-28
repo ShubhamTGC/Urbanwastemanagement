@@ -244,5 +244,5 @@ MonoBehaviour:
   DotsNumber: 20
   dots: {fileID: 0}
   ProjectionParent: {fileID: 0}
-  Forcefactor: 15
+  Forcefactor: 10
   Timedata: 0.05

@@ -14,6 +14,7 @@ public class Stage3PageHandler : MonoBehaviour
     public GameObject gameGuidePage;
     public Stage3handler Stage3MainPage;
     public GameObject ClearStage3, FinalAssessmentpage;
+    public GameObject Backbtn;
     void Start()
     {
        
@@ -77,7 +78,7 @@ public class Stage3PageHandler : MonoBehaviour
     {
         iTween.ScaleTo(landingPage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
-    
+        Backbtn.SetActive(false);
         gameGuidePage.SetActive(true);
 
     }
@@ -91,7 +92,6 @@ public class Stage3PageHandler : MonoBehaviour
         iTween.ScaleTo(gameGuidePage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
         gameGuidePage.SetActive(false);
-        Camera.main.gameObject.GetComponent<VolumevalueChange>().musicVolume = 0.5f;
         truckselectionPage.SetActive(true);
         landingPage.SetActive(false);
     }

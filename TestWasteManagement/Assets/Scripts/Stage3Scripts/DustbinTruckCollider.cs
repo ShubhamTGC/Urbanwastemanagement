@@ -6,8 +6,6 @@ public class DustbinTruckCollider : MonoBehaviour
 {
     public GameBoard Gamemanager;
     private bool Collided;
-    public AudioSource dustbinCollcted;
-    public AudioClip collectsound;
     void Start()
     {
         
@@ -15,7 +13,7 @@ public class DustbinTruckCollider : MonoBehaviour
     private void OnEnable()
     {
       
-        dustbinCollcted.clip = collectsound;
+       
         Collided = true;
     }
 
@@ -32,9 +30,7 @@ public class DustbinTruckCollider : MonoBehaviour
         {
             Collided = false;
             Gamemanager.VibrateDevice();
-            dustbinCollcted.Play();
             Gamemanager.CheckCorrectAns(this.gameObject, other.gameObject);
-            //Gamemanager.CheckCollision(this.gameObject, other.gameObject);
            
         }
 

@@ -26,7 +26,7 @@ public class AnagrameController : MonoBehaviour
     private List<GameObject> Words = new List<GameObject>();
     private List<GameObject> Dashs = new List<GameObject>();
     private string[] CorrectAns;
-    private string[] SelectedWord;
+    [SerializeField] private string[] SelectedWord;
     private List<string> AnsStatus = new List<string>();
     private List<string> UserGivenWord = new List<string>();
     private int[] OriginalIds;
@@ -251,18 +251,33 @@ public class AnagrameController : MonoBehaviour
         selectedobj.GetComponent<Button>().enabled = false;
         selectedobj.GetComponent<Image>().enabled = false;
         Dashs[SelectionCounter].transform.GetChild(0).GetComponent<Text>().text = word;
+        Dashs[SelectionCounter].GetComponent<Button>().onClick.RemoveAllListeners();
+        Dashs[SelectionCounter].GetComponent<Button>().onClick.AddListener(delegate { CorrectionTask(selectedobj); });
         selectedobj.transform.GetChild(0).GetComponent<Text>().text = "";
         SelectedWord[SelectionCounter] = word;
         SelectionCounter++;
         selectedobj.GetComponent<Button>().enabled = false;
         if(SelectionCounter == Dashs.Count)
         {
-
             StartCoroutine(CheckForAns());
         }
-        
-
     }
+    
+    public void CorrectionTask(GameObject selectedbtn)
+    {
+        GameObject selectedobj = EventSystem.current.currentSelectedGameObject;
+        string word = selectedobj.transform.GetChild(0).gameObject.GetComponent<Text>().text;
+        selectedobj.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
+        selectedbtn.transform.GetChild(0).gameObject.GetComponent<Text>().text = word;
+        SelectionCounter--;
+        SelectedWord[SelectionCounter] = "";
+        selectedbtn.GetComponent<Button>().enabled = true;
+        selectedbtn.GetComponent<Image>().enabled = true;
+        selectedobj.GetComponent<Button>().onClick.RemoveAllListeners();
+    }
+
+
+    
     IEnumerator CheckForAns()
     {
         yield return new WaitForSeconds(1f);

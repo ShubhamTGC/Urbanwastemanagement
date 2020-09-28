@@ -60,9 +60,17 @@ public class MatchTheTile : MonoBehaviour
     private int GameAttemptNumber;
     public GameObject WinPage,MainPage;
     private bool TimeBool = true;
+
+    // DROP DOWN INFO OBJECTS
+    public Button Infobtn;
+    public Sprite dropDown, DropUp;
+    public GameObject Infopage;
+    [SerializeField] private Vector3 targetPos;
+    private Vector3 startingpos;
+    public GameObject Hiddenpanel;
     void Start()
     {
-     
+        startingpos = Infopage.transform.localPosition;
         PostMasterTable = new PostScoreInMasterTable();
 
     }
@@ -405,6 +413,33 @@ public class MatchTheTile : MonoBehaviour
     }
 
 
+    public void ShowInfopage()
+    {
+        if(Infobtn.image.sprite.name.Equals("dropdown",System.StringComparison.OrdinalIgnoreCase))
+        {
+            Infobtn.image.sprite = DropUp;
+            Infobtn.interactable = false;
+            Hiddenpanel.SetActive(true);
+            TimeBool = false;
+            StartCoroutine(movepanel(targetPos));
+        }
+        else
+        {
+            Infobtn.image.sprite = dropDown;
+            Infobtn.interactable = false;
+            Hiddenpanel.SetActive(false);
+            TimeBool = true; 
+            StartCoroutine(movepanel(startingpos));
+        }
+    }
+
+    IEnumerator movepanel(Vector3 Pos)
+    {
+        iTween.MoveTo(Infopage, iTween.Hash("position", Pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.3f));
+        yield return new WaitForSeconds(0.3f);
+        Infobtn.interactable = true;
+
+    }
 
 
 }

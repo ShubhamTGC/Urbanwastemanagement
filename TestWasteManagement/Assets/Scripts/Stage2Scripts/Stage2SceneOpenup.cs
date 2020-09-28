@@ -28,7 +28,7 @@ public class Stage2SceneOpenup : MonoBehaviour
     public List<Stage2ZoneHandler> Zones;
     public List<GameObject> MainZones;
     public Color PlayedColor;
-
+    public GameObject deberifingBtn;
     public GameObject Stage2LeaderBoardPage, DeberifingPage;
     void Start()
     {
@@ -52,14 +52,6 @@ public class Stage2SceneOpenup : MonoBehaviour
     IEnumerator CheckForStage3()
     {
         TriviaPage.SetActive(true);
-        //string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
-        //WWW dashboard_res = new WWW(Response_url);
-        //yield return dashboard_res;
-        //if (dashboard_res.text != null)
-        //{
-        //    List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
-        //    totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
-        //}
 
         string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
         WWW StageData = new WWW(Hitting_url);
@@ -69,9 +61,10 @@ public class Stage2SceneOpenup : MonoBehaviour
             StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
             Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
             Debug.Log(" user score  " + StageModel.ConsolidatedScore);
+            deberifingBtn.SetActive(Stage3unlocked);
         }
 
-       
+
         yield return new WaitForSeconds(0.5f);  
         TriviaPage.SetActive(false);
         LandingPage.SetActive(true);

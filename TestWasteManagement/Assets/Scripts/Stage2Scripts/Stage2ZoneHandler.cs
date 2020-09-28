@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.Networking;
 using LitJson;
+using SimpleSQL;
 
 public class Stage2ZoneHandler : MonoBehaviour
 {
@@ -47,11 +48,13 @@ public class Stage2ZoneHandler : MonoBehaviour
     [SerializeField] private int Leve2number;
     private int totalscoreOfUser;
     private bool Stage2unlocked;
-    [SerializeField] private int Stage2UnlockScore;
+    public int Stage2UnlockScore;
     public bool ZoneCleared;
     public int GameAttemptNumber =0;
     public string Zonenumber;
     public List<ThrowWasteHandler> ZonesLevelHolder;
+    public SimpleSQLManager dbmanager;
+    [HideInInspector] public int GameBonusPoint;
     void Start()
     {
         
@@ -59,6 +62,7 @@ public class Stage2ZoneHandler : MonoBehaviour
 
      void OnEnable()
     {
+        StartCoroutine(GetSounddata());
         Username.text = PlayerPrefs.GetString("username");
         Gradeno.text = PlayerPrefs.GetString("User_grade");
         Zonetext.text = "STAGE 2 - " + ZoneHeading;
@@ -73,6 +77,17 @@ public class Stage2ZoneHandler : MonoBehaviour
         skip.onClick.RemoveAllListeners();
         skip.onClick.AddListener(delegate { Skiplevel();});
 
+    }
+
+    IEnumerator GetSounddata()
+    {
+        yield return new WaitForSeconds(0.2f);
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (SettingLog != null)
+        {
+            this.gameObject.GetComponent<AudioSource>().volume = SettingLog.Sound;
+            PlayerPrefs.SetString("VibrationEnable", SettingLog.Vibration == 1 ? "true" : "false");
+        }
     }
 
     // Update is called once per frame
@@ -97,8 +112,6 @@ public class Stage2ZoneHandler : MonoBehaviour
             {
                 GameAttemptNumber = 0;
             }
-            
-
         }
     }
 
@@ -268,7 +281,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         PostModel.id_log = 1;
         PostModel.id_user = PlayerPrefs.GetInt("UID");
         PostModel.id_game_content = id_game_content;
-        PostModel.score = totalscore;
+        PostModel.score = totalscore + GameBonusPoint;
         PostModel.id_score_unit = 1;
         PostModel.score_type = 1;
         PostModel.score_unit = "points";
@@ -294,9 +307,7 @@ public class Stage2ZoneHandler : MonoBehaviour
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Master_request.downloadHandler.text);
                 if (masterRes.STATUS.ToLower() == "success")
                 {
-                    //StartCoroutine(getBadgeConfiguration(0));
-                    //StartCoroutine(getHighScore());   
-                    yield return new WaitForSeconds(1);
+                     
                    StartCoroutine(CheckForGameBadge());
                 }
                 else
@@ -335,229 +346,10 @@ public class Stage2ZoneHandler : MonoBehaviour
 
     }
 
-    //====================== MOST HIGH SCORER API TASK =========================================
-    IEnumerator getHighScore()
-    {
-        string Hitting_Url = MainUrl + LeaderBoardApi + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
-        //string Hitting_Url = "https://www.skillmuni.in/wsmapi/api/WMSLeaderboad" + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
-        WWW Userscore_www = new WWW(Hitting_Url);
-        yield return Userscore_www;
-        if (Userscore_www.text != null)
-        {
-            List<LeaderBoardmodel> LeaderBoardData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LeaderBoardmodel>>(Userscore_www.text);
-            MyTotalScore = LeaderBoardData.FirstOrDefault(x => x.id_user == PlayerPrefs.GetInt("UID")).Score;
+ 
+  
 
-        }
-        else
-        {
-            Debug.Log(" interner Lost ====  stage 1 zonehandler script ");
-        }
-
-    }
-
-    IEnumerator CheckHighScoreTask()
-    {
-        string HittingUrl = MainUrl + CheckHighscoreApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 2
-            + "&is_bonus_game=" + 0 + "&score=" + MyTotalScore;
-        WWW highscorecheck = new WWW(HittingUrl);
-        yield return highscorecheck;
-        if (highscorecheck.text != null)
-        {
-            //Debug.Log(" high score data " + highscorecheck.text);
-            HighScoreBadgeModel HighscoreRes = Newtonsoft.Json.JsonConvert.DeserializeObject<HighScoreBadgeModel>(highscorecheck.text);
-            if (HighscoreRes.is_high_scorer == "1")
-            {
-                Debug.Log("  USER IS A HIGH SCORER PLATYER ");
-                StartCoroutine(PostHighscoreBadge());
-
-            }
-            else
-            {
-                Debug.Log(" USER IS  NOT A HIGH SCORER PLATYER ");
-            }
-        }
-    }
-
-    IEnumerator PostHighscoreBadge()
-    {
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "2",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = HighScoreBadgeid.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("High scorer badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("High scorer badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-    //===========================================================================================//
-
-
-    IEnumerator getBadgeConfiguration(int levelid)
-    {
-        string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + levelid;
-        WWW badge_www = new WWW(HittingUrl);
-        yield return badge_www;
-        if (badge_www.text != null)
-        {
-            //Debug.Log(" badge infp " + badge_www.text);
-            List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);
-            HighScoreBadgeid = badgemodel.FirstOrDefault(x => x.badge_name == Highscorename).id_badge;
-            ActivebadgeId = badgemodel.FirstOrDefault(x => x.badge_name == mostActiveName).id_badge;
-            MostObservantBadgeId = badgemodel.FirstOrDefault(x => x.badge_name == MostobservantName).id_badge;
-            StartCoroutine(CheckHighScoreTask());
-            StartCoroutine(CheckforMoseObservant());
-            StartCoroutine(checkMostActivePTask());
-
-        }
-    }
-
-
-    //================================  MOST ACTIVE PLAYER API TASK=========================================
-    IEnumerator checkMostActivePTask()
-    {
-        string HittingUrl = MainUrl + MostActivePlayerApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 2;
-        WWW activeplayer_www = new WWW(HittingUrl);
-        yield return activeplayer_www;
-        if (activeplayer_www.text != null)
-        {
-            //Debug.Log(" mose active usrer data " + activeplayer_www.text);
-            MostActiveModel activeplayer_data = Newtonsoft.Json.JsonConvert.DeserializeObject<MostActiveModel>(activeplayer_www.text);
-            if (activeplayer_data.play_count == "1")
-            {
-                Debug.Log("  USER IS A MOST ACTIVE PLATYER ");
-                StartCoroutine(PostActiveBadge());
-            }
-            else
-            {
-                Debug.Log(" USER IS NOT A MOST ACTIVE PLATYER");
-            }
-        }
-    }
-
-    IEnumerator PostActiveBadge()
-    {
-
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "2",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = ActivebadgeId.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        Debug.Log("data log " + Data_log);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("MOST ACTIVE badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-
-    //=====================================================================================================
-
-    IEnumerator CheckforMoseObservant()
-    {
-        string HittingUrl = MainUrl + MostObservantApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
-        WWW observant_www = new WWW(HittingUrl);
-        yield return observant_www;
-        if (observant_www.text != null)
-        {
-            MostObservantModel observantdata = Newtonsoft.Json.JsonConvert.DeserializeObject<MostObservantModel>(observant_www.text);
-            if (observantdata.is_eligible == 1)
-            {
-                StartCoroutine(PostMostObservantbadge());
-            }
-        }
-    }
-
-    IEnumerator PostMostObservantbadge()
-    {
-
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "1",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = MostObservantBadgeId.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        Debug.Log("data log " + Data_log);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("MOST ACTIVE badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-
-
+   
 
     IEnumerator CheckForGameBadge()
     {
@@ -647,6 +439,10 @@ public class Stage2ZoneHandler : MonoBehaviour
             {
                 Vibration.Vibrate(400);
                 Debug.Log("vibration");
+            }
+            else
+            {
+                Debug.Log("vibration not enabled");
             }
         }
     }

@@ -20,11 +20,11 @@ public class wasteCollection : MonoBehaviour
     public Vector2 collidersize;
     public GameObject collidedDustbin;
     public AudioClip correct_clip, wrong_clip;
-    private StartpageController startpage;
+    private Generationlevel startpage;
 
     public void Start()
     {
-       // startpage = FindObjectOfType<StartpageController>();
+       startpage = FindObjectOfType<Generationlevel>();
     }
 
     void Update()
@@ -35,7 +35,7 @@ public class wasteCollection : MonoBehaviour
             mousepos = new Vector2(screenpt.x, screenpt.y);
             hit = Physics2D.Raycast(mousepos, Vector2.zero);
            
-            if (hit.collider.tag == "waste")
+            if (hit != null && hit.collider != null && hit.collider.tag == "waste")
             {
                 hit.transform.SetAsLastSibling();
                 initialpos = hit.transform.gameObject.GetComponent<RectTransform>().localPosition;
@@ -49,7 +49,7 @@ public class wasteCollection : MonoBehaviour
 
             }
 
-            if(hit.collider.tag == "reduce")
+            if(hit != null && hit.collider != null && hit.collider.tag == "reduce")
             {
                 hit.transform.parent.gameObject.transform.SetAsLastSibling();
                 if (hit.collider.gameObject.name == this.gameObject.name)
@@ -65,7 +65,7 @@ public class wasteCollection : MonoBehaviour
                 ismoving = true;
             }
 
-            if(hit.collider.tag == "animatorobj")
+            if(hit != null && hit.collider != null && hit.collider.tag == "animatorobj")
             {
                 hit.transform.parent.gameObject.transform.SetAsLastSibling();
                 if (hit.collider.gameObject.name == this.gameObject.name)
@@ -87,7 +87,7 @@ public class wasteCollection : MonoBehaviour
             ismoving = false;
             if (!canblast)
             {
-                if(hit.collider.tag == "reduce")
+                if(hit != null && hit.collider != null && hit.collider.tag == "reduce")
                 {
                     if(hit.collider.gameObject.name == this.gameObject.name)
                     {
@@ -99,8 +99,8 @@ public class wasteCollection : MonoBehaviour
                     }
                 }
                 else
-                {
-                    if(hit.collider.tag == "waste")
+                {   
+                    if(hit != null && hit.collider != null && hit.collider.tag == "waste")
                     {
                         if (hit.collider.gameObject.name == this.gameObject.name)
                         {
@@ -109,7 +109,7 @@ public class wasteCollection : MonoBehaviour
                             hit.transform.gameObject.GetComponent<RectTransform>().localPosition = initialpos;
                         }
                     }
-                    else if (hit.collider.tag == "animatorobj")
+                    else if (hit != null && hit.collider != null && hit.collider.tag == "animatorobj")
                     {
                         if (hit.collider.gameObject.name == this.gameObject.name)
                         {
@@ -126,7 +126,7 @@ public class wasteCollection : MonoBehaviour
             else
             {
 
-                if (hit.collider.tag == "reduce")
+                if (hit != null && hit.collider != null && hit.collider.tag == "reduce")
                 {
                     if (hit.collider.gameObject.name == this.gameObject.name)
                     {
@@ -136,7 +136,7 @@ public class wasteCollection : MonoBehaviour
                 }
                 else
                 {
-                    if (hit.collider.tag == "waste")
+                    if (hit != null && hit.collider != null && hit.collider.tag == "waste")
                     {
                         if (hit.collider.gameObject.name == this.gameObject.name)
                         {
@@ -144,7 +144,7 @@ public class wasteCollection : MonoBehaviour
                             hit.collider.gameObject.transform.GetChild(0).gameObject.SetActive(false);
                         }
                     }
-                    else if (hit.collider.tag == "animatorobj")
+                    else if (hit != null && hit.collider != null && hit.collider.tag == "animatorobj")
                     {
                         if (hit.collider.gameObject.name == this.gameObject.name)
                         {
@@ -156,6 +156,7 @@ public class wasteCollection : MonoBehaviour
                 if (!check)
                 {
                     check = true;
+                    startpage.VibrateDevice();
                     zonewaste.waste_count += 1;
                     if(hit.collider.tag == "reduce")
                     {

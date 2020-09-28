@@ -293,9 +293,9 @@ public class AssessmentGameHandler : MonoBehaviour
             }
         }
         GenerateDashBoard();
-
-        StartCoroutine(PostAssessmentLog());
-        StartCoroutine(PostinginMastertable());
+        Stage3Variables.BonusGameBool = false;
+        // StartCoroutine(PostAssessmentLog());
+        //StartCoroutine(PostinginMastertable());
 
     }
 

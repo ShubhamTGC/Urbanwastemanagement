@@ -50,7 +50,6 @@ public class ObjectHandlert : MonoBehaviour
             {
                 extraelemts[i].GetComponent<Image>().enabled = true;
                 extraelemts[i].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.SetActive(false);
-
             }
             else
             {
@@ -61,7 +60,6 @@ public class ObjectHandlert : MonoBehaviour
             {
                 extraelemts[i].GetComponent<Image>().enabled = true;
             }
-        
         }
     }
 }

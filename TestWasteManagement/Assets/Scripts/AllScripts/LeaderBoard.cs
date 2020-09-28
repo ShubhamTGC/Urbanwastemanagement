@@ -95,10 +95,15 @@ public class LeaderBoard : MonoBehaviour
                         gb.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.SetActive(true);
                         gb.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = leader_res[a]["Rank"].ToString();
                     }
+                    if (leader_res[a]["Name"] != null)
+                    {
+                        gb.transform.GetChild(2).gameObject.GetComponent<Text>().text = leader_res[a]["Name"].ToString();
+                    }
                     if (PlayerPrefs.GetInt("UID") == int.Parse(leader_res[a]["id_user"].ToString()))
                     {
                         gb.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().color = MydataColor;
                         gb.transform.GetChild(2).gameObject.GetComponent<Text>().color = MydataColor;
+                        gb.transform.GetChild(2).gameObject.GetComponent<Text>().text = PlayerPrefs.GetString("username");
                         gb.transform.GetChild(3).gameObject.GetComponent<Text>().color = MydataColor;
                         gb.transform.GetChild(4).gameObject.GetComponent<Text>().color = MydataColor;
                         gb.transform.GetChild(5).gameObject.GetComponent<Text>().color = MydataColor;
@@ -110,10 +115,7 @@ public class LeaderBoard : MonoBehaviour
 
                     }
                     gb.SetActive(true);
-                    if (leader_res[a]["Name"] != null)
-                    {
-                        gb.transform.GetChild(2).gameObject.GetComponent<Text>().text = leader_res[a]["Name"].ToString();
-                    }
+                  
 
                     if (leader_res[a]["Level"] != null)
                     {

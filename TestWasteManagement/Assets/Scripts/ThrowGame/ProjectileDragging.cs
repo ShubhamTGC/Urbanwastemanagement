@@ -144,8 +144,8 @@ public class ProjectileDragging : MonoBehaviour
        
         mouseWorldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         catapultToMouse = mouseWorldPoint - catapult.position;
+        Endpos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 10f);
 
-       
         if (catapultToMouse.sqrMagnitude > maxStretchSqr)
         {
             rayToMouse.direction = catapultToMouse;
@@ -153,10 +153,7 @@ public class ProjectileDragging : MonoBehaviour
           
         }
         
-        Endpos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 10f);
-
-        forceAtplayer = Endpos - startPos;
-        if(Mathf.Sign(forceAtplayer.x) == 1 || Mathf.Sign(forceAtplayer.y) ==1)
+        if(Mathf.Sign(forceAtplayer.x) == 1) 
         {
             for (int a = 0; a < DotsNumber; a++)
             {
@@ -170,16 +167,12 @@ public class ProjectileDragging : MonoBehaviour
                 projectionDots[a].SetActive(true);
             }
         }
-        forceAtplayer.x = Mathf.Min(0f, forceAtplayer.x);
-        forceAtplayer.y = Mathf.Min(0f, forceAtplayer.y);
-        float radius = 8f;
-        forceAtplayer = Vector2.ClampMagnitude(forceAtplayer, radius);
+
         for (int a = 0; a < DotsNumber; a++)
         {
-            projectionDots[a].transform.position = ProjectCalculate(a * Timedata);
+            projectionDots[a].transform.position = ProjectCalculate(a * 0.1f);
         }
-
-
+        forceAtplayer = mouseWorldPoint - startPos;
         mouseWorldPoint.z = 0f;
         transform.position = mouseWorldPoint;
     }
@@ -237,11 +230,8 @@ public class ProjectileDragging : MonoBehaviour
 
     private Vector2 ProjectCalculate(float time)
     {
-        return new Vector2(Endpos.x, Endpos.y) +
+        return new Vector2(mouseWorldPoint.x, mouseWorldPoint.y) +
             new Vector2(-forceAtplayer.x * Forcefactor, -forceAtplayer.y * Forcefactor) * time + 0.5f * Physics2D.gravity * time * time;
     }
-    private Vector2 ShowProjectAfterStrtch(float time,Vector3 forceAtplayer1)
-    {
-        return new Vector2(Endpos.x, Endpos.y) + new Vector2(-forceAtplayer1.x * Forcefactor, -forceAtplayer1.y * Forcefactor);
-    }
+  
 }

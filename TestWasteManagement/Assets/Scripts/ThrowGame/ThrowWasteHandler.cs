@@ -42,6 +42,7 @@ public class ThrowWasteHandler : MonoBehaviour
     private float Totaltimer, RunningTimer;
     private float sec;
     private float Mintvalue;
+    private float CurrentTime;
     private bool helpingbool = true;
     public Image Timerbar;
     public Text Timer;
@@ -116,6 +117,9 @@ public class ThrowWasteHandler : MonoBehaviour
     public List<string> ObjectName = new List<string>();
     public List<int> Cscore = new List<int>();
     public SimpleSQLManager dbmanager;
+    private int Time0to30, Time30to45;
+    private int Bonuspt1,Bonuspt2;
+    private int bonusScore;
     private void Awake()
     {
 
@@ -136,6 +140,7 @@ public class ThrowWasteHandler : MonoBehaviour
         Totaltimer = (Mintvalue * 60) + second;
         Debug.Log("time data time " + Mintvalue + " sec " + second + "total time " + Totaltimer);
         RunningTimer = Totaltimer;
+        CurrentTime = 0f;
         initialSmoke.SetActive(false);
         moderateSmoke.SetActive(false);
         HighSmoke.SetActive(false);
@@ -167,6 +172,7 @@ public class ThrowWasteHandler : MonoBehaviour
         Totaltimer = 0;
         RunningTimer = 0f;
         Mintvalue = 0;
+        CurrentTime = 0;
     }
     void initialsetup()
     {
@@ -239,6 +245,13 @@ public class ThrowWasteHandler : MonoBehaviour
         ObjectName = ObjectLog;
         Cscore = Cscorelog;
 
+        var Bonuslog = dbmanager.Table<BonusTable>().ToList();
+        Time0to30 = Bonuslog.FirstOrDefault(x => x.RoomId == LevelRoomid).Time0to30;
+        Time30to45 = Bonuslog.FirstOrDefault(x => x.RoomId == LevelRoomid).Time30to45;
+        Bonuspt1 = Bonuslog.FirstOrDefault(x => x.RoomId == LevelRoomid).BonusPoint1;
+        Bonuspt2 = Bonuslog.FirstOrDefault(x => x.RoomId == LevelRoomid).BonusPoint2;
+
+
     }
 
     void getRandomeSprite()
@@ -274,6 +287,7 @@ public class ThrowWasteHandler : MonoBehaviour
                 sec = sec - Time.deltaTime;
                 RunningTimer = RunningTimer - Time.deltaTime;
                 Timerbar.fillAmount = RunningTimer / Totaltimer;
+                CurrentTime += Time.deltaTime;
                 if (sec.ToString("0").Length > 1)
                 {
                     Timer.text = "0" + Mintvalue.ToString("0") + ":" + sec.ToString("0");
@@ -400,13 +414,26 @@ public class ThrowWasteHandler : MonoBehaviour
             Previewimage1.gameObject.SetActive(false);
             Previewimage4.gameObject.SetActive(false);
             gameend = true;
+            bool AllowForBonus;
+           
             if (level1)
             {
-               Showmsg = "Congratulations! You have successfully completed Level 1\nPlease click on Level 2 to play!";
+                AllowForBonus = is_correct.Contains(0);
+                Showmsg = "Congratulations! You have successfully completed Level 1\nPlease click on Level 2 to play!";
             }
             else
             {
+                AllowForBonus = is_correctL2.Contains(0);
                 Showmsg = "Congratulations! You have successfully completed ";
+            }
+
+            if (CurrentTime < Time0to30 && !AllowForBonus)
+            {
+                bonusScore += Bonuspt1;
+            }
+            else if (CurrentTime > Time0to30 && CurrentTime < Time30to45 && !AllowForBonus)
+            {
+                bonusScore += Bonuspt2;
             }
             StartCoroutine(GameEndProcess(Showmsg));
         }
@@ -419,7 +446,7 @@ public class ThrowWasteHandler : MonoBehaviour
         BackLineRendere.enabled = false;
         ForntLinerendere.enabled = false;
         yield return new WaitForSeconds(0.1f);
-
+        stage2handler.GameBonusPoint += bonusScore;
         GeneratedObj.ForEach(x =>
         {
             x.SetActive(false);
@@ -622,7 +649,7 @@ public class ThrowWasteHandler : MonoBehaviour
         yield return new WaitForSeconds(1f);
         GeneratedObj.Clear();
         Gamecanvas.SetActive(false);
-        //ZonePag.SetActive(true);
+        ZonePag.SetActive(true);
         ZoneselectionPage.SetActive(true);
         Startpage.SetActive(true);
         Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.UI;
 #if PLATFORM_ANDROID
 using UnityEngine.Android;

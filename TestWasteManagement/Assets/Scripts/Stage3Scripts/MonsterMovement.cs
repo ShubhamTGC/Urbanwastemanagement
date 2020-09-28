@@ -372,8 +372,9 @@ public class MonsterMovement : MonoBehaviour
             string truckname = other.gameObject.name;
             other.gameObject.SetActive(false);
             Gamemanager.VibrateDevice();
+            int attackscore = Gamemanager.monsterAttackScore;
             WrongAns.transform.position = this.transform.position;
-            StartCoroutine(AnsStatus(WrongAns, 0, truckname, CenterName));
+            StartCoroutine(AnsStatus(WrongAns, attackscore, truckname, CenterName));
         }
      
     }

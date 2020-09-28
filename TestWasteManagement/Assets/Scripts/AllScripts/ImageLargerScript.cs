@@ -19,30 +19,60 @@ public class ImageLargerScript : MonoBehaviour
         HelpingBool = true;
     }
 
-    // Update is called once per frame
+   
     void Update()
     {
+        if(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.OSXPlayer ||Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 screenpt = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousepos = new Vector2(screenpt.x, screenpt.y);
+                hit = Physics2D.Raycast(mousepos, Vector2.zero);
+                if (hit != null && hit.collider != null && hit.collider.gameObject.name == this.gameObject.name && HelpingBool)
+                {
+                    HelpingBool = false;
+                    StartCoroutine(LargetView());
+                }
+              
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (hit != null && hit.collider != null && hit.collider.gameObject.name == this.gameObject.name && !HelpingBool)
+                {
+                    HelpingBool = true;
+                    StartCoroutine(SmallView());
+                }
+              
+            }
+        }
 
-        if (Input.GetMouseButtonDown(0))
+        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            Vector3 screenpt = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousepos = new Vector2(screenpt.x, screenpt.y);
-            hit = Physics2D.Raycast(mousepos, Vector2.zero);
-            if(hit.collider.gameObject.name == this.gameObject.name && HelpingBool)
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
-                HelpingBool = false;
-                StartCoroutine(LargetView());
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint((Input.GetTouch(0).position)), Vector2.zero);
+                if (hit != null && hit.collider != null && hit.collider.transform.gameObject.name == this.gameObject.name && HelpingBool)
+                {
+                    HelpingBool = false;
+                    StartCoroutine(LargetView());
+                }
+
+            }
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint((Input.GetTouch(0).position)), Vector2.zero);
+                if (hit != null && hit.collider != null && hit.collider.transform.gameObject.name == this.gameObject.name)
+                {
+                    HelpingBool = true;
+                    StartCoroutine(SmallView());
+                }
             }
         }
-        if (Input.GetMouseButtonUp(0))
-        {
-            if(hit.collider.gameObject.name == this.gameObject.name && !HelpingBool)
-            {
-                HelpingBool = true;
-                StartCoroutine(SmallView());
-            }
-        }
-          
+     
+
+
+       
     }
 
 
@@ -57,11 +87,9 @@ public class ImageLargerScript : MonoBehaviour
 
     IEnumerator SmallView()
     {
-        iTween.ScaleTo(gb, Vector3.zero, 0.3f);
-        yield return new WaitForSeconds(0.3f);
-        gb.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = null;
-        gb.SetActive(false);
-        Destroy(gb);
+        Destroy(gb,0.05f);
+        yield return new WaitForSeconds(0.05f);
+        
     }
 
   

@@ -8,6 +8,7 @@ using UnityEngine.Video;
 using System.Linq;
 using UnityEngine.Networking;
 using System;
+using SimpleSQL;
 
 public class StartpageController : MonoBehaviour 
 {
@@ -20,7 +21,7 @@ public class StartpageController : MonoBehaviour
     public AESalgorithm asealgorithm;
     public GameObject firstscreen;
     public Narrationmanagement narration_activity;
-    public string Mainurl, login_API,UpdateApkApi;
+    public string Mainurl, login_API,UpdateApkApi,GetBonusScoreApi,levelMovementApi;
     public JsonData login_json;
     public GameObject login_msg;
     public float login_msg_time;
@@ -85,11 +86,15 @@ public class StartpageController : MonoBehaviour
     public string nextSceneAddress;
     public GameObject UpdatePage,LoginPage;
     private bool UpdateAvailable;
+    public SimpleSQLManager dbmanager;
+    public StageUnlockingPage StageunlockScores;
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
         homebuttonpos = homebuttonpage.GetComponent<RectTransform>().localPosition;
+
+       //  METHOD FOR FORCE FULLY UPDATE FOR USER
         //StartCoroutine(CheckUpdatedApk());
     }
 
@@ -127,14 +132,16 @@ public class StartpageController : MonoBehaviour
         else
         {
             Home_instane = this;
-          
             StartCoroutine(sceneappear());
         }
         DontDestroyOnLoad(Home_instane);
-     
+       
+
     }
 
-    
+
+
+
 
     void ComeFromStages()
     {
@@ -331,16 +338,17 @@ public class StartpageController : MonoBehaviour
         switch (buttobiobj)
         {
             case "Generation":
-                StartCoroutine(ZoneGameActive(1, midlayer_sprite));
-                StartCoroutine(scenechanges(HomepageObject, Dirty_Sky));
+                //StartCoroutine(ZoneGameActive(1, midlayer_sprite));
+                StartCoroutine(ZoneGameActive(1, Dirty_Sky));
+                //StartCoroutine(scenechanges(HomepageObject, Dirty_Sky));
                 break;
             case "seperation":
-                StartCoroutine(ZoneGameActive(2, Stage2Bg));
-                StartCoroutine(scenechanges(HomepageObject, Moderate_sky));
+                StartCoroutine(ZoneGameActive(2, Moderate_sky));
+                //StartCoroutine(scenechanges(HomepageObject, Moderate_sky));
                 break;
             case "Mangement":
-                StartCoroutine(ZoneGameActive(3, Stage2Bg));
-                StartCoroutine(scenechanges(HomepageObject, Clear_sky));
+                StartCoroutine(ZoneGameActive(3, Clear_sky));
+                //StartCoroutine(scenechanges(HomepageObject, Clear_sky));
                 // StartCoroutine(scenechanges(this.gameObject, midlayer_sprite));
                 break;
             default:
@@ -348,13 +356,11 @@ public class StartpageController : MonoBehaviour
         }
     }
 
-    IEnumerator ZoneGameActive(int Sceneno,Sprite midlayer_sprite)
+    IEnumerator ZoneGameActive(int Sceneno,Sprite sky)
     {
         yield return new WaitForSeconds(0.2f);
         toplayer.SetActive(false);
-        yield return new WaitForSeconds(1.2f);
-        yield return new WaitForSeconds(1.5f);
-        StartCoroutine(scenechanges(HomepageObject, midlayer_sprite));
+        StartCoroutine(scenechanges(HomepageObject, sky));
         yield return new WaitForSeconds(1.4f);
         SceneManager.LoadScene(Sceneno);
 
@@ -512,8 +518,19 @@ public class StartpageController : MonoBehaviour
            
             if (remeber_data == "true")
             {
-                settingpanelbtn.gameObject.SetActive(true);
-                StartCoroutine(game_play());
+                if (PlayerPrefs.GetString("Role").Equals("Parent", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    SceneManager.LoadScene(4);
+                }else if(PlayerPrefs.GetString("Role").Equals("teacher", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    SceneManager.LoadScene(5);
+                }
+                else
+                {
+                    settingpanelbtn.gameObject.SetActive(true);
+                    StartCoroutine(game_play());
+                }
+           
             }
             else
             {
@@ -542,26 +559,23 @@ public class StartpageController : MonoBehaviour
 
     IEnumerator game_play()
     {
-        //iTween.MoveTo(homebuttonpage, iTween.Hash("position", homebuttonpos, "easeType", iTween.EaseType.linear, "isLocal", true,
-        //  "time", 0.3f));
         yield return new WaitForSeconds(0.3f);
         UpdatedHomePage.SetActive(false);
-
         Debug.Log(PlayerPrefs.GetInt("UID") + " " + PlayerPrefs.GetInt("OID"));
         StartCoroutine(scenechanges(HomepageObject, toplayer_sprite));
         yield return new WaitForSeconds(1.2f);
         homebuttonpage.SetActive(false);
         string profile_data = PlayerPrefs.GetString("profile_done");
         superhero.SetActive(true);
-        
-      
+        StartCoroutine(GetBonusScoreTask());
+        StartCoroutine(LevelpercentageScore());
+        StartCoroutine(getScoreConfigdata());
+
+
     }
     IEnumerator play_action()
     {
-        //iTween.MoveTo(homebuttonpage, iTween.Hash("position", homebuttonpos, "easeType", iTween.EaseType.linear, "isLocal", true,
-        //   "time", 0.3f));
         yield return new WaitForSeconds(0.3f);
-       
         string msg = PlayerPrefs.GetString("login_msg");
         if (msg != "done")
         {
@@ -571,8 +585,6 @@ public class StartpageController : MonoBehaviour
         {
             login_msg.SetActive(false);
         }
-        //loginpage.SetActive(true);
-        // homebutton.SetActive(true);
         UpdatedHomePage.SetActive(false);
         LoginPage.SetActive(true);
         UpdatedLoginPage.SetActive(true);
@@ -652,31 +664,82 @@ public class StartpageController : MonoBehaviour
                         UserAuthenticationModel UserdataLog = Newtonsoft.Json.JsonConvert.DeserializeObject<UserAuthenticationModel>(Request.downloadHandler.text);
                         if (UserdataLog.AuthStatus.Equals("success", System.StringComparison.OrdinalIgnoreCase))
                         {
-                            PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
-                            PlayerPrefs.SetInt("OID", UserdataLog.OID);
-                            PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
-                            PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER));
-                            PlayerPrefs.SetString("username", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
-                            PlayerPrefs.SetString("User_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() :"0");
-                            PlayerPrefs.SetInt("id_school", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
-                            PlayerPrefs.SetInt("characterType", UserdataLog.avatar_type != null ? UserdataLog.avatar_type : 0);
-                            PlayerPrefs.SetInt("PlayerBody", UserdataLog.body_type != null ? UserdataLog.body_type : 0); 
-                            PlayerPrefs.SetString("profile_done", UserdataLog.avatar_type != null ? "done" :"false");
-                            settingpanelbtn.gameObject.SetActive(true);
-                            username_leftdashboard.text = PlayerPrefs.GetString("username");
-                            username_input.GetComponent<InputField>().enabled = true;
-                            password_input.GetComponent<InputField>().enabled = true;
-                            loginbutton.GetComponent<Button>().enabled = true;
-                            homebutton.SetActive(false);
-                            loadinganim.SetActive(false);
-                            string msg = "Logged In Successfully!";
-                            StartCoroutine(Messagedisplay(msg));
-                            yield return new WaitForSeconds(3.6f);
-                            loginpage.SetActive(false);
-                            videoPlayed = true;
-                            YoutubeVideopage.SetActive(true);
-                            TriviaPage.SetActive(true);
-                            Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+                            if (remeberme.isOn == true)
+                            {
+                                PlayerPrefs.SetString("logged", "true");
+                            }
+                            remeberme.isOn = false;
+                            if (UserdataLog.Id_Role == 181)     // LOGIN AS USER
+                            {
+                                PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
+                                PlayerPrefs.SetInt("OID", UserdataLog.OID);
+                                PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
+                                PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER));
+                                PlayerPrefs.SetString("username", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
+                                PlayerPrefs.SetString("User_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() : "0");
+                                PlayerPrefs.SetInt("id_school", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
+                                PlayerPrefs.SetInt("characterType", UserdataLog.avatar_type != null ? UserdataLog.avatar_type : 0);
+                                PlayerPrefs.SetInt("PlayerBody", UserdataLog.body_type != null ? UserdataLog.body_type : 0);
+                                PlayerPrefs.SetString("profile_done", UserdataLog.avatar_type >= 0 ? "done" : "false");
+                                PlayerPrefs.SetString("Role", "User");
+                                settingpanelbtn.gameObject.SetActive(true);
+                                username_leftdashboard.text = PlayerPrefs.GetString("username");
+                                username_input.GetComponent<InputField>().enabled = true;
+                                password_input.GetComponent<InputField>().enabled = true;
+                                loginbutton.GetComponent<Button>().enabled = true;
+                                homebutton.SetActive(false);
+                                loadinganim.SetActive(false);
+                                string msg = "Logged In Successfully!";
+                                StartCoroutine(Messagedisplay(msg));
+                                yield return new WaitForSeconds(3.6f);
+                                loginpage.SetActive(false);
+                                videoPlayed = true;
+                                YoutubeVideopage.SetActive(true);
+                                TriviaPage.SetActive(true);
+                                Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+                                StartCoroutine(GetBonusScoreTask());
+                                StartCoroutine(LevelpercentageScore());
+                                StartCoroutine(getScoreConfigdata());
+
+                            }else if(UserdataLog.Id_Role == 180)    // LOGIN AS TEACHER
+                            {
+                                PlayerPrefs.SetInt("TUID", UserdataLog.IDUSER);
+                                PlayerPrefs.SetInt("TOID", UserdataLog.OID);
+                                PlayerPrefs.SetInt("Tgame_id", UserdataLog.id_org_game_unit);
+                                PlayerPrefs.SetString("teachername", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
+                                PlayerPrefs.SetString("teacher_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() : "0");
+                                PlayerPrefs.SetInt("teacherschool", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
+                                PlayerPrefs.SetString("Role", "Teacher");
+                             
+                                username_input.GetComponent<InputField>().enabled = true;
+                                password_input.GetComponent<InputField>().enabled = true;
+                                loginbutton.GetComponent<Button>().enabled = true;
+                                homebutton.SetActive(false);
+                                loadinganim.SetActive(false);
+                                string msg = "Logged In Successfully!";
+                                StartCoroutine(Messagedisplay(msg));
+                                yield return new WaitForSeconds(3.6f);
+                                SceneManager.LoadScene(5);
+
+                            }
+                            else if(UserdataLog.Id_Role == 182)     // LOGIN AS PARENT
+                            {
+                                PlayerPrefs.SetInt("PUID", UserdataLog.IDUSER);
+                                PlayerPrefs.SetInt("POID", UserdataLog.OID);
+                                PlayerPrefs.SetInt("Pgame_id", UserdataLog.id_org_game_unit);
+                                PlayerPrefs.SetString("parentname", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
+                                PlayerPrefs.SetString("Role", "Parent");
+                                username_input.GetComponent<InputField>().enabled = true;
+                                password_input.GetComponent<InputField>().enabled = true;
+                                loginbutton.GetComponent<Button>().enabled = true;
+                                homebutton.SetActive(false);
+                                loadinganim.SetActive(false);
+                                string msg = "Logged In Successfully!";
+                                StartCoroutine(Messagedisplay(msg));
+                                yield return new WaitForSeconds(3.6f);
+                                SceneManager.LoadScene(4);
+                            }
+                        
 
                         }
                         else
@@ -694,6 +757,7 @@ public class StartpageController : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log(Request.downloadHandler.text);
                     username_input.GetComponent<InputField>().enabled = true;
                     password_input.GetComponent<InputField>().enabled = true;
                     loginbutton.GetComponent<Button>().enabled = true;
@@ -705,127 +769,6 @@ public class StartpageController : MonoBehaviour
                 }
 
             }
-
-
-            //Debug.Log(loginlink);
-            //WWWForm loginForm = new WWWForm();
-            //loginForm.AddField("IMEI", "");
-            //loginForm.AddField("USERID", username);
-            //loginForm.AddField("PASSWORD", encryptedpassword1);
-            //loginForm.AddField("OS", "");
-            //loginForm.AddField("Network", "");
-            //loginForm.AddField("OSVersion", "");
-            //loginForm.AddField("Details", "");
-            //loginForm.AddField("REURL", "");
-
-            //WWW loginurl = new WWW(loginlink, loginForm);
-            //yield return loginurl;
-            //if (loginurl.text != null)
-            //{
-            //    Debug.Log(loginurl.text);
-            //    login_json = JsonMapper.ToObject(loginurl.text);
-            //    string status = login_json["AuthStatus"].ToString();
-            //    int UID = int.Parse(login_json["IDUSER"].ToString());
-            //    int OID = int.Parse(login_json["OID"].ToString());
-            //    int game_id = int.Parse(login_json["id_org_game_unit"].ToString());
-            //    PlayerPrefs.SetInt("game_id", game_id);
-              
-            //    if(status.ToLower() == "success")
-            //    {
-
-            //        if (UID == PlayerPrefs.GetInt("UID"))
-            //        {
-            //            PlayerPrefs.SetInt("UID", UID);
-            //            PlayerPrefs.SetInt("OID", OID);
-            //            PlayerPrefs.SetInt("game_id", game_id);
-            //            PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
-            //            if (login_json["FIRST_NAME"].ToString() != null)
-            //            {
-            //                PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
-            //            }
-            //            if (login_json["UserGrade"] != null)
-            //            {
-            //                PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
-            //            }
-            //            if(login_json["id_school"] != null)
-            //            {
-            //                PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
-            //            }
-            //            PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-            //            PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
-            //            PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
-            //            if (login_json["avatar_type"] != null)
-            //            {
-            //                PlayerPrefs.SetString("profile_done", "done");
-                           
-            //            }
-            //        }
-            //        else
-            //        {
-            //            PlayerPrefs.SetInt("UID", UID);
-            //            PlayerPrefs.SetInt("OID", OID);
-            //            PlayerPrefs.SetInt("game_id", game_id);
-            //            PlayerPrefs.SetString("gender", login_json["GENDER"].ToString());
-            //            if (login_json["FIRST_NAME"] != null)
-            //            {
-            //                PlayerPrefs.SetString("username", login_json["FIRST_NAME"].ToString());
-            //            }
-            //            if (login_json["UserGrade"] != null)
-            //            {
-            //                PlayerPrefs.SetString("User_grade", login_json["UserGrade"].ToString());
-            //            }
-            //            if (login_json["id_school"] != null)
-            //            {
-            //                PlayerPrefs.SetInt("id_school", int.Parse(login_json["id_school"].ToString()));
-            //            }
-            //            PlayerPrefs.SetInt("characterType", int.Parse(login_json["avatar_type"].ToString()));
-            //            PlayerPrefs.SetInt("PlayerBody", int.Parse(login_json["body_type"].ToString()));
-            //            PlayerPrefs.SetString("Gender", login_json["GENDER"].ToString());
-            //            if (login_json["avatar_type"] != null)
-            //            {
-            //                PlayerPrefs.SetString("profile_done", "done");
-            //            }
-            //            //else
-            //            //{
-            //            //    PlayerPrefs.DeleteKey("profile_done");
-            //            //    PlayerPrefs.DeleteKey("username");
-            //            //    PlayerPrefs.DeleteKey("User_grade");
-            //            //    PlayerPrefs.DeleteKey("characterType");
-            //            //    PlayerPrefs.DeleteKey("PlayerBody");
-
-            //            //}
-            //        }
-            //        //===============================================================//
-            //        settingpanelbtn.gameObject.SetActive(true);
-            //        username_leftdashboard.text = PlayerPrefs.GetString("username");
-            //        username_input.GetComponent<InputField>().enabled = true;
-            //        password_input.GetComponent<InputField>().enabled = true;
-            //        loginbutton.GetComponent<Button>().enabled = true;
-            //        homebutton.SetActive(false);
-            //        loadinganim.SetActive(false);
-            //        string msg = "Logged In Successfully!";
-            //        StartCoroutine(Messagedisplay(msg));
-            //        yield return new WaitForSeconds(3.6f);
-            //        loginpage.SetActive(false);
-            //        videoPlayed = true;
-            //        YoutubeVideopage.SetActive(true);
-            //        TriviaPage.SetActive(true);
-            //        Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
-                  
-            //    }
-            //    else
-            //    {
-            //        username_input.GetComponent<InputField>().enabled = true;
-            //        password_input.GetComponent<InputField>().enabled = true;
-            //        loginbutton.GetComponent<Button>().enabled = true;
-            //        loadinganim.SetActive(false);
-            //        string msg = "Login In Failed!!";
-            //        StartCoroutine(Messagedisplay(msg));
-            //        yield return new WaitForSeconds(3.5f);
-            //        UpdatedLoginPage.SetActive(true);
-            //    }
-            //}
-
         }
     }
 
@@ -849,10 +792,6 @@ public class StartpageController : MonoBehaviour
         superhero.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
     }
-
-
-
-
 
 
     IEnumerator Enablepage(GameObject enableobject, GameObject disableobject, float time)
@@ -910,8 +849,6 @@ public class StartpageController : MonoBehaviour
         }
         profilesetup_page.SetActive(false);
         narration_activity.AfterAvatar_task();
-
-
     }
 
     public void backpage()
@@ -939,7 +876,97 @@ public class StartpageController : MonoBehaviour
         }
     }
 
- 
+    IEnumerator GetBonusScoreTask()
+    {
+        string HittingUrl = $"{Mainurl}{GetBonusScoreApi}";
+        WWW Bonuswww = new WWW(HittingUrl);
+        yield return Bonuswww;
+        if(Bonuswww.text != null)
+        {
+            if(Bonuswww.text != "[]")
+            {
+                List<BonusScoreModel> Bonusmodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BonusScoreModel>>(Bonuswww.text);
+                Bonusmodel.ForEach(x =>
+                {
+                    var Scorelog = dbmanager.Table<BonusTable>().FirstOrDefault(y => y.RoomId == x.id_room);
+                    if(Scorelog == null)
+                    {
+                        BonusTable table = new BonusTable
+                        {
+                            RoomId = x.id_room,
+                            Time0to30 = x.Time0to30,
+                            BonusPoint1 = x.BonusPoint1,
+                            Time30to45 = x.Time30to45,
+                            BonusPoint2 = x.BonusPoint2
+                        };
+                        dbmanager.Insert(table);
+                    }
+                    else
+                    {
+                        Scorelog.RoomId = x.id_room;
+                        Scorelog.Time0to30 = x.Time0to30;
+                        Scorelog.BonusPoint1 = x.BonusPoint1;
+                        Scorelog.Time30to45 = x.Time30to45;
+                        Scorelog.BonusPoint2 = x.BonusPoint2;
+                        dbmanager.UpdateTable(Scorelog);
+                    }
+                });
+               
+            }
+        }
+    }
+
+    IEnumerator LevelpercentageScore()
+    {
+        string HittingUrl = $"{Mainurl}{levelMovementApi}?id_org_game=1";
+        WWW Logwww = new WWW(HittingUrl);
+        yield return Logwww;
+        if(Logwww.text != null)
+        {
+            if(Logwww.text != "[]")
+            {
+                List<LevelMovement> LevelLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(Logwww.text);
+                LevelLog.ForEach(x =>
+                {
+                    var PercentageLog = dbmanager.Table<LevelPercentageTable>().FirstOrDefault(y => y.LevelId == x.id_level);
+                    if(PercentageLog == null)
+                    {
+                        LevelPercentageTable log = new LevelPercentageTable
+                        {
+                            LevelId = x.id_level,
+                            LevelPercentage = x.completion_score
+                        };
+                        dbmanager.Insert(log);
+                    }
+                    else
+                    {
+                       PercentageLog.LevelId = x.id_level;
+                        PercentageLog.LevelPercentage = x.completion_score;
+                        dbmanager.UpdateTable(PercentageLog);
+                    }
+                });
+            }
+        }
+    }
 
 
+    IEnumerator getScoreConfigdata()
+    {
+        yield return new WaitForSeconds(0f);
+        var ScoreLog = dbmanager.Table<ScoreConfiguration>().ToList();
+        if(ScoreLog.Count >0)
+        {
+            ScoreLog.ForEach(x =>
+            {
+                if (x.levelId == 1)
+                {
+                    StageunlockScores.Stage1Score = x.UnlockScore;
+                }
+                if (x.levelId == 2)
+                {
+                    StageunlockScores.Stage2Score = x.UnlockScore;
+                }
+            });
+        }
+    }
 }

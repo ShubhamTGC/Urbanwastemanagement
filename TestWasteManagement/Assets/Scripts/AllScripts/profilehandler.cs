@@ -383,8 +383,8 @@ public class profilehandler : MonoBehaviour
            // intro_panel.SetActive(true);
             PlayerPrefs.SetString("profile_done", "done");
             PlayerPrefs.SetString("User_grade", grade_value);
-            PlayerPrefs.SetString("avatar_type", FaceType);
-            PlayerPrefs.SetString("body_type", BodyType);
+            PlayerPrefs.SetInt("characterType",int.Parse(FaceType));
+            PlayerPrefs.SetInt("PlayerBody", int.Parse(BodyType));
             this.gameObject.SetActive(false);
          
         }

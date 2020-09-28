@@ -102,12 +102,14 @@ public class GameBoard : MonoBehaviour
     private bool helpingbool = true;
     public Image Timerbar;
     public Text Timer;
-    public AudioClip GameSoundTrack;
+    public AudioClip GameSoundTrack,Rightsound,WrongSound;
 
     [Header("All Api Section")]
     public string MainUrl;
-    public string MasterTabelPostApi, GetlevelWisedataApi, GetGamesIDApi, RoomData_api, PostPriorityLogApi, PostdrivingLogApi, GetAssessmentQuesApi;
-    private int TotaltruckScore, GameAttemptNumber;
+    public string MasterTabelPostApi, GetlevelWisedataApi, GetGamesIDApi, RoomData_api, PostPriorityLogApi, PostdrivingLogApi, GetAssessmentQuesApi, GetBadgeConfigApi,
+        StageUnlockApi, PostBadgeUserApi;
+
+    private int TotaltruckScore, GameAttemptNumber, level2GameBadgeId;
     public int Gamelevel;
     [SerializeField] private List<int> game_content = new List<int>();
     [SerializeField] private string ZoneName;
@@ -133,6 +135,18 @@ public class GameBoard : MonoBehaviour
     public GameObject InstructionPanel;
     private RectTransform textRect;
     private Vector2 uiOffset;
+    public List<GameObject> MosterSound;
+    private AudioSource DustbinSound;
+    public List<GameObject> CenterSound;
+    public string Level3BadgeName;
+    public int Stage3UnlockScore;
+    private bool Stage3unlocked;
+
+    [HideInInspector] public List<string> centernames = new List<string>();
+    [HideInInspector] public List<int> CenterCorrectPoint = new List<int>();
+    [HideInInspector] public List<int> CenterWrongPoint = new List<int>();
+    [HideInInspector]  public int monsterAttackScore;
+
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
@@ -179,6 +193,7 @@ public class GameBoard : MonoBehaviour
 
     void OnEnable()
     {
+        DustbinSound = this.gameObject.GetComponent<AudioSource>();
         textRect = ScoreText.GetComponent<RectTransform>();
         StartCoroutine(GetAssessmentQues());
         AllCommonTask();
@@ -254,10 +269,6 @@ public class GameBoard : MonoBehaviour
             PlasticActive.Add(SecondBin[randomindex[a]]);
             GlassActive.Add(Thirdbin[randomindex[a]]);
             MetalActive.Add(ForthBin[randomindex[a]]);
-            //Biohazard[randomindex[a]].SetActive(true);
-            //Ewaste[randomindex[a]].SetActive(true);
-            //Organic[randomindex[a]].SetActive(true);
-            //Recycle[randomindex[a]].SetActive(true);
            
         }
         for(int a = 0; a < 3; a++)
@@ -277,6 +288,7 @@ public class GameBoard : MonoBehaviour
 
     public void getGamedata()
     {
+        StartCoroutine(GetSounddata());
         game_content.Clear();
         TruckNamePlayed.Clear();
         dustbinCounts.Clear();
@@ -292,6 +304,26 @@ public class GameBoard : MonoBehaviour
         // StartCoroutine(GetGameAttemptNoTask());
         StartCoroutine(GetGamesIDactivity());
 
+    }
+
+    IEnumerator GetSounddata()
+    {
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (SettingLog != null)
+        {
+            DustbinSound.volume = SettingLog.Sound;
+            CenterSound.ForEach(x =>
+            {
+                x.GetComponent<AudioSource>().volume = SettingLog.Sound;
+            });
+            MosterSound.ForEach(y =>
+            {
+                y.GetComponent<AudioSource>().volume = SettingLog.Sound;
+            });
+           TruckGamePlatform.GetComponent<AudioSource>().volume = SettingLog.Music;
+            PlayerPrefs.SetString("VibrationEnable", SettingLog.Vibration == 1 ? "true" : "false");
+            yield return new WaitForSeconds(0.2f);
+        }
     }
     IEnumerator GetGameAttemptNoTask()
     {
@@ -395,23 +427,13 @@ public class GameBoard : MonoBehaviour
             DustbinCounter++;
             CheckedCollision = false;
             CurrentActive[num].SetActive(false);
-            //PlasticActive[num].SetActive(false);
-            //GlassActive[num].SetActive(false);
-            //MetalActive[num].SetActive(false);
             DustbinCollectCount++;
             DustbinCollection.text = DustbinCollectCount.ToString();
             ScorePointCounter += 10;
             DustinCollectScore += 10;
             ScorePoints.text = ScorePointCounter.ToString();
-            //Debug.Log(" object counter after " + ObjCounter + " " + BioDustbins[randomindex[ObjCounter]].name);
             CurrentActive[num] = num != -1 ? FirstBin[randomindex[ObjCounter]] : null;
-            //PlasticActive[num] = num != -1 ? SecondBin[randomindex[ObjCounter]] : null;
-            //GlassActive[num] = num != -1 ? Thirdbin[randomindex[ObjCounter]] : null;
-            //MetalActive[num] = num != -1 ? ForthBin[randomindex[ObjCounter]] : null;
             CurrentActive[num].SetActive(true);
-            //PlasticActive[num].SetActive(true);
-            //GlassActive[num].SetActive(true);
-            //MetalActive[num].SetActive(true);
             StartCoroutine(ResetBool());
             ObjCounter++;
 
@@ -425,10 +447,6 @@ public class GameBoard : MonoBehaviour
             DustinCollectScore += 10;
             ScorePoints.text = ScorePointCounter.ToString();
             Taskcounter++;
-            ////PlayGame();
-            //PlasticActive[num].SetActive(false);
-            //GlassActive[num].SetActive(false);
-            //MetalActive[num].SetActive(false);
             CurrentActive[num].SetActive(false);
         }
 
@@ -459,6 +477,8 @@ public class GameBoard : MonoBehaviour
         if (BinValid)
         {
             CheckCollision(dustbin, truck);
+            DustbinSound.clip = Rightsound;
+            DustbinSound.Play();
             Correcteffect.transform.position = dustbin.transform.position;
             ScoreText.gameObject.SetActive(true);
             Vector2 pos = Camera.main.WorldToViewportPoint(dustbin.transform.position);
@@ -476,6 +496,8 @@ public class GameBoard : MonoBehaviour
             WrongCollision();
             dustbin.SetActive(false);
             ScoreText.gameObject.SetActive(true);
+            DustbinSound.clip = WrongSound;
+            DustbinSound.Play();
             Vector2 pos = Camera.main.WorldToViewportPoint(dustbin.transform.position);
             ScoreText.text = "+0";
             var screen = Camera.main.WorldToScreenPoint(dustbin.transform.position);
@@ -563,7 +585,25 @@ public class GameBoard : MonoBehaviour
 
     public void TruckCenterResult(int score, string truckName, string CenterName)
     {
-
+        int cmsScore = 0;
+        if(CenterName != "null"){
+            string center = CenterName + " Center";
+            int index = centernames.FindIndex(x => x.Equals(center, System.StringComparison.OrdinalIgnoreCase));
+            if (score == 50)
+            {
+                cmsScore = CenterCorrectPoint[index];
+            }
+            else
+            {
+                cmsScore = CenterWrongPoint[index];
+            }
+        }
+        else
+        {
+            cmsScore = score;
+        }
+       
+       
         CenterNames.Add(CenterName != "" ? CenterName : "null");
         CorrectAlignStatus.Add(score == 50 ? 1 : 0);
         if (ActiveTruckCount < StationaryTrucks.Count)
@@ -573,7 +613,7 @@ public class GameBoard : MonoBehaviour
                 x.gameObject.transform.position = x.MonsterInitialPos;
                 x.StartMoving = false;
             });
-            ScorePointCounter += score;
+            ScorePointCounter += cmsScore;
             ScorePoints.text = ScorePointCounter.ToString();
             CurrentActive.ForEach(x =>
             {
@@ -600,7 +640,7 @@ public class GameBoard : MonoBehaviour
         }
         else
         {
-            ScorePointCounter += score;
+            ScorePointCounter += cmsScore;
             ScorePoints.text = ScorePointCounter.ToString();
             ItemCollectionCount.Add(DustbinCounter);
             DustbinCounter = 0;
@@ -840,11 +880,12 @@ public class GameBoard : MonoBehaviour
         // POstdashBoarddata();     //local database entry method
         //PosttruckGamedata();     //local database entry method
 
-       
+        StartCoroutine(CheckForGameBadge());
         StartCoroutine(PostPriorityGamedata());
         StartCoroutine(PostDrivingGamedata());
         StartCoroutine(PostScorePriorityTask());
         StartCoroutine(PostScoreDriveTask());
+        
 
 
     }
@@ -1222,5 +1263,81 @@ public class GameBoard : MonoBehaviour
                 });
             }
         }
+    }
+
+
+
+
+    IEnumerator CheckForGameBadge()
+    {
+        string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + 3;
+        WWW badge_www = new WWW(HittingUrl);
+        yield return badge_www;
+        if (badge_www.text != null)
+        {
+            //Debug.Log(" badge infp " + badge_www.text);
+            List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);
+            level2GameBadgeId = badgemodel.FirstOrDefault(x => x.badge_name == Level3BadgeName).id_badge;
+            StartCoroutine(CheckForStage2());
+        }
+    }
+    IEnumerator CheckForStage2()
+    {
+
+
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={3}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
+        {
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage3UnlockScore;
+        }
+
+        if (Stage3unlocked)
+        {
+            StartCoroutine(PostGameBadgeLevelWise());
+        }
+    }
+
+
+    IEnumerator PostGameBadgeLevelWise()
+    {
+
+        string HittingUrl = MainUrl + PostBadgeUserApi;
+        var BadgeModel = new PostBadgeModel()
+        {
+            id_user = PlayerPrefs.GetInt("UID").ToString(),
+            id_level = "1",
+            id_zone = "0",
+            id_room = "0",
+            id_special_game = "0",
+            id_badge = level2GameBadgeId.ToString()
+        };
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
+        Debug.Log("data log " + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                string status = Request.downloadHandler.text;
+                if (status.ToLower() == "success")
+                {
+                    Debug.Log("MOST ACTIVE badge uploaded " + status);
+                }
+                else
+                {
+                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
+                }
+
+            }
+
+        }
+
     }
 }

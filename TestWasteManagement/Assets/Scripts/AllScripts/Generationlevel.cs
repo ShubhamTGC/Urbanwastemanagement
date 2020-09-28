@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using SimpleSQL;
 
 public class Generationlevel : MonoBehaviour
 {
@@ -12,9 +13,6 @@ public class Generationlevel : MonoBehaviour
  
    
     public GameObject Done_msg_panel,dusbin;
-    //[Header("==kitchen objects list===")]
-    //public List<GameObject> kitchen_reduce;
-    //public List<GameObject> kitchen_reuse, kitchen_recycle,K_partially_reduce, K_partially_reuse, K_partially_recycle;
     public GameObject HomepageObject,Backbutton;
 
 
@@ -33,8 +31,6 @@ public class Generationlevel : MonoBehaviour
     public int Gamelevel,BadgeType;
     public List<GameObject> ZonesButtons;
     public Text Zoneinfo;
-
-    // Start is called before the first frame update
     void Start()
     {
         Backbutton.SetActive(true);
@@ -43,9 +39,19 @@ public class Generationlevel : MonoBehaviour
     }
      void OnEnable()
     {
-      
+        StartCoroutine(sceneappear());
         
     }
+    //IEnumerator sceneappear()
+    //{
+    //    float shadevalue = HomepageObject.GetComponent<Image>().color.a;
+    //    while (shadevalue < 1)
+    //    {
+    //        HomepageObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, shadevalue);
+    //        shadevalue += 0.1f;
+    //        yield return new WaitForSeconds(0.05f);
+    //    }
+    //}
 
     // Update is called once per frame
     void Update()
@@ -145,22 +151,22 @@ public class Generationlevel : MonoBehaviour
         switch (name.ToLower())
         {
             case "homezone":
-                StartCoroutine(midlevel_task(home_sprite, 0));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 0));
                 break;
             case "schoolzone":
-                StartCoroutine(midlevel_task(home_sprite, 1));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 1));
                 break;
             case "hospitalzone":
-                StartCoroutine(midlevel_task(home_sprite, 2));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 2));
                 break;
             case "officezone":
-                StartCoroutine(midlevel_task(home_sprite, 3));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 3));
                 break;
             case "factoryzone":
-                StartCoroutine(midlevel_task(home_sprite, 4));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 4));
                 break;
             case "parkzone":
-                StartCoroutine(midlevel_task(home_sprite, 5));
+                StartCoroutine(ZoneSelectionProcess(home_sprite, 5));
                 break;
             default:
                 Debug.Log("unique zone");
@@ -169,6 +175,8 @@ public class Generationlevel : MonoBehaviour
 
     }
 
+
+    // METHOD FOR CARD VIEW ZONE SELECTION WITH UPDATED UI
     IEnumerator midlevel_task(Sprite scene_sprite, int level_id)
     {
 
@@ -189,16 +197,29 @@ public class Generationlevel : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         //Generation_level.SetActive(true);
         G_levels[level_id].SetActive(true);
+    }
 
 
+
+    // ZONE SELECTION WITH THE CITY LANDSCAPE STYLE OLD DESIGN 
+    IEnumerator ZoneSelectionProcess(Sprite scene_sprite, int level_id)
+    {
+        yield return new WaitForSeconds(0.1f);
+        Camera.main.GetComponent<AudioSource>().enabled = false;
+        Zoneinfo.text = "";
+
+        zonelayer.SetActive(false);
+        StartCoroutine(scenechanges(HomepageObject, scene_sprite));
+        yield return new WaitForSeconds(1.2f);
+        G_levels[level_id].SetActive(true);
     }
 
     public void VibrateDevice()
     {
         if (!PlayerPrefs.HasKey("VibrationEnable"))
         {
+            Debug.Log("vibrated");
             Vibration.Vibrate(400);
-            Debug.Log("vibration");
         }
         else
         {
@@ -206,8 +227,8 @@ public class Generationlevel : MonoBehaviour
 
             if (vibration == "true")
             {
+                Debug.Log("vibrated");
                 Vibration.Vibrate(400);
-                Debug.Log("vibration");
             }
         }
 

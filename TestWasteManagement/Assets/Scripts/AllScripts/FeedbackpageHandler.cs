@@ -75,17 +75,17 @@ public class FeedbackpageHandler : MonoBehaviour
                     Texture2D texture = NativeGallery.LoadImageAtPath(path, 1024, false);
                     if (texture != null)
                     {
-                        // imageBytes = texture.EncodeToPNG();
                         texture.name = "test.png";
                         test = texture;
                         tex = texture;
-
                         Sprite ImageSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                        GameObject gb = Instantiate(ImagePreview, PreviewHandler, false);
+                        GameObject gb = Instantiate(ImagePreview);
+                        gb.transform.SetParent(PreviewHandler);
                         gb.GetComponent<Image>().sprite = ImageSprite;
                         gb.name = "preview";
                         gb.SetActive(true);
                         gb.GetComponent<ShowimagePreview>().PreviewTexture = texture;
+                        gb.GetComponent<ShowimagePreview>().canvas = this.gameObject.transform;
                         TextForImage.SetActive(false);
                     }
                 }
@@ -107,23 +107,21 @@ public class FeedbackpageHandler : MonoBehaviour
                 texture.Apply();
                 texture.name = "test.png";
                 test = texture;
-                Debug.Log("Texture size " + texture.width + " " + texture.height);
-                //LargePreview.GetComponent<RectTransform>().sizeDelta = new Vector2(texture.width, texture.height);
-                //LargePreview.texture = texture;
-                //LargePreview.gameObject.SetActive(true);
                 Texture2D newScreenshot = ScaleTexture(texture, 256, 256);
                 var bytes = newScreenshot.EncodeToPNG();
                 string imagestr = Convert.ToBase64String(bytes);
                 Texture2D tex = new Texture2D(1, 1);
                 tex.LoadImage(Convert.FromBase64String(imagestr));
                 Sprite btn_sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
-                GameObject gb = Instantiate(ImagePreview, PreviewHandler, true);
+                GameObject gb = Instantiate(ImagePreview, PreviewHandler, false);
+                gb.name = "preview";
+                gb.GetComponent<BoxCollider2D>().enabled = false;
                 gb.GetComponent<Image>().sprite = btn_sprite;
                 gb.GetComponent<ShowimagePreview>().PreviewTexture = texture;
+                gb.GetComponent<ShowimagePreview>().canvas = this.gameObject.transform;
+                gb.GetComponent<BoxCollider2D>().enabled = true;
                 gb.SetActive(true);
-                gb.name = "preview";
                 TextForImage.SetActive(false);
-                //LargePreview.texture = texture;
 
             }
         }

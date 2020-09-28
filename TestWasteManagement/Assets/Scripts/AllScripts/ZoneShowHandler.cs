@@ -54,6 +54,7 @@ public class ZoneShowHandler : MonoBehaviour
     public Color playedColor, NormalColor;
     public GameObject DeberfingPage;
     public SimpleSQLManager dbmanager;
+    public GameObject DeberfingBtn;
     void Start()
     {
 
@@ -74,7 +75,6 @@ public class ZoneShowHandler : MonoBehaviour
         if (Home.zone_completed || School.zone_completed || Hospital.zone_completed || Office.zone_completed
           || Industry.zone_completed || Park.zone_completed)
         {
-            
             SkippedTask();
         }
         else
@@ -262,16 +262,6 @@ public class ZoneShowHandler : MonoBehaviour
     IEnumerator CheckForStage2()
     {
         TriviaPage.SetActive(true);
-        //string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
-        //WWW dashboard_res = new WWW(Response_url);
-        //yield return dashboard_res;
-        //if (dashboard_res.text != null)
-        //{
-        //    Debug.Log(" log data  " + dashboard_res.text);
-        //    List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
-        //    totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
-        //}
-
 
         string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={1}&id_org_game={1}";
         WWW StageData = new WWW(Hitting_url);
@@ -281,11 +271,10 @@ public class ZoneShowHandler : MonoBehaviour
             StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
             Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
             Debug.Log(" user score  " + StageModel.ConsolidatedScore);
+            DeberfingBtn.SetActive(Stage2unlocked);
         }
 
         TriviaPage.SetActive(false);
-        StartCoroutine(PostBadgedata());
-        StartCoroutine(getBadgeConfiguration());
         OffInitialPops();
 
     }
@@ -330,7 +319,7 @@ public class ZoneShowHandler : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         StageWiseLeaderBOard.SetActive(true);
 
-    }
+    }   
 
     public void CloseStageDashboard()
     {

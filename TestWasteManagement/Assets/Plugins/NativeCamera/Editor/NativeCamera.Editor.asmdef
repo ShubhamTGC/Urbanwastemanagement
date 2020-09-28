@@ -2,8 +2,7 @@
     "name": "NativeCamera.Editor",
     "references": [],
     "includePlatforms": [
-        "Editor",
-        "iOS"
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

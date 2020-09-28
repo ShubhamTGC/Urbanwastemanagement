@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+using SimpleSQL;
+using System.Linq;
 public class GameFrameHandler : MonoBehaviour
 {
     public GameObject buttonpanel,normalbuttonpanel, targetobj,normaltargetobj;
     private Vector3 outpos, incomepos, dashboard_inpos, dashboard_outpos,normalpanelin_pos,nomalpanelout_pos;
     private int clickcount = 1,clickcount2=1, playcount = 1,volume_count =1,dashboard_count =1;
     public Sprite in_sprite,out_sprite,play,pause,slient,volume;
-    public GameObject panel_btn,panel_btn2,play_btn,volume_btn,Stage_voluBtn,pausepanel,dashboard_btn;
+    public GameObject panel_btn,panel_btn2,play_btn,volume_btn,Stage_voluBtn,pausepanel,dashboard_btn,SettingPage;
     //public GameObject leftdashboard, dashboard_target;
 
     [Header("======For count down time====")]
@@ -36,27 +37,49 @@ public class GameFrameHandler : MonoBehaviour
     public AudioSource mainaudio;
     public Image brightness;
     static StartpageController instance;
+    public SimpleSQLManager dbmanager;
     public void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         instance = StartpageController.Home_instane;
-        mainaudio.volume = PlayerPrefs.GetFloat("volume");
+        //mainaudio.volume = PlayerPrefs.GetFloat("volume");
+
         brightness.color = new Color(0, 0, 0, PlayerPrefs.GetFloat("brightness"));
+        StartCoroutine(GetSounddata());
     }
     void Start()
     {
-        
-       
         incomepos = targetobj.GetComponent<RectTransform>().localPosition;
         outpos = buttonpanel.GetComponent<RectTransform>().localPosition;
         normalpanelin_pos = normaltargetobj.GetComponent<RectTransform>().localPosition;
         nomalpanelout_pos = normalbuttonpanel.GetComponent<RectTransform>().localPosition;
     }
 
+    private void OnEnable()
+    {
+        StartCoroutine(GetSounddata());
+    }
+
+    IEnumerator GetSounddata()
+    {
+      
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (SettingLog != null)
+        {
+            Camera.main.gameObject.GetComponent<AudioSource>().volume = SettingLog.Music;
+            PlayerPrefs.SetString("VibrationEnable", SettingLog.Vibration == 1? "true":"false");
+        }
+        else
+        {
+            Camera.main.gameObject.GetComponent<AudioSource>().volume =1;
+        }
+        yield return new WaitForSeconds(0.2f);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        volume_btn.GetComponent<Image>().sprite = AudioListener.volume == 1 ? volume : slient;
+        //volume_btn.GetComponent<Image>().sprite = AudioListener.volume == 1 ? volume : slient;
     }
 
     public void Timeraction()
@@ -90,8 +113,11 @@ public class GameFrameHandler : MonoBehaviour
 
     public void NormalMovebuttonpanel()
     {
+        Debug.Log("Hitting");
         if (normalbuttonpanel.GetComponent<RectTransform>().localPosition == normalpanelin_pos)
         {
+
+            Debug.Log(" out Hitting");
             is_closed = true;
             panel_btn2.GetComponent<Image>().sprite = in_sprite;
             iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
@@ -99,6 +125,8 @@ public class GameFrameHandler : MonoBehaviour
         }
         else
         {
+
+            Debug.Log(" in hitting Hitting");
             panel_btn2.GetComponent<Image>().sprite = out_sprite;
             iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", normalpanelin_pos, "easeType", iTween.EaseType.linear, "isLocal", true, "time", 0.5));
             StartCoroutine(offsliderpanel(normalbuttonpanel, panel_btn2, nomalpanelout_pos));
@@ -405,6 +433,21 @@ public class GameFrameHandler : MonoBehaviour
             OverallPage.SetActive(true);
             panel_btn.GetComponent<Image>().sprite = in_sprite;
             iTween.MoveTo(buttonpanel, iTween.Hash("position", outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+        }
+    }
+
+    public void OpenSettingPAge(GameObject sliderpanel)
+    {
+        SettingPage.SetActive(true);
+        if (sliderpanel.name == buttonpanel.name)
+        {
+            panel_btn.GetComponent<Image>().sprite = in_sprite;
+            iTween.MoveTo(buttonpanel, iTween.Hash("position", outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+        }
+        else
+        {
+            panel_btn2.GetComponent<Image>().sprite = in_sprite;
+            iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
         }
     }
 

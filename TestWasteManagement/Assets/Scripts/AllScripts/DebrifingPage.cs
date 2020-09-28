@@ -32,7 +32,6 @@ public class DebrifingPage : MonoBehaviour
         
     }
 
-
     IEnumerator getlevelScore()
     {
         string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={Gamelevel}&id_org_game={1}";

@@ -187,6 +187,17 @@ public class Zonehandler : MonoBehaviour
     public Dictionary<string, string> MasterList = new Dictionary<string, string>();
     public SimpleSQLManager dbmanager;
 
+
+    //======== BONUS SCORE CONFIGURATION BASED ON Time ===================
+    private float RunningTime;
+    private int totalBonusScore;
+    private int Time0to30;
+    private int Time30to45;
+    private int Bonuspt1, Bonuspt2;
+    public List<GameObject> DustbinSound;
+    public GameObject TimeSound;
+    private bool CloseDoublePopup;
+
     void Start()
     {
         tabs = new List<GameObject>(new GameObject[subzones.Count]);
@@ -204,7 +215,7 @@ public class Zonehandler : MonoBehaviour
     }
     void OnEnable()
     {
-
+        StartCoroutine(GetSounddata());
         RoomIds = new List<int>();
         StartCoroutine(GetGamesIDactivity());
         StartCoroutine(GetGameAttemptNoTask());
@@ -226,9 +237,24 @@ public class Zonehandler : MonoBehaviour
         NextPAge.onClick.AddListener(delegate { RightPageEnable(); });
         backPAge.onClick.RemoveAllListeners();
         backPAge.onClick.AddListener(delegate { LeftPageEnable(); });
-
+        CloseDoublePopup = false;
         //Initialtask(0);
 
+    }
+
+
+    IEnumerator GetSounddata()
+    {
+        yield return new WaitForSeconds(0.2f);
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (SettingLog != null)
+        {
+            DustbinSound.ForEach(x =>
+            {
+                x.GetComponent<AudioSource>().volume = SettingLog.Sound;
+            });
+            TimeSound.GetComponent<AudioSource>().volume = SettingLog.Sound;
+        }
     }
     IEnumerator CollectRoomdata()
     {
@@ -365,6 +391,7 @@ public class Zonehandler : MonoBehaviour
             CurrentCscore = CMsObjectCscore1;
             room1_check = true;
             rooms = room1;
+            StartCoroutine(GetBonusPointsLocal(RoomIds[0]));
         }
         else if (roomno == 1)
         {
@@ -373,6 +400,7 @@ public class Zonehandler : MonoBehaviour
             CurrentPCscore = CMsObjectPCscore2;
             CurrentCscore = CMsObjectCscore2;
             room2_check = true;
+            StartCoroutine(GetBonusPointsLocal(RoomIds[1]));
         }
         else if (roomno == 2)
         {
@@ -381,10 +409,21 @@ public class Zonehandler : MonoBehaviour
             CurrentPCscore = CMsObjectPCscore3;
             CurrentCscore = CMsObjectCscore3;
             room3_check = true;
+            StartCoroutine(GetBonusPointsLocal(RoomIds[2]));
         }
         backbtn.onClick.RemoveAllListeners();
         backbtn.onClick.AddListener(delegate { backtozonepage(rooms); });
        
+    }
+
+    IEnumerator GetBonusPointsLocal(int room)
+    {
+        yield return new WaitForSeconds(0.1f);
+        var BonusLog = dbmanager.Table<BonusTable>().FirstOrDefault(x => x.RoomId == room);
+        Time0to30 = BonusLog.Time0to30;
+        Time30to45 = BonusLog.Time30to45;
+        Bonuspt1 = BonusLog.BonusPoint1;
+        Bonuspt2 = BonusLog.BonusPoint2;
     }
 
     void Timeraction()
@@ -440,6 +479,7 @@ public class Zonehandler : MonoBehaviour
                         nextroombtn.onClick.RemoveAllListeners();
                         yesbtn.onClick.RemoveAllListeners();
                         string msg = "Times up for this room, you can proceed with next room.";
+                        backbtn.gameObject.SetActive(false);
                         StartCoroutine(showstatus(msg));
                         for (int a = 0; a < subzones.Count; a++)
                         {
@@ -451,6 +491,7 @@ public class Zonehandler : MonoBehaviour
                         CurrentItemList = CMsobjectRoom2;
                         CurrentPCscore = CMsObjectPCscore2;
                         CurrentCscore = CMsObjectCscore2;
+                        StartCoroutine(GetBonusPointsLocal(RoomIds[1]));
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(1); });
@@ -462,6 +503,7 @@ public class Zonehandler : MonoBehaviour
                         nextroombtn.onClick.RemoveAllListeners();
                         yesbtn.onClick.RemoveAllListeners();
                         string msg = "Times up for this room, you can proceed with next room.";
+                        backbtn.gameObject.SetActive(false);
                         StartCoroutine(showstatus(msg));
                         for (int a = 0; a < subzones.Count; a++)
                         {
@@ -473,6 +515,7 @@ public class Zonehandler : MonoBehaviour
                         CurrentItemList = CMsobjectRoom3;
                         CurrentPCscore = CMsObjectPCscore3;
                         CurrentCscore = CMsObjectCscore3;
+                        StartCoroutine(GetBonusPointsLocal(RoomIds[2]));
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(2); });
@@ -484,6 +527,7 @@ public class Zonehandler : MonoBehaviour
                         timerstart = false;
                         timertext.text = "Times Up!";
                         iTween.ScaleTo(timesuppage, Vector3.one, 1f);
+                        backbtn.gameObject.SetActive(false);
                         for (int a = 0; a < subzones.Count; a++)
                         {
                             if (subzones[a].gameObject.activeInHierarchy)
@@ -509,6 +553,7 @@ public class Zonehandler : MonoBehaviour
                         nextroombtn.onClick.RemoveAllListeners();
                         yesbtn.onClick.RemoveAllListeners();
                         string msg = "Times up for this room, you can proceed with next room.";
+                        backbtn.gameObject.SetActive(false);
                         StartCoroutine(showstatus(msg));
                         for (int a = 0; a < subzones.Count; a++)
                         {
@@ -520,6 +565,7 @@ public class Zonehandler : MonoBehaviour
                         CurrentItemList = CMsobjectRoom3;
                         CurrentPCscore = CMsObjectPCscore3;
                         CurrentCscore = CMsObjectCscore3;
+                        StartCoroutine(GetBonusPointsLocal(RoomIds[2]));
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(2); });
@@ -531,6 +577,7 @@ public class Zonehandler : MonoBehaviour
                         timerstart = false;
                         timertext.text = "Times Up!";
                         iTween.ScaleTo(timesuppage, Vector3.one, 1f);
+                        backbtn.gameObject.SetActive(false);
                         for (int a = 0; a < subzones.Count; a++)
                         {
                             if (subzones[a].gameObject.activeInHierarchy)
@@ -556,6 +603,7 @@ public class Zonehandler : MonoBehaviour
                         nextroombtn.onClick.RemoveAllListeners();
                         yesbtn.onClick.RemoveAllListeners();
                         string msg = "Times up for this room, you can proceed with next room.";
+                        backbtn.gameObject.SetActive(false);
                         StartCoroutine(showstatus(msg));
                         for (int a = 0; a < subzones.Count; a++)
                         {
@@ -567,6 +615,7 @@ public class Zonehandler : MonoBehaviour
                         CurrentItemList = CMsobjectRoom1;
                         CurrentPCscore = CMsObjectPCscore1;
                         CurrentCscore = CMsObjectCscore1;
+                        StartCoroutine(GetBonusPointsLocal(RoomIds[0]));
                         yesbtn.onClick.RemoveAllListeners();
                         home_btn.onClick.RemoveAllListeners();
                         home_btn.onClick.AddListener(delegate { yesclose(0); });
@@ -578,6 +627,7 @@ public class Zonehandler : MonoBehaviour
                         timerstart = false;
                         timertext.text = "Times Up!";
                         iTween.ScaleTo(timesuppage, Vector3.one, 1f);
+                        backbtn.gameObject.SetActive(false);
                         for (int a = 0; a < subzones.Count; a++)
                         {
                             if (subzones[a].gameObject.activeInHierarchy)
@@ -590,13 +640,7 @@ public class Zonehandler : MonoBehaviour
                     }
 
                 }
-
-
-
             }
-
-
-
         }
         //-==========================================================================================//
         if (waste_count == room1.Count && room1_check)
@@ -605,6 +649,21 @@ public class Zonehandler : MonoBehaviour
             room1name = "Kitchen";
             room1_clear = true;
             room1_score = level1score - (room2_score + room3_score);
+            float runningTime = 60 - sec;
+            int TempScore = 0;
+            CurrentCscore.ForEach(x =>
+            {
+                TempScore += x;
+            });
+            
+            if(runningTime < Time0to30 && TempScore == room1_score)
+            {
+                totalBonusScore += Bonuspt1;
+            }else if(runningTime > Time0to30 && runningTime < Time30to45 && TempScore == room1_score)
+            {
+                totalBonusScore += Bonuspt2;
+            }
+
             if (room1_clear && room2_clear && room3_clear)
             {
                 // Bonusscore_room1 = Bonus_Score;
@@ -612,10 +671,12 @@ public class Zonehandler : MonoBehaviour
             }
             else
             {
+                
                 timerstop = true;
                 nextroombtn.onClick.RemoveAllListeners();
                 yesbtn.onClick.RemoveAllListeners();
                 string msg = "You have collected all the waste materials, you can move to next room.";
+                backbtn.gameObject.SetActive(false);
                 StartCoroutine(showstatus(msg));
                 if (!room2_clear)
                 {
@@ -627,6 +688,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom2;
                     CurrentPCscore = CMsObjectPCscore2;
                     CurrentCscore = CMsObjectCscore2;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[1]));
                 }
                 else if (!room3_clear)
                 {
@@ -638,6 +700,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom3;
                     CurrentPCscore = CMsObjectPCscore3;
                     CurrentCscore = CMsObjectCscore3;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[2]));
                 }
 
             }
@@ -648,7 +711,22 @@ public class Zonehandler : MonoBehaviour
             room2_check = false;
             room2_clear = true;
             room2name = "Bedroom";
+            float runningTime = 60 - sec;
             room2_score = level1score - (room1_score + room3_score);
+            int TempScore = 0;
+            CurrentCscore.ForEach(x =>
+            {
+                TempScore += x;
+            });
+
+            if (runningTime < Time0to30 && TempScore == room2_score)
+            {
+                totalBonusScore += Bonuspt1;
+            }
+            else if (runningTime > Time0to30 && runningTime < Time30to45 && TempScore == room2_score)
+            {
+                totalBonusScore += Bonuspt2;
+            }
             if (room1_clear && room2_clear && room3_clear)
             {
                 // Bonusscore_room2 = Bonus_Score;
@@ -660,6 +738,7 @@ public class Zonehandler : MonoBehaviour
                 nextroombtn.onClick.RemoveAllListeners();
                 yesbtn.onClick.RemoveAllListeners();
                 string msg = "You have collected all the waste materials, you can move to next room.";
+                backbtn.gameObject.SetActive(false);
                 StartCoroutine(showstatus(msg));
 
                 if (!room1_clear)
@@ -672,6 +751,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom1;
                     CurrentPCscore = CMsObjectPCscore1;
                     CurrentCscore = CMsObjectCscore1;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[0]));
                 }
                 else if (!room3_clear)
                 {
@@ -683,6 +763,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom3;
                     CurrentPCscore = CMsObjectPCscore3;
                     CurrentCscore = CMsObjectCscore3;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[2]));
                 }
             }
 
@@ -692,7 +773,22 @@ public class Zonehandler : MonoBehaviour
             room3_check = false;
             room3_clear = true;
             room3name = "Livingroom";
+            float runningTime = 60 - sec;
             room3_score = level1score - (room2_score + room1_score);
+            int TempScore = 0;
+            CurrentCscore.ForEach(x =>
+            {
+                TempScore += x;
+            });
+
+            if (runningTime < Time0to30 && TempScore == room3_score)
+            {
+                totalBonusScore += Bonuspt1;
+            }
+            else if (runningTime > Time0to30 && runningTime < Time30to45 && TempScore == room3_score)
+            {
+                totalBonusScore += Bonuspt2;
+            }
             if (room1_clear && room2_clear && room3_clear)
             {
                 // Bonusscore_room3 = Bonus_Score; 
@@ -704,6 +800,7 @@ public class Zonehandler : MonoBehaviour
                 nextroombtn.onClick.RemoveAllListeners();
                 yesbtn.onClick.RemoveAllListeners();
                 string msg = "You have collected all the waste materials, you can move to next room.";
+                backbtn.gameObject.SetActive(false);
                 StartCoroutine(showstatus(msg));
                 if (!room1_clear)
                 {
@@ -715,6 +812,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom1;
                     CurrentPCscore = CMsObjectPCscore1;
                     CurrentCscore = CMsObjectCscore1;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[0]));
                 }
                 else if (!room2_clear)
                 {
@@ -726,6 +824,7 @@ public class Zonehandler : MonoBehaviour
                     CurrentItemList = CMsobjectRoom2;
                     CurrentPCscore = CMsObjectPCscore2;
                     CurrentCscore = CMsObjectCscore2;
+                    StartCoroutine(GetBonusPointsLocal(RoomIds[1]));
                 }
             }
 
@@ -739,12 +838,11 @@ public class Zonehandler : MonoBehaviour
             Invoke("stopshake", 1.5f);
             scoretext.text = level1score.ToString();
             knobangle = (level1score / totalscore) * 200;
-            //scoreknob.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, -knobangle);
 
         }
         var rotationangle = Quaternion.Euler(0f, 0f, -knobangle);
         scoreknob.GetComponent<RectTransform>().rotation = Quaternion.Lerp(scoreknob.GetComponent<RectTransform>().rotation, rotationangle, 10 * 1 * Time.deltaTime);
-        //scoreknob.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, -knobangle);
+       
         if (action_plan_page.activeInHierarchy && action_check)
         {
             if (actionplan_score == 0)
@@ -873,6 +971,7 @@ public class Zonehandler : MonoBehaviour
         }
 
         timerwarining = true;
+        backbtn.gameObject.SetActive(true);
         timer.GetComponent<AudioSource>().enabled = true;
         timerstart = true;
         collected_text.GetComponent<Text>().text = "0";
@@ -888,8 +987,21 @@ public class Zonehandler : MonoBehaviour
         }
         else
         {
-            exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "You have not found all the waste, Do you really want to exit!";
-            iTween.ScaleTo(exit_panel, Vector3.one, 1f);
+            if(Done_msg_panel.transform.localScale == Vector3.one)
+            {
+                iTween.ScaleTo(Done_msg_panel, Vector3.zero, 0.2f);
+                exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "You have not found all the waste, Do you really want to exit!";
+                iTween.ScaleTo(exit_panel, Vector3.one, 0.6f);
+                CloseDoublePopup = true;
+
+            }
+            else
+            {
+                exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "You have not found all the waste, Do you really want to exit!";
+                iTween.ScaleTo(exit_panel, Vector3.one, 0.6f);
+                CloseDoublePopup = false;
+            }
+          
 
         }
     }
@@ -908,7 +1020,7 @@ public class Zonehandler : MonoBehaviour
     IEnumerator backtozone(int subzone)
     {
         yield return new WaitForSeconds(0.1f);
-        iTween.ScaleTo(exit_panel, Vector3.zero, 0.6f);
+        iTween.ScaleTo(exit_panel, Vector3.zero, 0.8f);
         exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
         yield return new WaitForSeconds(1f);
         timerpanel.SetActive(false);
@@ -921,9 +1033,15 @@ public class Zonehandler : MonoBehaviour
     }
     public void noclose()
     {
-        iTween.ScaleTo(exit_panel, Vector3.zero, 1f);
+        iTween.ScaleTo(exit_panel, Vector3.zero, 0.5f);
         exit_panel.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
-
+        if (CloseDoublePopup)
+        {
+            iTween.ScaleTo(Done_msg_panel, Vector3.one, 0.2f);
+            CloseDoublePopup = false;
+        }
+      
+      
     }
 
     public void zonedone(int lastroom)
@@ -2499,16 +2617,12 @@ public class Zonehandler : MonoBehaviour
             if (masterRes.STATUS.ToLower() == "success")
             {
                 is_zome_completed = true;
-
             }
             else
             {
                 Debug.Log(" STATUS  ====  FAILED stage 1 zonehandler script ");
             }
-
-
         }
-
     }
     IEnumerator ScorePostTask()
     {
@@ -2546,8 +2660,7 @@ public class Zonehandler : MonoBehaviour
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
                 if (masterRes.STATUS.ToLower() == "success")
                 {
-
-                    StartCoroutine(getBadgeConfiguration(0));
+                    StartCoroutine(CheckForGameBadge());
                 }
                 else
                 {
@@ -2558,235 +2671,13 @@ public class Zonehandler : MonoBehaviour
         }
     }
 
-    IEnumerator getBadgeConfiguration(int levelid)
-    {
-        string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + levelid;
-        WWW badge_www = new WWW(HittingUrl);
-        yield return badge_www;
-        if (badge_www.text != null)
-        {
-            //Debug.Log(" badge infp " + badge_www.text);
-            List<BadgeConfigModels> badgemodel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BadgeConfigModels>>(badge_www.text);
-            HighScoreBadgeid = badgemodel.FirstOrDefault(x => x.badge_name == Highscorename).id_badge;
-            ActivebadgeId = badgemodel.FirstOrDefault(x => x.badge_name == mostActiveName).id_badge;
-            MostObservantid = badgemodel.FirstOrDefault(x => x.badge_name == MostObervantName).id_badge;
-            //StartCoroutine(getHighScore());
-            //StartCoroutine(checkMostActivePTask());
-            //StartCoroutine(CheckforMoseObservant());
-            yield return new WaitForSeconds(1f);
-            StartCoroutine(CheckForGameBadge());
-        }
-    }
 
     public void action_plan_activite()
     {
         action_plan_page.SetActive(true);
     }
 
-    //=============================  ABILITY BADGE APIS =======================================
-
-    IEnumerator getHighScore()
-    {
-        string Hitting_Url = MainUrl + LeaderBoardApi + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
-        //string Hitting_Url = "https://www.skillmuni.in/wsmapi/api/WMSLeaderboad" + "?id_user=" + PlayerPrefs.GetInt("UID") + "&org_id=" + PlayerPrefs.GetInt("OID");
-        WWW Userscore_www = new WWW(Hitting_Url);
-        yield return Userscore_www;
-        if (Userscore_www.text != null)
-        {
-            List<LeaderBoardmodel> LeaderBoardData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LeaderBoardmodel>>(Userscore_www.text);
-            MyTotalScore = LeaderBoardData.FirstOrDefault(x => x.id_user == PlayerPrefs.GetInt("UID")).Score;
-            StartCoroutine(CheckHighScoreTask());
-
-
-        }
-        else
-        {
-            Debug.Log(" interner Lost ====  stage 1 zonehandler script ");
-        }
-
-    }
-
-    IEnumerator CheckHighScoreTask()
-    {
-        string HittingUrl = MainUrl + CheckHighscoreApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 1
-            + "&is_bonus_game=" + 0 + "&score=" + MyTotalScore;
-        WWW highscorecheck = new WWW(HittingUrl);
-        yield return highscorecheck;
-        if (highscorecheck.text != null)
-        {
-            //Debug.Log(" high score data " + highscorecheck.text);
-            HighScoreBadgeModel HighscoreRes = Newtonsoft.Json.JsonConvert.DeserializeObject<HighScoreBadgeModel>(highscorecheck.text);
-            if (HighscoreRes.is_high_scorer == "1")
-            {
-                Debug.Log("  USER IS A HIGH SCORER PLATYER ");
-                StartCoroutine(PostHighscoreBadge());
-
-            }
-            else
-            {
-                Debug.Log(" USER IS  NOT A HIGH SCORER PLATYER ");
-            }
-        }
-    }
-
-    IEnumerator PostHighscoreBadge()
-    {
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "1",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = HighScoreBadgeid.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("High scorer badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("High scorer badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-
-
-
-
-    IEnumerator checkMostActivePTask()
-    {
-        string HittingUrl = MainUrl + MostActivePlayerApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID") + "&id_level=" + 1;
-        WWW activeplayer_www = new WWW(HittingUrl);
-        yield return activeplayer_www;
-        if (activeplayer_www.text != null)
-        {
-            //Debug.Log(" mose active usrer data " + activeplayer_www.text);
-            MostActiveModel activeplayer_data = Newtonsoft.Json.JsonConvert.DeserializeObject<MostActiveModel>(activeplayer_www.text);
-            if (activeplayer_data.play_count == "1")
-            {
-                Debug.Log("  USER IS A MOST ACTIVE PLATYER ");
-                StartCoroutine(PostActiveBadge());
-            }
-            else
-            {
-                Debug.Log(" USER IS NOT A MOST ACTIVE PLATYER");
-            }
-        }
-    }
-
-    IEnumerator PostActiveBadge()
-    {
-
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "1",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = ActivebadgeId.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        Debug.Log("data log " + Data_log);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("MOST ACTIVE badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-
-
-    IEnumerator CheckforMoseObservant()
-    {
-        string HittingUrl = MainUrl + MostObservantApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
-        WWW observant_www = new WWW(HittingUrl);
-        yield return observant_www;
-        if (observant_www.text != null)
-        {
-            MostObservantModel observantdata = Newtonsoft.Json.JsonConvert.DeserializeObject<MostObservantModel>(observant_www.text);
-            if (observantdata.is_eligible == 1)
-            {
-                StartCoroutine(PostMostObservantbadge());
-            }
-        }
-    }
-
-    IEnumerator PostMostObservantbadge()
-    {
-
-        string HittingUrl = MainUrl + PostBadgeUserApi;
-        var BadgeModel = new PostBadgeModel()
-        {
-            id_user = PlayerPrefs.GetInt("UID").ToString(),
-            id_level = "1",
-            id_zone = "0",
-            id_room = "0",
-            id_special_game = "0",
-            id_badge = MostObservantid.ToString()
-        };
-
-        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(BadgeModel);
-        Debug.Log("data log " + Data_log);
-        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && !Request.isHttpError)
-            {
-                string status = Request.downloadHandler.text;
-                if (status.ToLower() == "success")
-                {
-                    Debug.Log("MOST ACTIVE badge uploaded " + status);
-                }
-                else
-                {
-                    Debug.Log("MOST ACTIVE badge Something went wrong " + status);
-                }
-
-            }
-
-        }
-
-    }
-
+ 
     //====================================== GAME BADGE UPDATE TASK ================================
     IEnumerator CheckForGameBadge()
     {

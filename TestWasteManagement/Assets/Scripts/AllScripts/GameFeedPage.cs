@@ -6,11 +6,12 @@ using System.Linq;
 using System.IO;
 using UnityEngine.Networking;
 using System;
+using UnityEngine.EventSystems;
 
 public class GameFeedPage : MonoBehaviour
 {
     public Color LikeColore, NotLikeColor;
-    public string MainUrl, GetUserProfileApi, PostGenericPicApi,getFeedPageApi, LikeThePostApi, CommentOnPostApi, PostGamefeedApi;
+    public string MainUrl, GetUserProfileApi, PostGenericPicApi,getFeedPageApi, LikeThePostApi, CommentOnPostApi, PostGamefeedApi,RateOnPostApi;
     private int id_post_image;
     public Text Username, Schoolname, Grade,Stage,StageIndex;
     public List<Sprite> BoyFace, Girlface;
@@ -47,6 +48,8 @@ public class GameFeedPage : MonoBehaviour
     public Text MsgBox;
     public Text InterNetTxt;
     private int ImagePrefebNum;
+    private int Id_diy, Id_actionplan;
+    private List<GameObject> ImageObject = new List<GameObject>();
     void Start()
     {
         
@@ -284,7 +287,6 @@ public class GameFeedPage : MonoBehaviour
                     FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(0).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
                     FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).transform.GetChild(2).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
                 }
-                
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = x.user_name;
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Grade " + x.Grade;
                 FeedBars[feedCounter].name = x.id_log.ToString();
@@ -309,9 +311,10 @@ public class GameFeedPage : MonoBehaviour
                         ratingObj.transform.GetChild(c-1).gameObject.GetComponent<Image>().sprite = Rated;
                     }
                 }
-             
+
+
+                GameObject ratingParent = FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(9).transform.gameObject;
                 GameObject LikeButton = FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(10).transform.GetChild(1).transform.GetChild(0).gameObject;
-               
                 LikeButton.transform.GetChild(0).gameObject.GetComponent<Text>().color = x.is_liked == 1 ? LikeColore : NotLikeColor;
                 //Comments Parents and Buttons for Comments functionality
                 GameObject CommentInput = FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).gameObject;
@@ -321,9 +324,11 @@ public class GameFeedPage : MonoBehaviour
                 Bt.onClick.AddListener(delegate { CommentOnPost(CommentInput, MainParentObj); });
                 LikeButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 LikeButton.GetComponent<Button>().onClick.AddListener(delegate { LikeFeedPost(MainParentObj, x.is_liked,LikeButton); });
+                GameObject PostType = FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(3).gameObject;
                 if (x.general_data != null)
                 {
-                    
+                    ratingParent.SetActive(false);
+                    PostType.GetComponent<Text>().text = "Generic Post";
                     url = x.general_data.image + ".png";
                     ImageUsrls.Add(url);
                     ImageParenets.Add(Parentobj);
@@ -332,10 +337,13 @@ public class GameFeedPage : MonoBehaviour
                 }
                 else if (x.DIYLog != null)
                 {
+                    ratingParent.SetActive(true);
+                    PostType.GetComponent<Text>().text = "DIY";
                     url = x.DIYLog.photo_filename;
                     ImageUsrls.Add(url);
                     ImageParenets.Add(Parentobj);
-                    if(x.DIYLog.detail_info.Length >1)
+                    Id_diy = x.DIYLog.id_log;
+                    if (x.DIYLog.detail_info.Length >1)
                     {
                         string details = x.DIYLog.detail_info;
                         string[] Data = details.Split("/"[0]);
@@ -347,17 +355,21 @@ public class GameFeedPage : MonoBehaviour
                         TitleName.Add("");
                         Descriptiondata.Add("");
                     }
-                  
-
                 }
                 else if(x.TagLog != null)
                 {
+                    ratingParent.SetActive(true);
+                    PostType.GetComponent<Text>().text = "Action Plan";
                     url = x.TagLog.photo_filename;
                     ImageUsrls.Add(url);
                     ImageParenets.Add(Parentobj);
                     TitleName.Add(x.TagLog.key_info);
                     Descriptiondata.Add(x.TagLog.detail_info);
+                    Id_actionplan = x.TagLog.id_tag_photo;
                 }
+
+           
+                ratingButtonSetup(ratingParent, x.average_rating, FeedBars[feedCounter].name,Id_diy,Id_actionplan);
                 feedCounter++;
                 
             });
@@ -375,18 +387,92 @@ public class GameFeedPage : MonoBehaviour
             yield return new WaitForSeconds(3f);
             InterNetTxt.gameObject.SetActive(false);
             InterNetTxt.text = "";
-        }
+        }     
+    }
 
+
+    void ratingButtonSetup(GameObject ratingParent,int ratingvalue,string Id,int idDiy,int idActionPlan)
+    {
+        int childcount = ratingParent.transform.childCount;
+        List<GameObject> ratinglist = new List<GameObject>();
+        for(int a = 0; a < childcount; a++)
+        {
+            ratinglist.Add(ratingParent.transform.GetChild(a).gameObject);
+
+        }
+        for(int b =0;b < ratingvalue; b++)
+        {
+            ratinglist[b].GetComponent<Image>().sprite = Rated;
+        }
+        ratinglist.ForEach(x =>
+        {
+            x.GetComponent<Button>().onClick.RemoveAllListeners();
+            x.GetComponent<Button>().onClick.AddListener(delegate { Rating(ratinglist, Id, idDiy, idActionPlan); });
+        });
         
+    }
+
+    public void Rating(List<GameObject> ratinglist,string id,int idDiy,int idActionPlan)
+    {
+        int ButtonNum = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+        for(int a = 0; a < ratinglist.Count; a++)
+        {
+            ratinglist[a].GetComponent<Image>().sprite = a < ButtonNum ? Rated : Notrated; 
+        }
+        StartCoroutine(PostRating(ButtonNum, idDiy, idActionPlan));
+    }
+
+    IEnumerator PostRating(int rating,int diy_id,int actionplan_id)
+    {
+        yield return new WaitForSeconds(1f);
+        string HittingUrl = $"{MainUrl}{RateOnPostApi}";
+        PostRatingModel Ratinglog = new PostRatingModel
+        {
+            id_user = PlayerPrefs.GetInt("UID"),
+            id_rating = 0,
+            id_diy = diy_id,
+            id_tag = actionplan_id,
+            rating = rating
+        };
+
+        string Logdata = Newtonsoft.Json.JsonConvert.SerializeObject(Ratinglog);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Logdata))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                Debug.Log(Request.downloadHandler.text);
+                RatingPostLogModel log = Newtonsoft.Json.JsonConvert.DeserializeObject<RatingPostLogModel>(Request.downloadHandler.text);
+                if (log.Status.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    string msg = log.Message;
+                    StartCoroutine(ShowMsg(msg));
+                }
+                else
+                {
+                    string msg = log.Message;
+                    StartCoroutine(ShowMsg(msg));
+                }
+            }
+            else
+            {
+                string msg = "Check Your internet connection";
+                StartCoroutine(ShowMsg(msg));
+            }
+        }
     }
 
     IEnumerator GetUserPostImage(Transform Parent,string Url,string Titlename,String Description )
     {
         GameObject gb = Instantiate(UserImagePrefeb, Parent, false);
+        ImageObject.Add(gb);
         gb.name = "UserPic" + ImagePrefebNum;
+        gb.GetComponent<BoxCollider2D>().enabled = true;
         gb.GetComponent<ImageLargerScript>().canvas = this.gameObject.transform;
         ImagePrefebNum++;
-        Debug.Log("strarted");
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(Url, true);
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
@@ -395,17 +481,15 @@ public class GameFeedPage : MonoBehaviour
         }
         else
         {
-           
             try
             {
-                Debug.Log("strarted");
                 Texture2D texture2d = new Texture2D(1, 1);
                 Sprite sprite = null;
                 if (www.isDone)
                 {
                     if (texture2d.LoadImage(www.downloadHandler.data))
                     {
-                        Debug.Log(" Image size " + texture2d.height + " " + texture2d.width);
+                        //Debug.Log(" Image size " + texture2d.height + " " + texture2d.width);
                         if (texture2d.height <= 12 && texture2d.width <= 12)
                         {
                             Debug.Log("missing");
@@ -421,7 +505,7 @@ public class GameFeedPage : MonoBehaviour
 
                 if (sprite != null)
                 {
-                    Debug.Log("done");
+                    
                     gb.GetComponent<Image>().sprite = sprite;
                     if(Titlename != null && Description != null)
                     {
@@ -435,8 +519,6 @@ public class GameFeedPage : MonoBehaviour
             {
                 Debug.Log(e);
             }
-          
-         
         }
     }
 
@@ -445,7 +527,7 @@ public class GameFeedPage : MonoBehaviour
     {
         if(likeddata != 1)
         {
-            Debug.Log(" parenr objevt for like " + Parentname.name);
+            //Debug.Log(" parenr objevt for like " + Parentname.name);
             int Id_log = int.Parse(Parentname.name.ToString());
             StartCoroutine(PostLikeTask(Id_log));
             LikeButton.transform.GetChild(0).gameObject.GetComponent<Text>().color =  LikeColore;
@@ -477,6 +559,11 @@ public class GameFeedPage : MonoBehaviour
                     string msg = "You have like the post.";
                     StartCoroutine(ShowMsg(msg));
                 }
+            }
+            else
+            {
+                string msg = "Check Your internet connection";
+                StartCoroutine(ShowMsg(msg));
             }
         }
     }
@@ -530,6 +617,11 @@ public class GameFeedPage : MonoBehaviour
                 }
 
             }
+            else
+            {
+                string msg = "Check Your internet connection";
+                StartCoroutine(ShowMsg(msg));
+            }
         }
 
         yield return new WaitForSeconds(0);
@@ -543,7 +635,7 @@ public class GameFeedPage : MonoBehaviour
 
     IEnumerator ClosureTask()
     {
-        
+        ImagePrefebNum = 0;
         int count = FeedTransform.childCount;
         for(int a = 0; a < count; a++)
         {
@@ -560,6 +652,10 @@ public class GameFeedPage : MonoBehaviour
 
     public void RefreshPage()
     {
+        ImageObject.ForEach(x =>
+        {
+            x.GetComponent<BoxCollider2D>().enabled = false;
+        });
         int count = FeedTransform.childCount;
         for (int a = 0; a < count; a++)
         {
@@ -569,6 +665,7 @@ public class GameFeedPage : MonoBehaviour
         {
             FeedBars.Clear();
         }
+        ImageObject.Clear();
         MakePage();
     }
 }

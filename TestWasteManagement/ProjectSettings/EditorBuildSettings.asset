@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stage3Games.unity
     guid: 15bdb909488d55546a5dedc4da2c0955
+  - enabled: 1
+    path: Assets/Scenes/ParentsScene.unity
+    guid: 169a53389db11614b9184da36ee720ba
+  - enabled: 1
+    path: Assets/Scenes/TeachersGame.unity
+    guid: 91460cacb45529d4e9b03853b04b1ad9
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 4a8b6752c78d61e4689842de04242828,
       type: 2}

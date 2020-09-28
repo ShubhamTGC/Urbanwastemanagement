@@ -7,6 +7,7 @@ using UnityEngine.Video;
 using System.Net;
 using UnityEngine.Networking;
 using YoutubeExplode.Models;
+using SimpleSQL;
 
 public class Zonenarrations : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class Zonenarrations : MonoBehaviour
 
     [Header("===zone narrarion======")]
     public GameObject textbox;
-    public GameObject zone_text, video_msg_panel;
+    public GameObject zone_text, video_msg_panel,ZoneinfoObject;
     private bool isskipped = false;
     public GameObject startpage;
     public Zonehandler hoomzone, schoolzone, Hospitalzone, officezone, industryzone, parkzone;
@@ -30,7 +31,7 @@ public class Zonenarrations : MonoBehaviour
     [Header("Stage 2 unlock Portion")]
     [Space(10)]
     public string MainUrl;
-    public string levelClearnessApi, PostBadgeApi,BadgeUpadteApi;
+    public string  GetRoomDataCMsApi, StageUnlockApi;
     public int ZoneNo, Gamelevel;
     [SerializeField]
     private int Stage2UnlockScore;
@@ -43,35 +44,16 @@ public class Zonenarrations : MonoBehaviour
     public Sprite greenBackground, CityPage;
     public GameObject Bonusgamepage;
     public GameObject StageWiseLeaderBOard;
+    public SimpleSQLManager dbmanager;
+    [HideInInspector] public bool AnagramPlayed;
+    public GameObject TriviaPage, DeberfingBtn;
+    public GameObject deberifingPage;
+    [SerializeField] private List<Zonehandler> ZoneScores;
     void Start()
     {
+        AnagramPlayed = false;
+        StartCoroutine(GetZoneCMSdata());
         Mainpage = FindObjectOfType<Generationlevel>();
-        if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
-            || industryzone.zone_completed || parkzone.zone_completed)
-        {
-            if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed
-                && industryzone.final_completed && parkzone.final_completed)
-            {
-                for (int a = 0; a < zones.Count; a++)
-                {
-                    zones[a].gameObject.SetActive(false);
-                }
-                StartCoroutine(last_msg_task());
-            }
-            else
-            {
-                for (int a = 0; a < zones.Count; a++)
-                {
-                    zones[a].gameObject.SetActive(true);
-                }
-            }
-
-        }
-        else
-        {
-            StartCoroutine(startNarration());
-        }
-
     }
 
 
@@ -79,32 +61,28 @@ public class Zonenarrations : MonoBehaviour
     void OnEnable()
     {
 
-
-        StartCoroutine(CheckForStage2());
+       
+       
+    }
+    void OffInitialPops()
+    {
         if (hoomzone.zone_completed || schoolzone.zone_completed || Hospitalzone.zone_completed || officezone.zone_completed
-            || industryzone.zone_completed || parkzone.zone_completed)
+          || industryzone.zone_completed || parkzone.zone_completed)
         {
-            if (hoomzone.final_completed && schoolzone.final_completed && Hospitalzone.final_completed && officezone.final_completed
-                && industryzone.final_completed && parkzone.final_completed)
-            {
-                for (int a = 0; a < zones.Count; a++)
-                {
-                    zones[a].gameObject.SetActive(false);
-                }
-                StartCoroutine(last_msg_task());
-
-            }
-            else
-            {
-                for (int a = 0; a < zones.Count; a++)
-                {
-                    zones[a].gameObject.SetActive(true);
-                }
-            }
+            skip();
         }
         else
         {
             StartCoroutine(startNarration());
+        }
+    }
+
+    void SkippedTask()
+    {
+        StartCoroutine(closevideo_action());
+        if (!AnagramPlayed && Stage2unlocked)
+        {
+            Stage2popup.SetActive(Stage2unlocked);
         }
     }
 
@@ -210,8 +188,6 @@ public class Zonenarrations : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         Camera.main.GetComponent<AudioSource>().enabled = true;
         backbtn.SetActive(true);
-        // videplayer.GetComponent<RawImage>().enabled = false;
-        // videplayer.SetActive(false);
         videomsg.SetActive(false);
         YoutubePlayer.SetActive(false);
         skipbutton.SetActive(false);
@@ -229,6 +205,7 @@ public class Zonenarrations : MonoBehaviour
         {
             zones[a].gameObject.SetActive(true);
         }
+        Stage2popup.SetActive(Stage2unlocked);
     }
     public void skip()
     {
@@ -242,6 +219,7 @@ public class Zonenarrations : MonoBehaviour
         popupobject.SetActive(false);
         StopAllCoroutines();
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
+
         foreach (GameObject e in zones)
         {
             e.transform.GetChild(0).gameObject.SetActive(false);
@@ -254,7 +232,6 @@ public class Zonenarrations : MonoBehaviour
         }
 
         Stage2popup.SetActive(Stage2unlocked);
-       
 
     }
 
@@ -304,50 +281,29 @@ public class Zonenarrations : MonoBehaviour
 
     }
 
+ 
+
     IEnumerator CheckForStage2()
     {
-        videomsg.SetActive(true);
-        string Response_url = MainUrl + levelClearnessApi + "?id_org_game=" + ZoneNo;
-        WWW dashboard_res = new WWW(Response_url);
-        yield return dashboard_res;
-        if (dashboard_res.text != null)
+        TriviaPage.SetActive(true);
+
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={1}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
         {
-            List<LevelMovement> response_data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LevelMovement>>(dashboard_res.text);
-            totalscoreOfUser = response_data.FirstOrDefault(x => x.id_level == ZoneNo)?.completion_score ?? 0;
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
+            Debug.Log(" user score  " + StageModel.ConsolidatedScore);
+            DeberfingBtn.SetActive(Stage2unlocked);
         }
 
-        Stage2unlocked = totalscoreOfUser >= Stage2UnlockScore;
-        videomsg.SetActive(false);
-        
-     
-    }
-
-    IEnumerator BadgeUpadtingTask()
-    {
-        string HittingUrl = MainUrl + PostBadgeApi;
-        PostBadgeModel BadgePost = new PostBadgeModel();
-        BadgePost.id_user = PlayerPrefs.GetInt("UID").ToString();
-        BadgePost.id_level = Gamelevel.ToString();
-        BadgePost.id_zone = ZoneNo.ToString();
-        BadgePost.id_room = "1";
-        BadgePost.id_game = "1";
-        BadgePost.id_special_game = "1";
-        BadgePost.id_badge = "1";
-
-        string PostDataBadge = Newtonsoft.Json.JsonConvert.SerializeObject(BadgePost);
-        using(UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, PostDataBadge))
-        {
-            Request.method = UnityWebRequest.kHttpVerbPOST;
-            Request.SetRequestHeader("Content-Type", "application/json");
-            Request.SetRequestHeader("Accept", "application/json");
-            yield return Request.SendWebRequest();
-            if (!Request.isNetworkError && Request.isHttpError)
-            {
-
-            }
-        }
+        TriviaPage.SetActive(false);
+        OffInitialPops();
 
     }
+
+
 
     public void ClosePopup()
     {
@@ -361,7 +317,7 @@ public class Zonenarrations : MonoBehaviour
         }
         for (int a = 0; a < zones.Count; a++)
         {
-            zones[a].gameObject.SetActive(true);
+            zones[a].gameObject.SetActive(true);    
         }
 
     }
@@ -373,6 +329,7 @@ public class Zonenarrations : MonoBehaviour
 
     IEnumerator BonusgameTask()
     {
+        ZoneinfoObject.GetComponent<Text>().text = "";
         zone_text.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
         startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1);
         for (int a = 0; a < zones.Count; a++)
@@ -407,6 +364,7 @@ public class Zonenarrations : MonoBehaviour
     public void CloseStageDashboard()
     {
         StageWiseLeaderBOard.SetActive(false);
+        deberifingPage.SetActive(true);
         foreach (GameObject e in zones)
         {
             e.transform.GetChild(0).gameObject.SetActive(false);
@@ -420,5 +378,94 @@ public class Zonenarrations : MonoBehaviour
       
     }
 
+    public void closeStagedeberfingPage()
+    {
+        deberifingPage.SetActive(false);
+        foreach (GameObject e in zones)
+        {
+            e.transform.GetChild(0).gameObject.SetActive(false);
+            e.GetComponent<BoxCollider2D>().enabled = true;
+            e.SetActive(false);
+        }
+        for (int a = 0; a < zones.Count; a++)
+        {
+            zones[a].gameObject.SetActive(true);
+        }
+    }
 
+
+    // UPDATED METHODS 
+    IEnumerator GetZoneCMSdata()
+    {
+        string HittingUrl = $"{MainUrl}{GetRoomDataCMsApi}?id_level={1}";
+        WWW GetCmsdata = new WWW(HittingUrl);
+        yield return GetCmsdata;
+        if (GetCmsdata.text != null)
+        {
+            if (GetCmsdata.text != "[]")
+            {
+                List<Stage1CMSModel> CmsLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Stage1CMSModel>>(GetCmsdata.text);
+                Debug.Log("list of cms log" + CmsLog.Count);
+               int TScore=0;
+                CmsLog.ForEach(x =>
+                {
+                    var LocalCmsLog = dbmanager.Table<WasteGeneration>().FirstOrDefault(y => y.ItemId == x.item_Id);
+                    if (LocalCmsLog == null)
+                    {
+                        WasteGeneration WasteLog = new WasteGeneration
+                        {
+                            ItemId = x.item_Id,
+                            ItemName = x.item_Name,
+                            PCscore = x.partialcorrect_point,
+                            Cscore = x.correct_point,
+                            RoomId = x.id_room
+                        };
+                        dbmanager.Insert(WasteLog);
+                    }
+                    else
+                    {
+                        LocalCmsLog.ItemId = x.item_Id;
+                        LocalCmsLog.ItemName = x.item_Name;
+                        LocalCmsLog.PCscore = x.partialcorrect_point;
+                        LocalCmsLog.Cscore = x.correct_point;
+                        LocalCmsLog.RoomId = x.id_room;
+                        dbmanager.UpdateTable(LocalCmsLog);
+
+                    }
+                    TScore += x.correct_point;
+                });
+                var percentlog = dbmanager.Table<LevelPercentageTable>().FirstOrDefault(c => c.LevelId == 1).LevelPercentage;
+                float value = (float)TScore / 100;
+                int FinalLevelScore = (int)value * percentlog;
+                Debug.Log("value " + value + "final percantge " + FinalLevelScore);
+                ZoneScores.ForEach(x =>
+                {
+                    x.Stage2UnlockScore = FinalLevelScore;
+                });
+
+                Stage2UnlockScore = FinalLevelScore;
+                StartCoroutine(CheckForStage2());
+                var scoreconfig = dbmanager.Table<ScoreConfiguration>().FirstOrDefault(a => a.levelId == 1);
+                if (scoreconfig == null)
+                {
+                    ScoreConfiguration log = new ScoreConfiguration
+                    {
+                        levelId = 1,
+                        TotalScore = TScore,
+                        PercentScore = percentlog,
+                        UnlockScore = FinalLevelScore
+                    };
+                    dbmanager.Insert(log);
+                }
+                else
+                {
+                    scoreconfig.PercentScore = percentlog;
+                    scoreconfig.levelId = 1;
+                    scoreconfig.TotalScore = TScore;
+                    scoreconfig.UnlockScore = FinalLevelScore;
+                    dbmanager.UpdateTable(scoreconfig);
+                }
+            }
+        }
+    }
 }

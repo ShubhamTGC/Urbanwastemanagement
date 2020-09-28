@@ -19,11 +19,11 @@ public class TruckSelectionPageHandler : MonoBehaviour
     private bool Helpingbool;
     public GameObject ConfirmationOPage,InformationPage;
     public GameObject StartGamePage,truckGameUi,TimerPanel,Monster,monster2, monster3;
-
-
+    public List<GameObject> Trucks;
+    public GameObject landingpage,backbtn;
     [Header("Game Obeject ")]
     public GameObject TruckMainPage;
-    public List<GameObject> trucks;
+    public List<GameObject> TrucksBtn;
     public AudioClip GameSoundTrack;
     void Start()
     {
@@ -33,7 +33,8 @@ public class TruckSelectionPageHandler : MonoBehaviour
     private void OnEnable()
     {
         initialTask();
-        StartCoroutine(getTruckSeq());
+        StationaryTrucks.Clear();
+        //StartCoroutine(getTruckSeq());
         StartCoroutine(getAttemptNumber());
       
     }
@@ -56,30 +57,29 @@ public class TruckSelectionPageHandler : MonoBehaviour
         InformationPage.SetActive(true);
     }
 
-    IEnumerator getTruckSeq()
-    {
-        Gamemanager.UserSelectedId.Clear();
-        StationaryTrucks.Clear();
-        Gamemanager.TrucksPriority.Clear();
-        Gamemanager.StationaryTrucks.Clear();
-        Gamemanager.TruckSequence.Clear();
-        Gamemanager.TruckID.Clear();
-        string HittingUrl = MainUrl + TruckSeqApi + "?UID=" + PlayerPrefs.GetInt("UID");
-        WWW GetTruckSeq = new WWW(HittingUrl);
-        yield return GetTruckSeq;
-        if(GetTruckSeq.text != null)
-        {
-            List<TruckSeqModel> Truckdata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckSeqModel>>(GetTruckSeq.text);
-            Truckdata.ForEach(x =>
-            {
-                Gamemanager.TruckSequence.Add(x.truck_name);
-                Gamemanager.TruckID.Add(x.id_truck);
-                Gamemanager.CorrectPoint = x.correct_priority_point;
-                Gamemanager.WrongPoint = x.wrong_point;
-            });
-        }
-
-    }
+    //IEnumerator getTruckSeq()
+    //{
+    //    Gamemanager.UserSelectedId.Clear();
+    //    StationaryTrucks.Clear();
+    //    Gamemanager.TrucksPriority.Clear();
+    //    Gamemanager.StationaryTrucks.Clear();
+    //    Gamemanager.TruckSequence.Clear();
+    //    Gamemanager.TruckID.Clear();
+    //    string HittingUrl = MainUrl + TruckSeqApi + "?UID=" + PlayerPrefs.GetInt("UID");
+    //    WWW GetTruckSeq = new WWW(HittingUrl);
+    //    yield return GetTruckSeq;
+    //    if(GetTruckSeq.text != null)
+    //    {
+    //        List<TruckSeqModel> Truckdata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckSeqModel>>(GetTruckSeq.text);
+    //        Truckdata.ForEach(x =>
+    //        {
+    //            Gamemanager.TruckSequence.Add(x.truck_name);
+    //            Gamemanager.TruckID.Add(x.id_truck);
+    //            Gamemanager.CorrectPoint = x.correct_priority_point;
+    //            Gamemanager.WrongPoint = x.wrong_point;
+    //        });
+    //    }
+    //}
     IEnumerator getAttemptNumber()
     {
         string Hittingurl = MainUrl + TruckLogApi + "?UID=" + PlayerPrefs.GetInt("UID");
@@ -111,7 +111,10 @@ public class TruckSelectionPageHandler : MonoBehaviour
     public void SelectTrucksPriority(GameObject Trucks)
     {
         GameObject gb = null;
-        Gamemanager.TrucksPriority.Add(!Gamemanager.TrucksPriority.Contains(Trucks) ? Trucks : null);
+        if (!Gamemanager.TrucksPriority.Contains(Trucks))
+        {
+            Gamemanager.TrucksPriority.Add(Trucks);
+        }
         for (int a = 0; a < TruckPoits.Count; a++)
         {
             if (Gamemanager.TruckPoits[a].name == Trucks.name)
@@ -162,13 +165,11 @@ public class TruckSelectionPageHandler : MonoBehaviour
 
     public void ResetTrucks()
     {
-       
         Gamemanager.UserSelectedId.Clear();
         StationaryTrucks.Clear();
         Gamemanager.TrucksPriority.Clear();
         Gamemanager.StationaryTrucks.Clear();
         StartCoroutine(resetTask());
-      
     }
 
     IEnumerator resetTask()
@@ -186,8 +187,12 @@ public class TruckSelectionPageHandler : MonoBehaviour
 
     IEnumerator closePage()
     {
-        iTween.ScaleTo(InformationPage, Vector3.zero, 0.5f);
-        yield return new WaitForSeconds(0.6f);
+        iTween.ScaleTo(InformationPage, Vector3.zero, 0.4f);
+        yield return new WaitForSeconds(0.5f);
+        Trucks.ForEach(x =>
+        {
+            x.SetActive(true);
+        });
         InformationPage.SetActive(false);
 
     }
@@ -228,5 +233,31 @@ public class TruckSelectionPageHandler : MonoBehaviour
         ConfirmationOPage.transform.GetChild(enable).gameObject.SetActive(true);
         ConfirmationOPage.transform.GetChild(disable).gameObject.SetActive(false);
         ConfirmationOPage.SetActive(true);
+    }
+
+
+    public void BackTolanding()
+    {
+        StartCoroutine(LandingPageTask());
+    }
+
+    IEnumerator LandingPageTask()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Gamemanager.UserSelectedId.Clear();
+        StationaryTrucks.Clear();
+        Gamemanager.TrucksPriority.Clear();
+        Gamemanager.StationaryTrucks.Clear();
+        for(int a=0;a< TrucksBtn.Count; a++)
+        {
+            iTween.ScaleTo(TrucksBtn[a].gameObject, Vector3.zero, 0.2f);
+            yield return new WaitForSeconds(0.2f);
+            TrucksBtn[a].SetActive(false);
+        }
+        yield return new WaitForSeconds(1f);
+        landingpage.SetActive(true);
+        backbtn.SetActive(true);
+        this.gameObject.SetActive(false);
+
     }
 }

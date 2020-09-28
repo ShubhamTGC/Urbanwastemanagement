@@ -184,7 +184,7 @@ public class DIYpageHandler : MonoBehaviour
         if(diy_www.text != null)
         {
             LevelClearness leveldata = Newtonsoft.Json.JsonConvert.DeserializeObject<LevelClearness>(diy_www.text);
-            
+            Debug.Log("level log " + diy_www.text);
             if(leveldata.LastCompletedLevelId == "0")
             {
                 StageWiseLimit = 5;

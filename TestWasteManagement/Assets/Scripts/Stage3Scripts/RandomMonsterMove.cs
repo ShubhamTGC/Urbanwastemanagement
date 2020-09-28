@@ -162,6 +162,7 @@ public class RandomMonsterMove : MonoBehaviour
         Monstereffect.clip = monsterCollision;
         Monstereffect.Play();
         AnsEffect.SetActive(true);
+        Gamemanager.VibrateDevice();
         Gamemanager.TruckCenterResult(Score, TruckName, CenterName);
         yield return new WaitForSeconds(1f);
 
