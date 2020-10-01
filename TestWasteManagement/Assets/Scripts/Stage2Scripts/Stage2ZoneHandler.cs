@@ -165,6 +165,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         {
           
             StartCoroutine(MAsterTablePosting());
+            StartCoroutine(PostBonusScore());
             Level1Controller.generateDashboardL1();
             Level2Controller.generateDashboardL2();
             StartCoroutine(clearLevel(msg));
@@ -269,7 +270,53 @@ public class Stage2ZoneHandler : MonoBehaviour
         MainZone.SetActive(false);
 
     }
+    IEnumerator PostBonusScore()
+    {
 
+        int totalscore = Level1Controller.SCore + Level2Controller.SCore;
+        ScorePostModel PostModel = new ScorePostModel();
+        string HittingUrl = MainUrl + PostMasterScoreApi;
+        PostModel.UID = PlayerPrefs.GetInt("UID");
+        PostModel.OID = PlayerPrefs.GetInt("OID");
+        PostModel.id_log = 1;
+        PostModel.id_user = PlayerPrefs.GetInt("UID");
+        PostModel.id_game_content = id_game_content;
+        PostModel.score = GameBonusPoint;
+        PostModel.id_score_unit = 1;
+        PostModel.score_type = 2;
+        PostModel.score_unit = "points";
+        PostModel.status = "A";
+        PostModel.updated_date_time = DateTime.Now.ToString();
+        PostModel.id_level = 2;
+        PostModel.id_org_game = 1;
+        PostModel.attempt_no = GameAttemptNumber + 1;
+        PostModel.timetaken_to_complete = "00:00";
+        PostModel.is_completed = 1;
+        PostModel.game_type = 1;
+
+        string Postdata = Newtonsoft.Json.JsonConvert.SerializeObject(PostModel);
+        using (UnityWebRequest Master_request = UnityWebRequest.Put(HittingUrl, Postdata))
+        {
+            Master_request.method = UnityWebRequest.kHttpVerbPOST;
+            Master_request.SetRequestHeader("Content-Type", "application/json");
+            Master_request.SetRequestHeader("Accept", "application/json");
+            yield return Master_request.SendWebRequest();
+            if (!Master_request.isNetworkError && !Master_request.isHttpError)
+            {
+                Debug.Log(Master_request.downloadHandler.text);
+                MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Master_request.downloadHandler.text);
+                if (masterRes.STATUS.ToLower() == "success")
+                {
+
+                }
+                else
+                {
+                    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
+                }
+            }
+        }
+
+    }
     IEnumerator MAsterTablePosting()
     {
 
@@ -281,7 +328,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         PostModel.id_log = 1;
         PostModel.id_user = PlayerPrefs.GetInt("UID");
         PostModel.id_game_content = id_game_content;
-        PostModel.score = totalscore + GameBonusPoint;
+        PostModel.score = totalscore ;
         PostModel.id_score_unit = 1;
         PostModel.score_type = 1;
         PostModel.score_unit = "points";

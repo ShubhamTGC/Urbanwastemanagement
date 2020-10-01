@@ -8,5 +8,6 @@ public class TeacherEvent
     public int Month { get; set; }
     public int Year { get; set; }
     public string Event { get; set; }
+    public int IdEvent { get; set; }
 
 }

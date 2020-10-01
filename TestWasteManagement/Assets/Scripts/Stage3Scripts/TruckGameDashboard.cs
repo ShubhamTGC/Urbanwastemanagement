@@ -25,7 +25,7 @@ public class TruckGameDashboard : MonoBehaviour
     [SerializeField] private int correctansScore =10;
     [SerializeField] private List<string> ALignTableseq;
     [SerializeField] private List<string> CorrectSequence;
-
+    public GameObject Showmsg, Mainpage;
     [Header("API INTEGRATION DATA ")]
     public string MainUrl;
     public string DriveLogApi;
@@ -39,7 +39,8 @@ public class TruckGameDashboard : MonoBehaviour
     {
         if(dataHandler.Count == 0)
         {
-           // StartCoroutine(GetdataFromDB());
+            // StartCoroutine(GetdataFromDB());
+            Debug.Log("Api started");
             StartCoroutine(GetDrivingGameLog());
         }
     }
@@ -48,35 +49,6 @@ public class TruckGameDashboard : MonoBehaviour
     void Update()
     {
         
-    }
-
-    IEnumerator GetdataFromDB()
-    {
-        yield return new WaitForSeconds(0.1f);
-        var gamedata = dbmanager.Table<TruckGameModel>().ToList();
-        int a = 0;
-        gamedata.ForEach(x =>
-        {
-            truckname.Add(x.Truckname);
-            dustbinCollection.Add(x.dustbinCollected);
-            reachedcenter.Add(x.Reachedcentername);
-            CenterScore.Add(x.CenterScore);
-            is_reached_correct.Add(x.is_correctReached);
-        });
-
-        for (int b = 0; b < truckname.Count + 1; b++)
-        {
-            GameObject gb = Instantiate(dataPrefeb, objectparent, false);
-            dataHandler.Add(gb);
-        }
-
-        dustbinCollection.ForEach(x =>
-        {
-            DustinCollectScore += x * correctansScore;
-        });
-        
-
-        GeneratedashBoard();
     }
 
     IEnumerator GetDrivingGameLog()
@@ -88,6 +60,8 @@ public class TruckGameDashboard : MonoBehaviour
         {
             if (gameLog.text != "[]")
             {
+                Mainpage.SetActive(true);
+                Showmsg.SetActive(false);
                 List<TruckGetLogModel> TruckModel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckGetLogModel>>(gameLog.text);
                 var MaxNum = TruckModel.Max(x => x.attempt_no);
                 TruckModel.ForEach(x =>
@@ -115,6 +89,11 @@ public class TruckGameDashboard : MonoBehaviour
 
 
                 GeneratedashBoard();
+            }
+            else
+            {
+                Mainpage.SetActive(false);
+                Showmsg.SetActive(true);
             }
         }
     }

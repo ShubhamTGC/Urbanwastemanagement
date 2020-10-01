@@ -100,7 +100,7 @@ public class Studentregistration : MonoBehaviour
                 List<CountryModel> countrylog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CountryModel>>(Request.text);
                 Countrynames.options.Clear();
                 Countrynames.value = 0;
-                Countrynames.options.Add(new Dropdown.OptionData() { text = "Country name..." });
+                Countrynames.options.Add(new Dropdown.OptionData() { text = "State name..." });
                 countrylog.ForEach(x =>
                 {
                     Countrynames.options.Add(new Dropdown.OptionData() { text = x.name });

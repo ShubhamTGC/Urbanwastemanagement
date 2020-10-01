@@ -88,6 +88,7 @@ public class StartpageController : MonoBehaviour
     private bool UpdateAvailable;
     public SimpleSQLManager dbmanager;
     public StageUnlockingPage StageunlockScores;
+    public GameObject ForgotpasswordPage;
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
@@ -280,9 +281,6 @@ public class StartpageController : MonoBehaviour
             superhero.transform.GetChild(i).gameObject.SetActive(false);
         }
         
-        
-        //next_btn_one_time.SetActive(false);
-        //popupNotification.gameObject.SetActive(true);
         for (int a = 0; a < levels.Count; a++)
         {
             levels[a].gameObject.GetComponent<Animator>().enabled = false;
@@ -338,18 +336,13 @@ public class StartpageController : MonoBehaviour
         switch (buttobiobj)
         {
             case "Generation":
-                //StartCoroutine(ZoneGameActive(1, midlayer_sprite));
                 StartCoroutine(ZoneGameActive(1, Dirty_Sky));
-                //StartCoroutine(scenechanges(HomepageObject, Dirty_Sky));
                 break;
             case "seperation":
                 StartCoroutine(ZoneGameActive(2, Moderate_sky));
-                //StartCoroutine(scenechanges(HomepageObject, Moderate_sky));
                 break;
             case "Mangement":
                 StartCoroutine(ZoneGameActive(3, Clear_sky));
-                //StartCoroutine(scenechanges(HomepageObject, Clear_sky));
-                // StartCoroutine(scenechanges(this.gameObject, midlayer_sprite));
                 break;
             default:
                 break;
@@ -546,6 +539,7 @@ public class StartpageController : MonoBehaviour
         StartCoroutine(signup_task());
     }
 
+   
     IEnumerator signup_task()
     {
         iTween.MoveTo(loginpage, iTween.Hash("position", loginpage_pos, "easeType", iTween.EaseType.linear, "isLocal", true,
@@ -554,7 +548,10 @@ public class StartpageController : MonoBehaviour
         homebutton.SetActive(false);
         loginpage.SetActive(false);
         SignUp_panel.SetActive(true);
-
+    }
+    public void forgorpassword()
+    {
+        ForgotpasswordPage.SetActive(true);
     }
 
     IEnumerator game_play()
@@ -703,9 +700,9 @@ public class StartpageController : MonoBehaviour
 
                             }else if(UserdataLog.Id_Role == 180)    // LOGIN AS TEACHER
                             {
-                                PlayerPrefs.SetInt("TUID", UserdataLog.IDUSER);
-                                PlayerPrefs.SetInt("TOID", UserdataLog.OID);
-                                PlayerPrefs.SetInt("Tgame_id", UserdataLog.id_org_game_unit);
+                                PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
+                                PlayerPrefs.SetInt("OID", UserdataLog.OID);
+                                PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
                                 PlayerPrefs.SetString("teachername", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
                                 PlayerPrefs.SetString("teacher_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() : "0");
                                 PlayerPrefs.SetInt("teacherschool", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
@@ -724,9 +721,9 @@ public class StartpageController : MonoBehaviour
                             }
                             else if(UserdataLog.Id_Role == 182)     // LOGIN AS PARENT
                             {
-                                PlayerPrefs.SetInt("PUID", UserdataLog.IDUSER);
-                                PlayerPrefs.SetInt("POID", UserdataLog.OID);
-                                PlayerPrefs.SetInt("Pgame_id", UserdataLog.id_org_game_unit);
+                                PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
+                                PlayerPrefs.SetInt("OID", UserdataLog.OID);
+                                PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
                                 PlayerPrefs.SetString("parentname", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
                                 PlayerPrefs.SetString("Role", "Parent");
                                 username_input.GetComponent<InputField>().enabled = true;

@@ -60,15 +60,26 @@ public class PopupView : MonoBehaviour
 
     public void OnDatePicker()
     {
-        NativeDialog.OpenDatePicker(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year,
+        DateTime todate = DateTime.Today;
+        int date = todate.Day; 
+        int month = todate.Month; 
+        int year = todate.Year; 
+
+        NativeDialog.OpenDatePicker(year,month,date,
             (DateTime _date) =>
             {
+                Mainpage.todate = _date;
+                Mainpage.TempDateTime = _date;
                 Mainpage.CurrentdateTime = _date;
+                Mainpage.Updatedate();
                 DebugLog(_date.ToString());
             },
             (DateTime _date) =>
             {
+                Mainpage.todate = _date;
+                Mainpage.TempDateTime = _date;
                 Mainpage.CurrentdateTime = _date;
+                Mainpage.Updatedate();
                 DebugLog(_date.ToString());
             });        
     }

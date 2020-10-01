@@ -23,6 +23,7 @@ public class DiyPostingHandler : MonoBehaviour
     private GameObject Previewobj;
     public DIYpageHandler DiyMainPage;
     public GameObject DiyUploadPage, downloadbtn, backbtn, nextbtn, previousbtn,uploadbtn;
+    private int Currentrday;
     void Start()
     {
         
@@ -31,6 +32,8 @@ public class DiyPostingHandler : MonoBehaviour
     private void OnEnable()
     {
         setBtns(false);
+        DateTime Currentdate = DateTime.Today;
+        Currentrday = Currentdate.Day;
     }
 
     void setBtns(bool enable)
@@ -128,7 +131,29 @@ public class DiyPostingHandler : MonoBehaviour
         {
             var Stagedata = Stageno.text != null ? Stageno.text : "1";
             var Userdetail = UserTitle.text + "/" + Userdetails.text;
-            StartCoroutine(PostgenericImage(Userdetail,Stagedata));
+            StartCoroutine(PostgenericImage(Userdetail, Stagedata));
+            //if (PlayerPrefs.HasKey("Todaysdate"))
+            //{
+            //    if (Currentrday == PlayerPrefs.GetInt("Todaysdate"))
+            //    {
+            //        string msg = "You have already uploaded the activity, Please Try again later.";
+            //        StartCoroutine(ShowPopupTask(msg));
+            //        clearFields();
+            //    }
+            //    else
+            //    {
+            //        var Stagedata = Stageno.text != null ? Stageno.text : "1";
+            //        var Userdetail = UserTitle.text + "/" + Userdetails.text;
+            //        StartCoroutine(PostgenericImage(Userdetail, Stagedata));
+            //    }
+            //}
+            //else
+            //{
+            //    var Stagedata = Stageno.text != null ? Stageno.text : "1";
+            //    var Userdetail = UserTitle.text + "/" + Userdetails.text;
+            //    StartCoroutine(PostgenericImage(Userdetail, Stagedata));
+            //}
+
         }
         else
         {
@@ -141,10 +166,15 @@ public class DiyPostingHandler : MonoBehaviour
     IEnumerator PostgenericImage(string userinfo,string stagenum)
     {
         //Texture2D newScreenshot = ScaleTexture(tex, 256, 256);
-       
+        DateTime currentdate = DateTime.Today;
+
+        int randomdate = UnityEngine.Random.Range(3, 6);
+        DateTime UpcomingDate = currentdate.AddDays(randomdate);
+        string tempdata = UpcomingDate.ToString("yyyy-MM-ddTHH:mm:ss");
         yield return new WaitForSeconds(0.5f);
         Debug.Log(" image data " + post_image_byte[0].Length);
         yield return new WaitForSeconds(0.5f);
+
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
         formData.Add(new MultipartFormFileSection("DIYImage", post_image_byte[0], test.name, "image/png"));
         formData.Add(new MultipartFormDataSection("EXTN", "png"));
@@ -152,6 +182,7 @@ public class DiyPostingHandler : MonoBehaviour
         formData.Add(new MultipartFormDataSection("OID", PlayerPrefs.GetInt("OID").ToString()));
         formData.Add(new MultipartFormDataSection("DETAIL", userinfo));
         formData.Add(new MultipartFormDataSection("Level", stagenum));
+        formData.Add(new MultipartFormDataSection("DIYDATE", tempdata));
 
         string post_url = MainUrl + DiyPostApi;
         UnityWebRequest www = UnityWebRequest.Post(post_url, formData);
@@ -175,6 +206,8 @@ public class DiyPostingHandler : MonoBehaviour
             if (GenericModel.STATUS.Equals("success", System.StringComparison.OrdinalIgnoreCase))
             {
                 StartCoroutine(PostThisToGameFeed());
+                DateTime Todate = DateTime.Today;
+                PlayerPrefs.SetInt("Todaysdate", Todate.Day);
             }
             formData.Clear();
             post_image_byte.Clear();

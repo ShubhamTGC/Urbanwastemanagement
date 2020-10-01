@@ -14,6 +14,8 @@ public class ZonepopUp : MonoBehaviour
     private Vector2 initialpos;
     [SerializeField]
     private float time = 0.3f;
+    public string ZoneMSg;
+    public Text ZoneInfo;
     void Start()
     {
         initialpos = startpage.GetComponent<RectTransform>().localPosition;
@@ -27,6 +29,8 @@ public class ZonepopUp : MonoBehaviour
 
     public void OnMouseEnter()
     {
+        ZoneInfo.gameObject.SetActive(true);
+        ZoneInfo.text = ZoneMSg;
         //StartCoroutine(ZoneEffect());
         startpage.GetComponent<Image>().color = HoverEffect;
         ZoneChild.SetActive(true);
@@ -34,6 +38,7 @@ public class ZonepopUp : MonoBehaviour
 
     public void OnMouseExit()
     {
+        ZoneInfo.text = "";
         // StartCoroutine(CancelEffect());
         startpage.GetComponent<Image>().color = RelasedEffect;
         ZoneChild.SetActive(false);

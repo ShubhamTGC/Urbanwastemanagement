@@ -18,10 +18,11 @@ public class PrioritizedDashboard : MonoBehaviour
     private List<GameObject> dataRows = new List<GameObject>();
     public List<string> tableSequence;
     public Text OverallScore;
-
+    public GameObject Showmsg,Mainpage;
     [Header("API INTERGRATION PART")]
     public string MainUrl;
     public string GetPriorityLogApi;
+
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class PrioritizedDashboard : MonoBehaviour
     {
         if(dataRows.Count == 0 )
         {
-           // StartCoroutine(gettabeldata());
+            Debug.Log("Api started");
             StartCoroutine(getPriorityData());
         }
         
@@ -45,27 +46,6 @@ public class PrioritizedDashboard : MonoBehaviour
     }
 
 
-    IEnumerator gettabeldata()
-    {
-        yield return new WaitForSeconds(0.1f);
-        var Gamedata = dbmanager.Table<Prioritization>().ToList();
-        int a = 0;
-        Gamedata.ForEach(x =>
-        {
-            Truckname.Add(x.Truckname);
-            is_correct.Add(x.Is_correct);
-            truckScore.Add(x.Truckscore);
-            Correctseq.Add(x.CorrectTruck);
-            a++;
-        });
-
-        for(int b = 0; b < Truckname.Count; b++)
-        {
-            GameObject gb = Instantiate(dataPrefeb, TableParent, false);
-            dataRows.Add(gb);
-        }
-
-    }
 
     void GeneratedashBoard()
     {
@@ -118,7 +98,10 @@ public class PrioritizedDashboard : MonoBehaviour
         {
             if (GetGamedata.text != "[]")
             {
+                Mainpage.SetActive(true);
+                Showmsg.SetActive(false);
                 List<TruckLogModel> LogModel = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckLogModel>>(GetGamedata.text);
+                Debug.Log("log data " + GetGamedata.text);
                 var MaxAttemptNo = LogModel.Max(x => x.attempt_no);
                 LogModel.ForEach(x =>
                 {
@@ -138,6 +121,11 @@ public class PrioritizedDashboard : MonoBehaviour
                 }
 
                 GeneratedashBoard();
+            }
+            else
+            {
+                Mainpage.SetActive(false);
+                Showmsg.SetActive(true);
             }
         }
     }

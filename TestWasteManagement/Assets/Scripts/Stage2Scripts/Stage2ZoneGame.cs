@@ -35,6 +35,7 @@ public class Stage2ZoneGame : MonoBehaviour
     public GameObject GameGuidePage;
     private GameObject selectedZone;
     public List<GameObject> PopupinGameGuide;
+    public GameObject ZoneTextinfo;
     void Start()
     {
         Debug.Log("checking");
@@ -83,6 +84,8 @@ public class Stage2ZoneGame : MonoBehaviour
         Homepage.GetComponent<Image>().sprite = CityZoneSprite;
         selectedZone = SelectedZone;
         GameGuidePage.SetActive(true);
+        ZoneTextinfo.GetComponent<Text>().text = "";
+        ZoneTextinfo.SetActive(false);
 
     }
 

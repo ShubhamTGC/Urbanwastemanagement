@@ -266,7 +266,7 @@ public class GameFeedPage : MonoBehaviour
         {
             List<FeedPostModel> feedPosts = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FeedPostModel>>(GameFeeddata.text);
             feedPosts = feedPosts.OrderByDescending(x =>  x.id_log).ToList();
-
+            Debug.Log("Gamefeed log " + GameFeeddata.text);
             for(int a = 0; a < feedPosts.Count; a++)
             {
                 GameObject feed = Instantiate(FeedPrefeb, FeedTransform, false);
@@ -277,16 +277,20 @@ public class GameFeedPage : MonoBehaviour
             feedPosts.ForEach(x =>
             {
                 string url = "";
-                if (x.Gender.Equals("m", System.StringComparison.OrdinalIgnoreCase))
+                if(x.Gender != null)
                 {
-                    FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(0).gameObject.GetComponent<Image>().sprite = OtherUserBoy[x.avatar_type];
-                    FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).transform.GetChild(2).gameObject.GetComponent<Image>().sprite = OtherUserBoy[x.avatar_type];
+                    if (x.Gender.Equals("m", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(0).gameObject.GetComponent<Image>().sprite = OtherUserBoy[x.avatar_type];
+                        FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).transform.GetChild(2).gameObject.GetComponent<Image>().sprite = OtherUserBoy[x.avatar_type];
+                    }
+                    else
+                    {
+                        FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(0).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
+                        FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).transform.GetChild(2).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
+                    }
                 }
-                else
-                {
-                    FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(0).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
-                    FeedBars[feedCounter].transform.GetChild(0).transform.GetChild(6).transform.GetChild(2).gameObject.GetComponent<Image>().sprite = OtherUserGirl[x.avatar_type];
-                }
+               
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<Text>().text = x.user_name;
                 FeedBars[feedCounter].transform.GetChild(0).gameObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = "Grade " + x.Grade;
                 FeedBars[feedCounter].name = x.id_log.ToString();

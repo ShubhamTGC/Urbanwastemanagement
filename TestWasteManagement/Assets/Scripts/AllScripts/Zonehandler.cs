@@ -2574,6 +2574,10 @@ public class Zonehandler : MonoBehaviour
         PlayerPrefs.SetInt("ZoneScore", totalscore);
         string data = JsonMapper.ToJson(logs);
         StartCoroutine(Post_data(data));
+        if(totalBonusScore > 0)
+        {
+            StartCoroutine(PostBonusScore());
+        }
         StartCoroutine(ScorePostTask());
 
 
@@ -2624,9 +2628,57 @@ public class Zonehandler : MonoBehaviour
             }
         }
     }
-    IEnumerator ScorePostTask()
+
+
+    IEnumerator PostBonusScore()
     {
         yield return new WaitForSeconds(0.1f);
+        string HittingUrl = MainUrl + ScorePostApi;
+        ScorePostModel scorePost = new ScorePostModel();
+        scorePost.UID = PlayerPrefs.GetInt("UID");
+        scorePost.OID = PlayerPrefs.GetInt("OID");
+        scorePost.id_user = PlayerPrefs.GetInt("UID");
+        scorePost.id_game_content = game_content;
+        scorePost.score = totalBonusScore;
+        scorePost.id_score_unit = 1;
+        scorePost.score_type = 2;
+        scorePost.score_unit = "points";
+        scorePost.status = "A";
+        scorePost.updated_date_time = DateTime.Now.ToString();
+        scorePost.id_level = 1;
+        scorePost.id_org_game = 1;
+        scorePost.attempt_no = GameAttemptNumber + 1;
+        scorePost.timetaken_to_complete = "00:00";
+        scorePost.is_completed = 1;
+        scorePost.game_type = 1;
+
+        string Data_log = Newtonsoft.Json.JsonConvert.SerializeObject(scorePost);
+        //Debug.Log("data log " + Data_log);
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Data_log))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                Debug.Log(Request.downloadHandler.text);
+                MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Request.downloadHandler.text);
+                if (masterRes.STATUS.ToLower() == "success")
+                {
+                   
+                }
+                else
+                {
+                    Debug.Log(" TSTATUS  ====  FAILED stage 1 zonehandler script ");
+                }
+            }
+
+        }
+    }
+    IEnumerator ScorePostTask()
+    {
+       
         string HittingUrl = MainUrl + ScorePostApi;
         ScorePostModel scorePost = new ScorePostModel();
         scorePost.UID = PlayerPrefs.GetInt("UID");
