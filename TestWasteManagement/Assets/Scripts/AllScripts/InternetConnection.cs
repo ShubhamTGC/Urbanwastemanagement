@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InternetConnection : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class InternetConnection : MonoBehaviour
         else
         {
             internetpanel.SetActive(false);
+            
         }
         yield return new WaitForSeconds(5f);
         StartCoroutine(checkInternet());

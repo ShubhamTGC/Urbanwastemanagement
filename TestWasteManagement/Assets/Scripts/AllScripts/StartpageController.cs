@@ -96,7 +96,7 @@ public class StartpageController : MonoBehaviour
         homebuttonpos = homebuttonpage.GetComponent<RectTransform>().localPosition;
 
        //  METHOD FOR FORCE FULLY UPDATE FOR USER
-        //StartCoroutine(CheckUpdatedApk());
+        StartCoroutine(CheckUpdatedApk());
     }
 
     IEnumerator CheckUpdatedApk()

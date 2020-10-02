@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using System;
 using UnityEngine.Networking;
 using LitJson;
+using SimpleSQL;
 
 public class AssessmentGameHandler : MonoBehaviour
 {
@@ -81,10 +82,14 @@ public class AssessmentGameHandler : MonoBehaviour
     private int UserSelectedId;
     private int GameAttemptNumber;
     public GameObject FinalPage;
+    public AudioSource GameSound;
+    public AudioClip CorrectAnsmusic, WrongAnsmusic;
+    public SimpleSQLManager dbmanager;
     void Start()
     {
       
     }
+    
 
     
 
@@ -144,6 +149,7 @@ public class AssessmentGameHandler : MonoBehaviour
 
     private void OnEnable()
     {
+        StartCoroutine(GetSounddata());
         QuestionBar.text = "";
         Buttons.ForEach(x =>
         {
@@ -154,6 +160,22 @@ public class AssessmentGameHandler : MonoBehaviour
         });
         StartCoroutine(GetQuestionTask());
         StartCoroutine(getAssessmentLog());
+    }
+
+    IEnumerator GetSounddata()
+    {
+
+        var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
+        if (SettingLog != null)
+        {
+            GameSound.volume = SettingLog.Sound;
+            PlayerPrefs.SetString("VibrationEnable", SettingLog.Vibration == 1 ? "true" : "false");
+        }
+        else
+        {
+            GameSound.volume = 1;
+        }
+        yield return new WaitForSeconds(0.2f);
     }
 
 
@@ -245,9 +267,13 @@ public class AssessmentGameHandler : MonoBehaviour
             {
                 Buttons[a].gameObject.GetComponent<Image>().sprite = Correctans;
                 Buttons[a].gameObject.GetComponent<Image>().color = correctcolor;
+                GameSound.clip = CorrectAnsmusic;
+                GameSound.Play();
 
                 if (Buttons[a].name != SelecteObj.name)
                 {
+                    GameSound.clip = WrongAnsmusic;
+                    GameSound.Play();
                     SelecteObj.GetComponent<Image>().sprite = WrongAns;
                     SelecteObj.GetComponent<Image>().color = correctcolor;
                 }

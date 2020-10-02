@@ -129,30 +129,27 @@ public class DiyPostingHandler : MonoBehaviour
     {
         if(post_image_byte.Count >0)
         {
-            var Stagedata = Stageno.text != null ? Stageno.text : "1";
-            var Userdetail = UserTitle.text + "/" + Userdetails.text;
-            StartCoroutine(PostgenericImage(Userdetail, Stagedata));
-            //if (PlayerPrefs.HasKey("Todaysdate"))
-            //{
-            //    if (Currentrday == PlayerPrefs.GetInt("Todaysdate"))
-            //    {
-            //        string msg = "You have already uploaded the activity, Please Try again later.";
-            //        StartCoroutine(ShowPopupTask(msg));
-            //        clearFields();
-            //    }
-            //    else
-            //    {
-            //        var Stagedata = Stageno.text != null ? Stageno.text : "1";
-            //        var Userdetail = UserTitle.text + "/" + Userdetails.text;
-            //        StartCoroutine(PostgenericImage(Userdetail, Stagedata));
-            //    }
-            //}
-            //else
-            //{
-            //    var Stagedata = Stageno.text != null ? Stageno.text : "1";
-            //    var Userdetail = UserTitle.text + "/" + Userdetails.text;
-            //    StartCoroutine(PostgenericImage(Userdetail, Stagedata));
-            //}
+            if (PlayerPrefs.HasKey("Todaysdate"))
+            {
+                if (Currentrday == PlayerPrefs.GetInt("Todaysdate"))
+                {
+                    string msg = "You have already uploaded the activity, Please Try again later.";
+                    StartCoroutine(ShowPopupTask(msg));
+                    clearFields();
+                }
+                else
+                {
+                    var Stagedata = Stageno.text != null ? Stageno.text : "1";
+                    var Userdetail = UserTitle.text + "/" + Userdetails.text;
+                    StartCoroutine(PostgenericImage(Userdetail, Stagedata));
+                }
+            }
+            else
+            {
+                var Stagedata = Stageno.text != null ? Stageno.text : "1";
+                var Userdetail = UserTitle.text + "/" + Userdetails.text;
+                StartCoroutine(PostgenericImage(Userdetail, Stagedata));
+            }
 
         }
         else
@@ -165,10 +162,10 @@ public class DiyPostingHandler : MonoBehaviour
 
     IEnumerator PostgenericImage(string userinfo,string stagenum)
     {
-        //Texture2D newScreenshot = ScaleTexture(tex, 256, 256);
+       
         DateTime currentdate = DateTime.Today;
 
-        int randomdate = UnityEngine.Random.Range(3, 6);
+        int randomdate =  UnityEngine.Random.Range(3, 6);
         DateTime UpcomingDate = currentdate.AddDays(randomdate);
         string tempdata = UpcomingDate.ToString("yyyy-MM-ddTHH:mm:ss");
         yield return new WaitForSeconds(0.5f);
