@@ -11,7 +11,7 @@ public class Studentregistration : MonoBehaviour
 {
     // Start is called before the first frame update
     public string MainUrl, SchoolListApi, CheckUserID,TeacherListApi,StudentRegisterApi, GetCountryNameApi;
-    public Dropdown school_dropdown, TeacherName, Countrynames;
+    public Dropdown school_dropdown, TeacherName, Countrynames,Gender;
     public InputField Username, Grade, UserId, Emailid;
     private Dictionary<string, int> SchoolIdList = new Dictionary<string, int>();
     public GameObject PopUppage;
@@ -22,6 +22,7 @@ public class Studentregistration : MonoBehaviour
     private Dictionary<int, string> CountryIDs = new Dictionary<int, string>();
     public List<Dropdown.OptionData> schooloptions;
     public InputField schoolsearchBar;
+    private string Genderdata;
     void Start()
     {
         schooloptions = school_dropdown.options;
@@ -47,6 +48,8 @@ public class Studentregistration : MonoBehaviour
         school_dropdown.value = 0;
         TeacherName.value = 0;
         Countrynames.value = 0;
+        Gender.value = 0;
+
     }
 
     // Update is called once per frame
@@ -113,7 +116,8 @@ public class Studentregistration : MonoBehaviour
 
     public void RegisterUser()
     {
-        if (Username.text == ""  || Grade.text == "" || UserId.text == ""  || school_dropdown.value == 0 || TeacherName.value == 0  || Countrynames.value == 0)
+        if (Username.text == ""  || Grade.text == "" || UserId.text == ""  || school_dropdown.value == 0 || TeacherName.value == 0  || Countrynames.value == 0 
+            || Gender.value ==0 || Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));
@@ -215,6 +219,15 @@ public class Studentregistration : MonoBehaviour
     {
         yield return new WaitForSeconds(0f);
         string teacherid = TeachersIDs.FirstOrDefault(x => x.Value == TeacherName.options[TeacherName.value].text).Key.ToString();
+        string gendervalue = Gender.options[Gender.value].text;
+        if (gendervalue.Equals("male", System.StringComparison.OrdinalIgnoreCase))
+        {
+            Genderdata = "M";
+        }
+        else
+        {
+            Genderdata = "F";
+        }
         string HittingUrl = $"{MainUrl}{StudentRegisterApi}";
         UserRegistrationModel UserLog = new UserRegistrationModel
         {
@@ -225,6 +238,7 @@ public class Studentregistration : MonoBehaviour
             TeacherId = TeachersIDs.FirstOrDefault(x => x.Value == TeacherName.options[TeacherName.value].text).Key.ToString(),
             id_school = SchoolIDs.FirstOrDefault(x => x.Value == school_dropdown.options[school_dropdown.value].text).Key.ToString(),
             id_state =  CountryIDs.FirstOrDefault(x => x.Value == Countrynames.options[Countrynames.value].text).Key.ToString(),
+            Gender = Genderdata
         };
 
         string RegistrationLog = Newtonsoft.Json.JsonConvert.SerializeObject(UserLog);

@@ -102,8 +102,5 @@ public class DebrifingPage : MonoBehaviour
 
     }
 
-    public void SkipPage()
-    {
-
-    }
+  
 }

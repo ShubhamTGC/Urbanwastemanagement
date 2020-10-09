@@ -5,6 +5,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using SimpleSQL;
+using System.Linq;
 
 public class DIYpageHandler : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class DIYpageHandler : MonoBehaviour
     public GameObject DiyuploadPage;
     [SerializeField] private int Stagelimit =5;
     public bool Disablebtn;
+    public SimpleSQLManager dbmanager;
     void Start()
     {
         
@@ -38,7 +41,9 @@ public class DIYpageHandler : MonoBehaviour
         Disablebtn = true;
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            StartCoroutine(CheckLevelCleared());
+            //StartCoroutine(CheckLevelCleared());
+            StartCoroutine(GetUnlockStage());
+
         }
         else
         {
@@ -66,7 +71,7 @@ public class DIYpageHandler : MonoBehaviour
         {
             StageText.text = pagecounter < 5 ? "Stage 1" : "Stage 2";
             Stagename = pagecounter < 5 ? "Stage1" : "Stage2";
-            if (pagecounter > 10)
+            if (pagecounter > 9)
             {
                 StageText.text = "Stage 3";
                 Stagename = "Stage3";
@@ -205,5 +210,38 @@ public class DIYpageHandler : MonoBehaviour
         }
         Debug.Log("stage limit " + StageWiseLimit);
        
+    }
+
+    IEnumerator GetUnlockStage()
+    {
+        yield return new WaitForSeconds(0.1f);
+        var Log = dbmanager.Table<StageClearness>().ToList();
+        if(Log == null)
+        {
+            StageWiseLimit = 5;
+        }
+        else
+        {
+            Log.ForEach(x =>
+            {
+                if (x.IsClear == 1 &&  x.LevelId == 1)
+                {
+                    StageWiseLimit = 10;
+                }
+                if (x.IsClear == 1 && x.LevelId ==2 )
+                {
+                    StageWiseLimit = 16;
+                }
+                if(x.IsClear == 0 && x.LevelId ==1)
+                {
+                    StageWiseLimit = 5;
+                }
+                if (x.IsClear == 0 && x.LevelId == 2)
+                {
+                    StageWiseLimit = 5;
+                }
+            });
+        }
+      
     }
 }

@@ -103,8 +103,10 @@ public class ProjectileDragging : MonoBehaviour
         catapultLineFront.SetPosition(0, catapultLineFront.transform.position);
         catapultLineBack.SetPosition(0, catapultLineBack.transform.position);
 
-        catapultLineFront.sortingLayerName = "Foreground";
-        catapultLineBack.sortingLayerName = "Foreground";
+        //catapultLineFront.sortingLayerName = "Foreground";
+        //catapultLineBack.sortingLayerName = "Foreground";
+        catapultLineFront.sortingLayerName = "Default";
+        catapultLineBack.sortingLayerName = "Default";
 
         catapultLineFront.sortingOrder = 3;
         catapultLineBack.sortingOrder = 1;
@@ -194,21 +196,26 @@ public class ProjectileDragging : MonoBehaviour
         {
             collide = true;
             string objectname = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite.name;
-            if (collision.gameObject.tag == "Groud")
+            Debug.Log("collision name " + collision.gameObject.name);
+            if(collision.gameObject.tag != "leaderboard")
             {
-                ONstrike.transform.position = this.gameObject.transform.position;
-                string collidername = collision.collider.gameObject.name;
-                throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
-                StartCoroutine(CollidedTask(collision.gameObject));
+                if (collision.gameObject.tag == "Groud")
+                {
+                    ONstrike.transform.position = this.gameObject.transform.position;
+                    string collidername = collision.collider.gameObject.name;
+                    throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
+                    StartCoroutine(CollidedTask(collision.gameObject));
+                }
+                else
+                {
+                    string collidername = "wall";
+                    throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
+                    collide = false;
+                    this.gameObject.SetActive(false);
+
+                }
             }
-            else
-            {
-                string collidername = "wall";
-                throwwaste.checkCollidedAns(collidername, objectname, collision.gameObject);
-                collide = false;
-                this.gameObject.SetActive(false);
-               
-            }
+           
         }
      
     }

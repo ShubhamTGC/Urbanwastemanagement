@@ -12,6 +12,7 @@ public class BrightnessControl : MonoBehaviour
     public SimpleSQLManager dbmanager;
     public Button Musicbtn, Soundbtn, vibrationbtn;
     private int MusicValue,SoundValue,VibrationValue;
+    public Text AppversionName;
     void Start()
     {
      
@@ -19,6 +20,7 @@ public class BrightnessControl : MonoBehaviour
 
     private void OnEnable()
     {
+        AppversionName.text = "Version : " + Application.version.ToString();
         var SettingLog = dbmanager.Table<GameSetting>().FirstOrDefault();
         if(SettingLog != null)
         {

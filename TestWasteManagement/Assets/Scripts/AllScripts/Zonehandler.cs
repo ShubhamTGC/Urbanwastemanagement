@@ -2753,6 +2753,23 @@ public class Zonehandler : MonoBehaviour
         {
             StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
             Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
+            var tableLog = dbmanager.Table<StageClearness>().FirstOrDefault(x => x.LevelId == 1);
+            int clear = int.Parse(StageModel.ConsolidatedScore) > Stage2UnlockScore ? 1 : 0;
+            if (tableLog == null)
+            {
+                StageClearness log = new StageClearness
+                {
+                    LevelId = 1,
+                    IsClear = clear
+                };
+                dbmanager.Insert(log);
+            }
+            else
+            {
+                tableLog.LevelId = 1;
+                tableLog.IsClear = clear;
+                dbmanager.UpdateTable(tableLog);
+            }
         }
 
         if (Stage2unlocked)

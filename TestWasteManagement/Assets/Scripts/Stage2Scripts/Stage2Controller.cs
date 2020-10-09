@@ -20,17 +20,26 @@ public class Stage2Controller : MonoBehaviour
     public SimpleSQLManager dbmanager;
     public Stage2ZoneGame Stage2Parent;
     public List<Stage2ZoneHandler> stage2zones;
+    public YoutubePlayer.YoutubePlayer YoutubeVideoPage;
     void Start()
     {
-      
         StartCoroutine(getCmsdata());
-        
+        StartCoroutine(GetYoutubeLink());
     }
     private void OnEnable()
     {
         StartCoroutine(sceneAppear());
     }
 
+    IEnumerator GetYoutubeLink()
+    {
+        yield return new WaitForSeconds(0.1f);
+        var LocalLog = dbmanager.Table<VideoUrls>().FirstOrDefault(x => x.LevelId == 2);
+        if (LocalLog != null)
+        {
+            YoutubeVideoPage.youtubeUrl = LocalLog.VideoLink;
+        }
+    }
     // Update is called once per frame
     void Update()
     {

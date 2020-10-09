@@ -12,6 +12,7 @@ TagManager:
   - Groud
   - Border
   - Truck
+  - leaderboard
   layers:
   - Default
   - TransparentFX

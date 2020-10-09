@@ -26,25 +26,25 @@ public class ShowimagePreview : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Vector3 screenpt = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    mousepos = new Vector2(screenpt.x, screenpt.y);
-        //    hit = Physics2D.Raycast(mousepos, Vector2.zero);
-        //    if (hit.collider.gameObject.name == this.gameObject.name && HelpingBool)
-        //    {
-        //        HelpingBool = false;
-        //        StartCoroutine(LargetView());
-        //    }
-        //}
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    if (hit.collider.gameObject.name == this.gameObject.name && !HelpingBool)
-        //    {
-        //        HelpingBool = true;
-        //        StartCoroutine(SmallView());
-        //    }
-        //}
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 screenpt = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousepos = new Vector2(screenpt.x, screenpt.y);
+            hit = Physics2D.Raycast(mousepos, Vector2.zero);
+            if (hit != null && hit.collider != null && hit.collider.gameObject.name == this.gameObject.name && HelpingBool)
+            {
+                HelpingBool = false;
+                StartCoroutine(LargetView());
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (hit != null && hit.collider != null && hit.collider.gameObject.name == this.gameObject.name && !HelpingBool)
+            {
+                HelpingBool = true;
+                StartCoroutine(SmallView());
+            }
+        }
     }
 
 

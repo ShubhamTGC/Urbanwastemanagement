@@ -49,14 +49,24 @@ public class Zonenarrations : MonoBehaviour
     public GameObject TriviaPage, DeberfingBtn;
     public GameObject deberifingPage;
     [SerializeField] private List<Zonehandler> ZoneScores;
+    public YoutubePlayer.YoutubePlayer YoutubeVideoPage;
     void Start()
     {
         AnagramPlayed = false;
         StartCoroutine(GetZoneCMSdata());
         Mainpage = FindObjectOfType<Generationlevel>();
+        StartCoroutine(GetYoutubeLink());
     }
 
-
+    IEnumerator GetYoutubeLink()
+    {
+        yield return new WaitForSeconds(0.1f);
+        var LocalLog = dbmanager.Table<VideoUrls>().FirstOrDefault(x => x.LevelId == 1);
+        if(LocalLog != null)
+        {
+            YoutubeVideoPage.youtubeUrl = LocalLog.VideoLink;
+        }
+    }
 
     void OnEnable()
     {
@@ -118,6 +128,7 @@ public class Zonenarrations : MonoBehaviour
         {
             if (YoutubePlayer.GetComponent<VideoPlayer>().isPlaying)
             {
+                skipbutton.SetActive(true);
                 CheckForEnd = true;
             }
             if (CheckForEnd)
@@ -172,7 +183,7 @@ public class Zonenarrations : MonoBehaviour
         videomsg.SetActive(true);
         VideoPlayed = true;
         YoutubePlayer.SetActive(true);
-        skipbutton.SetActive(true);
+       // skipbutton.SetActive(true);
         backbtn.SetActive(false);
         msg2.SetActive(false);
     }

@@ -205,7 +205,10 @@ public class SaveImageToServer : MonoBehaviour
         string longi = PlayerPrefs.GetFloat("LONG").ToString();
         string uid = PlayerPrefs.GetInt("UID").ToString();
         string oid = PlayerPrefs.GetInt("OID").ToString();
-
+        if(post_image_byte.Count == 0)
+        {
+            post_image_byte.Add(Without_image);
+        }
  
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
         formData.Add(new MultipartFormDataSection("UID", uid));
@@ -242,18 +245,27 @@ public class SaveImageToServer : MonoBehaviour
            
             Debug.Log(www.downloadHandler.text);
             ActionPlanResModel actionModelRes = Newtonsoft.Json.JsonConvert.DeserializeObject<ActionPlanResModel>(www.downloadHandler.text);
-            id_tag_photo = actionModelRes.id_tag_photo;
-            StartCoroutine(PostThisToGameFeed());
-            yield return new WaitForSeconds(0.5f);
-            string msg = "PLAN SUCCESSFULLY GENERATED!";
-            StartCoroutine(statusmsgshow(msg));
-            yield return new WaitForSeconds(2.5f);
-            CaptureButton.interactable = true;
-            user_text.text = "";
-            plan_title.text = "";
-            post_image_byte.Clear();
-            capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
-            formData.Clear();
+            if (actionModelRes.STATUS.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+            {
+                id_tag_photo = actionModelRes.id_tag_photo;
+                StartCoroutine(PostThisToGameFeed());
+                yield return new WaitForSeconds(0.5f);
+                string msg = "Plan Successfully Generated!";
+                StartCoroutine(statusmsgshow(msg));
+                yield return new WaitForSeconds(2.5f);
+                CaptureButton.interactable = true;
+                user_text.text = "";
+                plan_title.text = "";
+                post_image_byte.Clear();
+                capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
+                formData.Clear();
+            }
+            else
+            {
+                string msg = "Something went wrong, Please try again later!";
+                StartCoroutine(statusmsgshow(msg));
+            }
+      
                
         }
         

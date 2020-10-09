@@ -12,6 +12,8 @@ public class Parentregistration : MonoBehaviour
     private Dictionary<int, string> CountryData = new Dictionary<int, string>();
     public Text ExtramsgBox;
     public GameObject PopUppage;
+    public Dropdown Gender;
+    private string Genderdata;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +31,7 @@ public class Parentregistration : MonoBehaviour
         parentName.text = "";
         Emailid.text = "";
         studentid.text = "";
+        Gender.value = 0;
 
     }
 
@@ -53,7 +56,7 @@ public class Parentregistration : MonoBehaviour
 
     public void ParentRegister()
     {
-        if (parentName.text == "" || studentid.text == "" || Userid.text == "" )
+        if (parentName.text == "" || studentid.text == "" || Userid.text == ""  || Gender.value == 0 || Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));
@@ -67,6 +70,15 @@ public class Parentregistration : MonoBehaviour
 
     IEnumerator GetParentRegistered()
     {
+        string gendervalue = Gender.options[Gender.value].text;
+        if (gendervalue.Equals("male", System.StringComparison.OrdinalIgnoreCase))
+        {
+            Genderdata = "M";
+        }
+        else
+        {
+            Genderdata = "F";
+        }
         string HittingUrl = $"{MainUrl}{ParentregistrationApi}";
 
         ParentModel ParentLog = new ParentModel
@@ -74,7 +86,8 @@ public class Parentregistration : MonoBehaviour
             ParentName = parentName.text,
             StudentsUserId = studentid.text,
             ParentUserId = Userid.text,
-            EmailId = Emailid.text
+            EmailId = Emailid.text,
+            Gender = Genderdata
         };
 
         string Logdata = Newtonsoft.Json.JsonConvert.SerializeObject(ParentLog);

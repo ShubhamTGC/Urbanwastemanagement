@@ -7,7 +7,7 @@ public class Stage3PageHandler : MonoBehaviour
 {
     public GameObject Mainpage;
     public Text ShowMsgpanel;
-    public GameObject MsgPanel, GamemanagerObj, ValidPointsObj,landingPage,truckselectionPage,levelCardPage;
+    public GameObject MsgPanel, GamemanagerObj, ValidPointsObj,landingPage,truckselectionPage,levelCardPage,SelectionPage;
     public GameBoard Gamemanagerdata;
     public GameObject PriorityBtn, alignBtn;
     public GameObject AllPoints, gameManagerPart;
@@ -30,6 +30,7 @@ public class Stage3PageHandler : MonoBehaviour
         {
             levelCardPage.SetActive(true);
         }
+        Backbtn.SetActive(true);
         GamemanagerObj.SetActive(true);
         ValidPointsObj.SetActive(true);
      
@@ -61,9 +62,9 @@ public class Stage3PageHandler : MonoBehaviour
         }
         MsgPanel.SetActive(true);
         yield return new WaitForSeconds(3f);
-        ShowMsgpanel.text = "";
         iTween.ScaleTo(MsgPanel, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
+        ShowMsgpanel.text = "";
         MsgPanel.SetActive(false);
         PriorityBtn.GetComponent<BoxCollider2D>().enabled = alignBtn.GetComponent<BoxCollider2D>().enabled = true;
 
@@ -78,6 +79,10 @@ public class Stage3PageHandler : MonoBehaviour
     {
         iTween.ScaleTo(landingPage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.6f);
+       
+        //SelectionPage.SetActive(false);
+        levelCardPage.SetActive(false);
+        yield return new WaitForSeconds(0f);
         Backbtn.SetActive(false);
         gameGuidePage.SetActive(true);
 
@@ -134,5 +139,9 @@ public class Stage3PageHandler : MonoBehaviour
         landingPage.SetActive(false);
     }
 
+    public void Setnormal()
+    {
+        Mainpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+    }
 
 }

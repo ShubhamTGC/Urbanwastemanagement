@@ -22,8 +22,8 @@ public class DiyLeaderBoardHandler : MonoBehaviour
     private void OnEnable()
     {
         rankOrder = 1;
-        UserName.text = PlayerPrefs.GetString("username");
-        ClassValue.text = PlayerPrefs.GetString("User_grade");
+        //UserName.text = PlayerPrefs.GetString("username");
+        //ClassValue.text = PlayerPrefs.GetString("User_grade");
         if(Rows.Count == 0)
         {
             StartCoroutine(GenerateLeaderBoard());
@@ -48,9 +48,13 @@ public class DiyLeaderBoardHandler : MonoBehaviour
         {
             if(diyLog.text != "[]")
             {
-                List<DiyLeaderBoardModel> log = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DiyLeaderBoardModel>>(diyLog.text);
-                log = log.OrderByDescending(x => x.DIYPoints).ToList();
-                log.ForEach(x =>
+                Debug.Log("data log " + diyLog.text);
+                DiyLeaderBoardModel log = Newtonsoft.Json.JsonConvert.DeserializeObject<DiyLeaderBoardModel>(diyLog.text);
+                List<DIYLeaderBoardList> listLog = log.LeaderList.ToList();
+                UserName.text = log.Name;
+                ClassValue.text = log.Class;
+                listLog = listLog.OrderByDescending(x => x.DIYPoints).ToList();
+                listLog.ForEach(x =>
                 {
                     GameObject gb = Instantiate(dataRow, RowHandler, false);
                     Rows.Add(gb);
@@ -60,20 +64,20 @@ public class DiyLeaderBoardHandler : MonoBehaviour
                     gb.transform.GetChild(2).gameObject.GetComponent<Text>().text = x.DIYTitle.ToString();
                     gb.transform.GetChild(3).gameObject.GetComponent<Text>().text = x.DIYPoints.ToString();
 
-                    
+
                     if (rankOrder == 1)
                     {
-                        setRanks(row, Firstrank,user, fisrtmedel);
+                        setRanks(row, Firstrank, user, fisrtmedel);
                     }
                     else if (rankOrder == 2)
                     {
-                        setRanks(row, secondrank,user,secondmedel);
+                        setRanks(row, secondrank, user, secondmedel);
                     }
                     else if (rankOrder == 3)
                     {
-                        setRanks(row, Thirdrank,user,thirdmedel);
+                        setRanks(row, Thirdrank, user, thirdmedel);
                     }
-                    else if(rankOrder > 3)
+                    else if (rankOrder > 3)
                     {
                         row.GetComponent<Text>().text = x.Rank.ToString();
                         user.transform.GetChild(0).gameObject.SetActive(false);

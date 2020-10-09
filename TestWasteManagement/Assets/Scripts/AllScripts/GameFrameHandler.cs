@@ -38,13 +38,12 @@ public class GameFrameHandler : MonoBehaviour
     public Image brightness;
     static StartpageController instance;
     public SimpleSQLManager dbmanager;
+    public GameObject FeedBackPage;
     public void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         instance = StartpageController.Home_instane;
-        //mainaudio.volume = PlayerPrefs.GetFloat("volume");
-
-        brightness.color = new Color(0, 0, 0, PlayerPrefs.GetFloat("brightness"));
+       
         StartCoroutine(GetSounddata());
     }
     void Start()
@@ -79,7 +78,7 @@ public class GameFrameHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //volume_btn.GetComponent<Image>().sprite = AudioListener.volume == 1 ? volume : slient;
+        
     }
 
     public void Timeraction()
@@ -358,13 +357,13 @@ public class GameFrameHandler : MonoBehaviour
 
     public void YesLogout()
     {
-        //Time.timeScale = 1f;
+        
         logoutpage.SetActive(false);
         StartCoroutine(afterlogout());
     }
     public void LogoutCancel()
     {
-        //Time.timeScale = 1f;
+        
     }
 
     IEnumerator afterlogout()
@@ -419,7 +418,19 @@ public class GameFrameHandler : MonoBehaviour
         {
             iTween.MoveTo(buttonpanel, iTween.Hash("position", outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
         }
-        
+    }
+
+    public void ShowFeedBack(GameObject panel)
+    {
+        FeedBackPage.SetActive(true);
+        if (panel.name == normalbuttonpanel.name)
+        {
+            iTween.MoveTo(normalbuttonpanel, iTween.Hash("position", nomalpanelout_pos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+        }
+        else
+        {
+            iTween.MoveTo(buttonpanel, iTween.Hash("position", outpos, "isLocal", true, "easeType", iTween.EaseType.linear, "time", 0.5f));
+        }
     }
 
     public void ShowOverallDashboard()

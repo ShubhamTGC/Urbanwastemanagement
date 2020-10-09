@@ -9,4 +9,5 @@ public class UserRegistrationModel
     public string TeacherId { get; set; }
     public string id_school { get; set; }
     public string id_state { get; set; }
+    public string Gender { get; set; }
 }

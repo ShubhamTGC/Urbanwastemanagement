@@ -10,7 +10,8 @@ using UnityEngine.Networking;
 using System;
 using SimpleSQL;
 
-public class StartpageController : MonoBehaviour 
+
+public class StartpageController : MonoBehaviour
 {
     public static StartpageController Home_instane;
     public GameObject HomepageObject;
@@ -21,7 +22,7 @@ public class StartpageController : MonoBehaviour
     public AESalgorithm asealgorithm;
     public GameObject firstscreen;
     public Narrationmanagement narration_activity;
-    public string Mainurl, login_API,UpdateApkApi,GetBonusScoreApi,levelMovementApi;
+    public string Mainurl, login_API, UpdateApkApi, GetBonusScoreApi, levelMovementApi, StageUnlockApi, VideoUrlApi;
     public JsonData login_json;
     public GameObject login_msg;
     public float login_msg_time;
@@ -42,22 +43,22 @@ public class StartpageController : MonoBehaviour
 
     //------------------------------------//
     private Vector3 homebuttonpos, loginpage_pos;
-    public GameObject homebuttonpage,homebutton;
+    public GameObject homebuttonpage, homebutton;
 
 
     [Header("==superher narration part==")]
     public GameObject superhero;
     public Text narrationtext;
-    public GameObject generation, seperation, management,next_btn_one_time;
+    public GameObject generation, seperation, management, next_btn_one_time;
     // Start is called before the first frame update
     public List<GameObject> levels;
     public List<GameObject> sublevels;
-    public GameObject toplayer, midlayer,zonelayer;
+    public GameObject toplayer, midlayer, zonelayer;
 
     [Header("=====generation level sprites=====")]
     public Sprite toplayer_sprite;
-    public Sprite midlayer_sprite,home_sprite,industry_sprite,hospital_sprite,forest_sprite,school_sprite,park_sprite, Dirty_Sky,Moderate_sky,Clear_sky, Stage2Bg;
-    public Button Back,dashboardbtn,settingpanelbtn;
+    public Sprite midlayer_sprite, home_sprite, industry_sprite, hospital_sprite, forest_sprite, school_sprite, park_sprite, Dirty_Sky, Moderate_sky, Clear_sky, Stage2Bg;
+    public Button Back, dashboardbtn, settingpanelbtn;
 
 
     [Header("====Generation level===")]
@@ -80,37 +81,106 @@ public class StartpageController : MonoBehaviour
 
     //===================== ON BORDING VARIABLES================= //
     public GameObject TriviaPage;
-    public GameObject YoutubeVideopage,skipVideo;
+    public GameObject YoutubeVideopage, skipVideo;
 
     private bool videoPlayed, checkforEnd;
     public string nextSceneAddress;
-    public GameObject UpdatePage,LoginPage;
+    public GameObject UpdatePage, LoginPage;
     private bool UpdateAvailable;
     public SimpleSQLManager dbmanager;
     public StageUnlockingPage StageunlockScores;
     public GameObject ForgotpasswordPage;
+    private int Stage1Score, Stage2Score;
+    public YoutubePlayer.YoutubePlayer youtubePage;
+    public Button ShoePasswordBtn;
+    public Sprite OpenEye, CloseEye;
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
         loginpage_pos = loginpage.GetComponent<RectTransform>().localPosition;
         homebuttonpos = homebuttonpage.GetComponent<RectTransform>().localPosition;
 
-       //  METHOD FOR FORCE FULLY UPDATE FOR USER
-        StartCoroutine(CheckUpdatedApk());
+        // METHOD FOR FORCE FULLY UPDATE FOR USER
+        //StartCoroutine(CheckUpdatedApk());
+        StartCoroutine(GetCmsVideoLinks());
     }
 
     IEnumerator CheckUpdatedApk()
     {
-       
+
         string HittingUrl = $"{Mainurl}{UpdateApkApi}?vid={Application.version}";
         WWW checkApkwww = new WWW(HittingUrl);
         yield return checkApkwww;
-        if(checkApkwww.text != null)
+        if (checkApkwww.text != null)
         {
             UpdateAvailable = checkApkwww.text == "\"1|Success\"" ? false : true;
         }
     }
 
+    IEnumerator GetCmsVideoLinks()
+    {
+        string HittingUrl = $"{Mainurl}{VideoUrlApi}";
+        PostUrlModel postLog = new PostUrlModel
+        {
+            id_level = "1",
+            video_type = "1"
+        };
+
+        string dataLog = Newtonsoft.Json.JsonConvert.SerializeObject(postLog);
+
+        using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, dataLog))
+        {
+            Request.method = UnityWebRequest.kHttpVerbPOST;
+            Request.SetRequestHeader("Content-Type", "application/json");
+            Request.SetRequestHeader("Accept", "application/json");
+            yield return Request.SendWebRequest();
+            if (!Request.isNetworkError && !Request.isHttpError)
+            {
+                if (Request.downloadHandler.text != null)
+                {
+                    if (Request.downloadHandler.text != "[]")
+                    {
+                        Debug.Log("data " + Request.downloadHandler.text);
+                        List<VideoUrlModel> VideoLog = Newtonsoft.Json.JsonConvert.DeserializeObject<List<VideoUrlModel>>(Request.downloadHandler.text);
+                        VideoLog.ForEach(x =>
+                        {
+                            var LocalLog = dbmanager.Table<VideoUrls>().FirstOrDefault(y => y.LevelId == x.id_level);
+                            if (LocalLog == null)
+                            {
+                                VideoUrls videolog = new VideoUrls
+                                {
+                                    LevelId = x.id_level,
+                                    VideoId = x.id_video,
+                                    VideoLink = x.video_url,
+                                    VideoType = x.video_type,
+                                    UrlType = x.url_type
+                                };
+                                dbmanager.Insert(videolog);
+                            }
+                            else
+                            {
+                                LocalLog.LevelId = x.id_level;
+                                LocalLog.VideoId = x.id_video;
+                                LocalLog.VideoLink = x.video_url;
+                                LocalLog.VideoType = x.video_type;
+                                LocalLog.UrlType = x.url_type;
+                                dbmanager.UpdateTable(LocalLog);
+                            }
+                            if (x.id_level == 0)
+                            {
+                                youtubePage.youtubeUrl = x.video_url;
+                            }
+                        });
+
+
+                    }
+                }
+            }
+        }
+       
+    }
+
+    
     void Start()
     {
         TapCount = 0;
@@ -513,9 +583,11 @@ public class StartpageController : MonoBehaviour
             {
                 if (PlayerPrefs.GetString("Role").Equals("Parent", System.StringComparison.OrdinalIgnoreCase))
                 {
+                    Debug.Log(PlayerPrefs.GetInt("UID") + " " + PlayerPrefs.GetInt("OID"));
                     SceneManager.LoadScene(4);
                 }else if(PlayerPrefs.GetString("Role").Equals("teacher", System.StringComparison.OrdinalIgnoreCase))
                 {
+                    Debug.Log(PlayerPrefs.GetInt("UID") + " " + PlayerPrefs.GetInt("OID"));
                     SceneManager.LoadScene(5);
                 }
                 else
@@ -567,6 +639,7 @@ public class StartpageController : MonoBehaviour
         StartCoroutine(GetBonusScoreTask());
         StartCoroutine(LevelpercentageScore());
         StartCoroutine(getScoreConfigdata());
+        StartCoroutine(CheckStage2Unlock());
 
 
     }
@@ -606,6 +679,22 @@ public class StartpageController : MonoBehaviour
 
     }
 
+    public void HidePassword()
+    {
+        if (ShoePasswordBtn.image.sprite.name.Equals("closeeye", System.StringComparison.OrdinalIgnoreCase))
+        {
+            ShoePasswordBtn.image.sprite = OpenEye;
+            password_input.contentType = InputField.ContentType.Standard;
+            password_input.ForceLabelUpdate();
+
+        }
+        else
+        {
+            ShoePasswordBtn.image.sprite = CloseEye;
+            password_input.contentType = InputField.ContentType.Password;
+            password_input.ForceLabelUpdate();
+        }
+    }
     public void login_task()
     {
         PlayerPrefs.SetString("login_msg", "done");
@@ -671,7 +760,7 @@ public class StartpageController : MonoBehaviour
                                 PlayerPrefs.SetInt("UID", UserdataLog.IDUSER);
                                 PlayerPrefs.SetInt("OID", UserdataLog.OID);
                                 PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
-                                PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER));
+                                PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER != null ? UserdataLog.GENDER : "m"));
                                 PlayerPrefs.SetString("username", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
                                 PlayerPrefs.SetString("User_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() : "0");
                                 PlayerPrefs.SetInt("id_school", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
@@ -679,6 +768,7 @@ public class StartpageController : MonoBehaviour
                                 PlayerPrefs.SetInt("PlayerBody", UserdataLog.body_type != null ? UserdataLog.body_type : 0);
                                 PlayerPrefs.SetString("profile_done", UserdataLog.avatar_type >= 0 ? "done" : "false");
                                 PlayerPrefs.SetString("Role", "User");
+                                PlayerPrefs.SetString("Email", UserdataLog.Mail != null || UserdataLog.Mail != "" ? UserdataLog.Mail : "");
                                 settingpanelbtn.gameObject.SetActive(true);
                                 username_leftdashboard.text = PlayerPrefs.GetString("username");
                                 username_input.GetComponent<InputField>().enabled = true;
@@ -697,6 +787,7 @@ public class StartpageController : MonoBehaviour
                                 StartCoroutine(GetBonusScoreTask());
                                 StartCoroutine(LevelpercentageScore());
                                 StartCoroutine(getScoreConfigdata());
+                                StartCoroutine(CheckStage2Unlock());
 
                             }else if(UserdataLog.Id_Role == 180)    // LOGIN AS TEACHER
                             {
@@ -707,7 +798,8 @@ public class StartpageController : MonoBehaviour
                                 PlayerPrefs.SetString("teacher_grade", UserdataLog.UserGrade != null ? UserdataLog.UserGrade.ToString() : "0");
                                 PlayerPrefs.SetInt("teacherschool", UserdataLog.id_school != null ? UserdataLog.id_school : 0);
                                 PlayerPrefs.SetString("Role", "Teacher");
-                             
+                                PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER != null ? UserdataLog.GENDER : "m"));
+                                PlayerPrefs.SetString("Email", UserdataLog.Mail != null || UserdataLog.Mail != "" ? UserdataLog.Mail : "");
                                 username_input.GetComponent<InputField>().enabled = true;
                                 password_input.GetComponent<InputField>().enabled = true;
                                 loginbutton.GetComponent<Button>().enabled = true;
@@ -726,6 +818,8 @@ public class StartpageController : MonoBehaviour
                                 PlayerPrefs.SetInt("game_id", UserdataLog.id_org_game_unit);
                                 PlayerPrefs.SetString("parentname", Convert.ToString(UserdataLog.FIRST_NAME != null ? UserdataLog.FIRST_NAME : "--"));
                                 PlayerPrefs.SetString("Role", "Parent");
+                                PlayerPrefs.SetString("gender", Convert.ToString(UserdataLog.GENDER != null ? UserdataLog.GENDER : "m"));
+                                PlayerPrefs.SetString("Email", UserdataLog.Mail != null || UserdataLog.Mail != "" ? UserdataLog.Mail : "");
                                 username_input.GetComponent<InputField>().enabled = true;
                                 password_input.GetComponent<InputField>().enabled = true;
                                 loginbutton.GetComponent<Button>().enabled = true;
@@ -958,12 +1052,76 @@ public class StartpageController : MonoBehaviour
                 if (x.levelId == 1)
                 {
                     StageunlockScores.Stage1Score = x.UnlockScore;
+                    Stage1Score = x.UnlockScore;
                 }
                 if (x.levelId == 2)
                 {
                     StageunlockScores.Stage2Score = x.UnlockScore;
+                    Stage2Score = x.UnlockScore;
                 }
             });
+        }
+    }
+
+    IEnumerator CheckStage2Unlock()
+    {
+        string Hitting_url = $"{Mainurl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={1}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
+        {
+            if(StageData.text != "[]")
+            {
+                StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+                var tableLog = dbmanager.Table<StageClearness>().FirstOrDefault(x => x.LevelId == 1);
+                int clear = int.Parse(StageModel.ConsolidatedScore) > Stage1Score ? 1 : 0;
+                if (tableLog == null)
+                {
+                    StageClearness log = new StageClearness
+                    {
+                        LevelId = 1,
+                        IsClear = clear
+                    };
+                    dbmanager.Insert(log);
+                }
+                else
+                {
+                    tableLog.LevelId = 1;
+                    tableLog.IsClear = clear;
+                    dbmanager.UpdateTable(tableLog);
+
+                }
+            }
+        }
+        StartCoroutine(checkstage3Unlock());
+    }
+
+    IEnumerator checkstage3Unlock()
+    {
+        string Hitting_url = $"{Mainurl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
+        {
+            Debug.Log(StageData.text);
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            var tableLog = dbmanager.Table<StageClearness>().FirstOrDefault(x => x.LevelId == 2);
+            int clear = int.Parse(StageModel.ConsolidatedScore) > Stage2Score ? 1 : 0;
+            if (tableLog == null)
+            {
+                StageClearness log = new StageClearness
+                {
+                    LevelId = 2,
+                    IsClear = clear
+                };
+                dbmanager.Insert(log);
+            }
+            else
+            {
+                tableLog.LevelId = 2;
+                tableLog.IsClear = clear;
+                dbmanager.UpdateTable(tableLog);
+            }
         }
     }
 }

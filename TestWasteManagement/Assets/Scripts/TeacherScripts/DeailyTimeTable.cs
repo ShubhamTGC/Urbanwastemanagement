@@ -28,6 +28,7 @@ public class DeailyTimeTable : MonoBehaviour
     public InputField Event1, Event2, Event3;
     public GameObject msgPanel;
     public Text Info;
+    public TeacherHomepage teacherpage;
     void Start()
     {
         
@@ -208,7 +209,10 @@ public class DeailyTimeTable : MonoBehaviour
             {
                 Debug.Log(Request.downloadHandler.text);
                 string msg = "Your Event recorded successfully.";
+                teacherpage.GetlievEvents();
                 StartCoroutine(ShowMsginfo(msg));
+
+
 
             }
             else

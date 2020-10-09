@@ -5,13 +5,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using SimpleSQL;
 using System.Linq;
+using UnityEngine.UI;
 
 public class Stage3handler : MonoBehaviour
 {
     public GameObject TriviaPage, OnbordingVideoPage, SkipButton, AvatarPage, Stage3LandingPage, Gamemanager, GamePoints;
     private bool videoPlayed, checkforEnd;
     private bool EndvideoBool, Endvideocheck;
-
+    public Text username;
     [Header("API INTEGRATION PART")]
     public string MainUrl;
     public string StageUnlockApi, GetTruckCenterApi, GetMonsterCmsApi, TruckSeqApi, GetDustbinScoreApi;
@@ -30,21 +31,41 @@ public class Stage3handler : MonoBehaviour
     public GameBoard GameBoardpage;
     private int TotalScoreOfGame;
     public SimpleSQLManager dbmanager;
+    public YoutubePlayer.YoutubePlayer YoutubeVideoPage,FinalVideoPage;
 
-    IEnumerator Start()
+
+    void Start()
     {
-        yield return new WaitForSeconds(0.5f);
+     
+    }
+
+     void OnEnable()
+    {
+        StartCoroutine(GetYoutubeLink());
+        StartCoroutine(GetTruckCenterData());
+        StartCoroutine(GetMonsterdata());
+    }
+
+    IEnumerator GetYoutubeLink()
+    {
+        yield return new WaitForSeconds(0.1f);
+        var LocalLog = dbmanager.Table<VideoUrls>().FirstOrDefault(x => x.LevelId == 3);
+        var finalLog = dbmanager.Table<VideoUrls>().FirstOrDefault(x => x.LevelId == 5);
+        if (LocalLog != null)
+        {
+            YoutubeVideoPage.youtubeUrl = LocalLog.VideoLink;
+        }
+        if(finalLog != null)
+        {
+            FinalVideoPage.youtubeUrl = finalLog.VideoLink;
+        }
         OnbordingVideoPage.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
         TriviaPage.SetActive(true);
         videoPlayed = true;
-      
-        StartCoroutine(GetTruckCenterData());
-        StartCoroutine(GetMonsterdata());
-       // StartCoroutine(GetStageScore());
     }
 
-    // Update is called once per frame
+  
     void Update()
     {
         if (videoPlayed)
@@ -84,19 +105,21 @@ public class Stage3handler : MonoBehaviour
     }
     public void SkipVideo()
     {
+        
         SkipButton.SetActive(false);
         TriviaPage.SetActive(false);
         OnbordingVideoPage.SetActive(false);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         videoPlayed = checkforEnd = false;
         int avatar_data = PlayerPrefs.GetInt("characterType");
-        //AvatarPage.SetActive(true);
+   
         if (avatar_data > 4)
         {
             StartCoroutine(ClosingTask());
         }
         else
         {
+            username.text = PlayerPrefs.GetString("username");
             AvatarPage.SetActive(true);
         }
 
@@ -118,6 +141,7 @@ public class Stage3handler : MonoBehaviour
     {
         iTween.ScaleTo(AvatarPage, Vector3.zero, 0.5f);
         yield return new WaitForSeconds(0.5f);
+        username.text = "";
         Stage3LandingPage.SetActive(true);
 
     }
@@ -133,10 +157,8 @@ public class Stage3handler : MonoBehaviour
         {
             StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
             BonusGameBool = int.Parse(StageModel.ConsolidatedScore) > GameScore;
-           // GameBoardpage.Stage3UnlockScore = TotalScoreOfGame;
             debrifingbtn.SetActive(BonusGameBool);
-           // CalculatePercentage();
-
+           
         }
     }
 
@@ -166,9 +188,7 @@ public class Stage3handler : MonoBehaviour
             Configdata.UnlockScore = (int)percentage;
             dbmanager.UpdateTable(Configdata);
         }
-
         StartCoroutine(GetStageScore());
-      
     }
 
     public void FinalPAgeClose()
@@ -211,11 +231,11 @@ public class Stage3handler : MonoBehaviour
         GameBoardpage.TruckSequence.Clear();
         GameBoardpage.TruckID.Clear();
         string HittingUrl = MainUrl + TruckSeqApi + "?UID=" + PlayerPrefs.GetInt("UID");
-        WWW GetTruckSeq = new WWW(HittingUrl);
-        yield return GetTruckSeq;
-        if (GetTruckSeq.text != null)
+        WWW Request = new WWW(HittingUrl);
+        yield return Request;
+        if (Request.text != null)
         {
-            List<TruckSeqModel> Truckdata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckSeqModel>>(GetTruckSeq.text);
+            List<TruckSeqModel> Truckdata = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TruckSeqModel>>(Request.text);
             Truckdata.ForEach(x =>
             {
                 GameBoardpage.TruckSequence.Add(x.truck_name);

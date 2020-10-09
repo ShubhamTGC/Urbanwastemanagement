@@ -141,7 +141,7 @@ public class GameBoard : MonoBehaviour
     public string Level3BadgeName;
     public int Stage3UnlockScore;
     private bool Stage3unlocked;
-
+    public GameObject deberifingpage;
     [HideInInspector] public List<string> centernames = new List<string>();
     [HideInInspector] public List<int> CenterCorrectPoint = new List<int>();
     [HideInInspector] public List<int> CenterWrongPoint = new List<int>();
@@ -429,8 +429,8 @@ public class GameBoard : MonoBehaviour
             CurrentActive[num].SetActive(false);
             DustbinCollectCount++;
             DustbinCollection.text = DustbinCollectCount.ToString();
-            ScorePointCounter += 10;
-            DustinCollectScore += 10;
+            ScorePointCounter += CorrectPoint;
+            DustinCollectScore += CorrectPoint;
             ScorePoints.text = ScorePointCounter.ToString();
             CurrentActive[num] = num != -1 ? FirstBin[randomindex[ObjCounter]] : null;
             CurrentActive[num].SetActive(true);
@@ -443,8 +443,8 @@ public class GameBoard : MonoBehaviour
             DustbinCollectCount++;
             DustbinCounter++;
             DustbinCollection.text = DustbinCollectCount.ToString();
-            ScorePointCounter += 10;
-            DustinCollectScore += 10;
+            ScorePointCounter += CorrectPoint;
+            DustinCollectScore += CorrectPoint;
             ScorePoints.text = ScorePointCounter.ToString();
             Taskcounter++;
             CurrentActive[num].SetActive(false);
@@ -482,7 +482,7 @@ public class GameBoard : MonoBehaviour
             Correcteffect.transform.position = dustbin.transform.position;
             ScoreText.gameObject.SetActive(true);
             Vector2 pos = Camera.main.WorldToViewportPoint(dustbin.transform.position);
-            ScoreText.text = "+10";
+            ScoreText.text = "+" + CorrectPoint;
             var screen = Camera.main.WorldToScreenPoint(dustbin.transform.position);
             screen.z = (Maincanavs.transform.position - Camera.main.transform.position).magnitude;
             var position = Camera.main.ScreenToWorldPoint(screen);
@@ -499,7 +499,7 @@ public class GameBoard : MonoBehaviour
             DustbinSound.clip = WrongSound;
             DustbinSound.Play();
             Vector2 pos = Camera.main.WorldToViewportPoint(dustbin.transform.position);
-            ScoreText.text = "+0";
+            ScoreText.text = "+" + WrongPoint;
             var screen = Camera.main.WorldToScreenPoint(dustbin.transform.position);
             screen.z = (Maincanavs.transform.position - Camera.main.transform.position).magnitude;
             var position = Camera.main.ScreenToWorldPoint(screen);
@@ -885,7 +885,7 @@ public class GameBoard : MonoBehaviour
         StartCoroutine(PostDrivingGamedata());
         StartCoroutine(PostScorePriorityTask());
         StartCoroutine(PostScoreDriveTask());
-        
+
 
 
     }
@@ -1096,6 +1096,7 @@ public class GameBoard : MonoBehaviour
         TruckGamePage.SetActive(false);
         startPage.SetActive(true);
         LandingPage.SetActive(true);
+        deberifingpage.SetActive(Stage3unlocked);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         TruckGamePage.GetComponent<AudioSource>().enabled = false;
         //this.gameObject.SetActive(false);

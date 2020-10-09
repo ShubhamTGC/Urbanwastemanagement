@@ -5,4 +5,6 @@ public class ParentModel
     public string StudentsUserId { get; set; }
     public string ParentUserId { get; set; }
     public string EmailId { get; set; }
+    public string Gender { get; set; }
+
 }

@@ -48,9 +48,13 @@ public class ActionPlanLeaderBoard : MonoBehaviour
         {
             if (diyLog.text != "[]")
             {
-                List<ActionPlanModel> log = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionPlanModel>>(diyLog.text);
-                log = log.OrderByDescending(x => x.ActionPlanPoints).ToList();
-                log.ForEach(x =>
+                Debug.Log("action plan " + diyLog.text);
+                ActionPlanModel log = Newtonsoft.Json.JsonConvert.DeserializeObject<ActionPlanModel>(diyLog.text);
+                List<ActionPlanLeaderBoardList> listLog = log.LeaderList.ToList();
+                UserName.text = log.Name;
+                ClassValue.text = log.Class;
+                listLog = listLog.OrderByDescending(x => x.ActionPlanPoints).ToList();
+                listLog.ForEach(x =>
                 {
                     GameObject gb = Instantiate(dataRow, RowHandler, false);
                     Rows.Add(gb);

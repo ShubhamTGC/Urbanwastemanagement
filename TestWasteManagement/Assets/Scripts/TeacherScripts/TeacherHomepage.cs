@@ -110,6 +110,10 @@ public class TeacherHomepage : MonoBehaviour
         }
     }
 
+    public void GetlievEvents()
+    {
+        StartCoroutine(GetEventDataLog());
+    }
     IEnumerator GetEventDataLog()
     {
         DateTime Eventdate;

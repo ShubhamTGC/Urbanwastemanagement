@@ -378,7 +378,7 @@ public class profilehandler : MonoBehaviour
             iTween.ScaleTo(this.gameObject, Vector3.zero, 0.5f);
             yield return new WaitForSeconds(0.5f);
             StartCoroutine(startpage.scenechanges(startpageObj, bagde_sprite));
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitForSeconds(1.6f);
             intro_panel.GetComponent<CompleteIntroPage>().After_profile();
            // intro_panel.SetActive(true);
             PlayerPrefs.SetString("profile_done", "done");

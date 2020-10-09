@@ -120,6 +120,10 @@ public class ThrowWasteHandler : MonoBehaviour
     private int Time0to30, Time30to45;
     private int Bonuspt1,Bonuspt2;
     private int bonusScore;
+    public GameObject MenuButton;
+    public GameObject LeaderBoard, SettingPage, overallDashboard, GreenJurnal;
+    public List<GameObject> DustbinsObj;
+    public GameObject PageGameObj;
     private void Awake()
     {
 
@@ -324,6 +328,27 @@ public class ThrowWasteHandler : MonoBehaviour
 
         if (!gameclose)
         {
+            if (LeaderBoard.activeInHierarchy || SettingPage.activeInHierarchy || overallDashboard.activeInHierarchy || GreenJurnal.activeInHierarchy)
+            {
+                TimePaused = true;
+                ForntLine.enabled = false;
+                BackLine.enabled = false;
+                DustbinsObj.ForEach(x =>
+                {
+                    x.GetComponent<BoxCollider2D>().enabled = false;
+                });
+            }
+            else
+            {
+                TimePaused = false;
+                ForntLine.enabled = true;
+                BackLine.enabled = true;
+                DustbinsObj.ForEach(x =>
+                {
+                    x.GetComponent<BoxCollider2D>().enabled = true;
+                });
+
+            }
             ThrowWasteObjectactiveStatus();
         }
 
@@ -339,6 +364,7 @@ public class ThrowWasteHandler : MonoBehaviour
         {
             PowerBar.fillAmount = GeneratedObj[Objectlive].GetComponent<ProjectileDragging>().catapultToMouse.sqrMagnitude / Maxstrecthvalue;
         }
+       
 
     }
 
@@ -398,6 +424,8 @@ public class ThrowWasteHandler : MonoBehaviour
                     }
                 }
             }
+
+        
         }
         if (Objectlive == GeneratedObj.Count && !gameend)
         {
@@ -437,6 +465,7 @@ public class ThrowWasteHandler : MonoBehaviour
             }
             StartCoroutine(GameEndProcess(Showmsg));
         }
+       
     }
 
     IEnumerator GameEndProcess(string msg)
@@ -459,7 +488,6 @@ public class ThrowWasteHandler : MonoBehaviour
 
     public void checkCollidedAns(string dustbin, string collidername, GameObject dustbinobj)
     {
-        
         if (level1)
         {
             if (dustbin != "wall")
@@ -469,7 +497,7 @@ public class ThrowWasteHandler : MonoBehaviour
 
                 if (iscorrectWaste)
                 {
-                    int index = ObjectName.FindIndex(x => x.Equals(collidername,System.StringComparison.OrdinalIgnoreCase));
+                    int index = ObjectName.FindIndex(x => x.Equals(collidername, System.StringComparison.OrdinalIgnoreCase));
                     int TempScore = Cscore[index];
                     gameSound.clip = RightAns;
                     gameSound.Play();
@@ -485,8 +513,8 @@ public class ThrowWasteHandler : MonoBehaviour
                 {
 
                     var RelatedDustbin = (from k in WasteCollectionList
-                                          where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
-                                          select k.Key).FirstOrDefault();
+                                            where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
+                                            select k.Key).FirstOrDefault();
                     CorrectOption.Add(RelatedDustbin);
                     gameSound.clip = WrongAns;
                     gameSound.Play();
@@ -518,10 +546,10 @@ public class ThrowWasteHandler : MonoBehaviour
             ItemColleted.Add(collidername);
         }
         //
-       
+
         else
         {
-            
+
             if (dustbin != "wall")
             {
                 var CollidedDustbin = WasteCollectionList.FirstOrDefault(x => x.Key.Equals(dustbin, System.StringComparison.OrdinalIgnoreCase));
@@ -545,8 +573,8 @@ public class ThrowWasteHandler : MonoBehaviour
                 {
 
                     var RelatedDustbin = (from k in WasteCollectionList
-                                          where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
-                                          select k.Key).FirstOrDefault();
+                                            where k.Value.Any(x => x.name.Equals(collidername, System.StringComparison.OrdinalIgnoreCase))
+                                            select k.Key).FirstOrDefault();
                     CorrectOptionL2.Add(RelatedDustbin);
                     gameSound.clip = WrongAns;
                     gameSound.Play();
@@ -577,6 +605,8 @@ public class ThrowWasteHandler : MonoBehaviour
             Totalwaste.text = correctGoal.ToString() + " / " + totalwasteCount.ToString();
             ItemColletedL2.Add(collidername);
         }
+        
+    
         
     }
 
@@ -652,6 +682,7 @@ public class ThrowWasteHandler : MonoBehaviour
         ZonePag.SetActive(true);
         ZoneselectionPage.SetActive(true);
         Startpage.SetActive(true);
+       // MenuButton.SetActive(true);
         Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         MainZone.SetActive(false);
         level1obj.SetActive(false);

@@ -22,4 +22,5 @@ public class UserAuthenticationModel
     public object GENDER { get; set; }
     public int body_type { get; set; }
     public int Id_Role { get; set; }
+    public string Mail { get; set; }
 }

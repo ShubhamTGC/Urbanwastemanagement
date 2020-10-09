@@ -50,6 +50,9 @@ public class GameFeedPage : MonoBehaviour
     private int ImagePrefebNum;
     private int Id_diy, Id_actionplan;
     private List<GameObject> ImageObject = new List<GameObject>();
+    public Sprite Male, female;
+    public GameObject DummyPic;
+    public Button crossbtn;
     void Start()
     {
         
@@ -58,16 +61,22 @@ public class GameFeedPage : MonoBehaviour
     private void OnEnable()
     {
         MakePage();
+
     }
 
     void MakePage()
     {
-        
+        if (PlayerPrefs.GetString("Role").Equals("Teacher", System.StringComparison.OrdinalIgnoreCase) ||
+            PlayerPrefs.GetString("Role").Equals("Parent", System.StringComparison.OrdinalIgnoreCase))
+        {
+            DummyPic.GetComponent<Image>().sprite = PlayerPrefs.GetString("gender").Equals("m", System.StringComparison.OrdinalIgnoreCase) ? Male : female;
+        }
         ImageUsrls = new List<string>();
         TitleName = new List<string>();
         Descriptiondata = new List<string>();
         ImageParenets = new List<Transform>();
         FeedBars = new List<GameObject>();
+        crossbtn.interactable = false;
         StartCoroutine(GetPrfoile());
         StartCoroutine(GenerateFeedPage());
     }
@@ -257,6 +266,7 @@ public class GameFeedPage : MonoBehaviour
 
     IEnumerator GenerateFeedPage()
     {
+
         int feedCounter = 0;
         ImagePrefebNum = 0;
         string HittingUrl = MainUrl + getFeedPageApi + "?UID=" + PlayerPrefs.GetInt("UID") + "&OID=" + PlayerPrefs.GetInt("OID");
@@ -264,6 +274,8 @@ public class GameFeedPage : MonoBehaviour
         yield return GameFeeddata;
         if(GameFeeddata.text != null)
         {
+           
+            Debug.Log("Gamefeed log " + GameFeeddata.text);
             List<FeedPostModel> feedPosts = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FeedPostModel>>(GameFeeddata.text);
             feedPosts = feedPosts.OrderByDescending(x =>  x.id_log).ToList();
             Debug.Log("Gamefeed log " + GameFeeddata.text);
@@ -277,6 +289,7 @@ public class GameFeedPage : MonoBehaviour
             feedPosts.ForEach(x =>
             {
                 string url = "";
+               
                 if(x.Gender != null)
                 {
                     if (x.Gender.Equals("m", System.StringComparison.OrdinalIgnoreCase))
@@ -383,9 +396,11 @@ public class GameFeedPage : MonoBehaviour
                 StartCoroutine(GetUserPostImage(ImageParenets[a], ImageUsrls[a], TitleName[a], Descriptiondata[a]));
                 yield return new WaitForSeconds(0.1f);
             }
+            crossbtn.interactable = true;
         }
         else
         {
+            crossbtn.interactable = true;
             InterNetTxt.gameObject.SetActive(true);
             InterNetTxt.text = "Poor internet Connectivity.";
             yield return new WaitForSeconds(3f);
@@ -641,7 +656,12 @@ public class GameFeedPage : MonoBehaviour
     {
         ImagePrefebNum = 0;
         int count = FeedTransform.childCount;
-        for(int a = 0; a < count; a++)
+        ImageObject.ForEach(x =>
+        {
+            x.GetComponent<BoxCollider2D>().enabled = false;
+        });
+        ImageObject.Clear();
+        for (int a = 0; a < count; a++)
         {
             Destroy(FeedTransform.GetChild(a).gameObject, 0.05f);
         }

@@ -16,6 +16,8 @@ public class TeacherRegistration : MonoBehaviour
     private Dictionary<int, string> CountryIDs = new Dictionary<int, string>();
     public Text ExtramsgBox;
     public GameObject PopUppage;
+    public Dropdown Gender;
+    private string Genderdata;
     void Start()
     {
         
@@ -44,6 +46,7 @@ public class TeacherRegistration : MonoBehaviour
         school_dropdown.value = 0;
         TeacherList.value = 0;
         CountryList.value = 0;
+        Gender.value = 0;
     }
 
     IEnumerator showtext(string msg)
@@ -151,7 +154,8 @@ public class TeacherRegistration : MonoBehaviour
 
     public void teacherregister()
     {
-        if (Username.text == "" || Grade.text == "" || Userid.text == "" || school_dropdown.value == 0 || TeacherList.value == 0 || CountryList.value == 0)
+        if (Username.text == "" || Grade.text == "" || Userid.text == "" || school_dropdown.value == 0 || TeacherList.value == 0 
+            || CountryList.value == 0 || Gender.value ==0 ||Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));
@@ -168,6 +172,15 @@ public class TeacherRegistration : MonoBehaviour
     
     IEnumerator getRegisterTeacher()
     {
+        string gendervalue = Gender.options[Gender.value].text;
+        if (gendervalue.Equals("male", System.StringComparison.OrdinalIgnoreCase))
+        {
+            Genderdata = "M";
+        }
+        else
+        {
+            Genderdata = "F";
+        }
         yield return new WaitForSeconds(0f);
         string HittingUrl = $"{MainUrl}{teacherRegisterApi}";
         TeacherRegisterModel teacherlog = new TeacherRegisterModel
@@ -178,7 +191,8 @@ public class TeacherRegistration : MonoBehaviour
             id_school = SchoolIDs.FirstOrDefault(x => x.Value == school_dropdown.options[school_dropdown.value].text).Key.ToString(),
             id_state = CountryIDs.FirstOrDefault(x => x.Value == CountryList.options[CountryList.value].text).Key.ToString(),
             EmailId = Emailid.text,
-            TeacherUserId = Userid.text
+            TeacherUserId = Userid.text,
+            Gender = Genderdata
         };
 
         string Logdata = Newtonsoft.Json.JsonConvert.SerializeObject(teacherlog);

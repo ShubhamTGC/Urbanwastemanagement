@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleSQL;
+using System.Linq;
 
 public class StageUnlockingPage : MonoBehaviour
 {
@@ -9,38 +11,35 @@ public class StageUnlockingPage : MonoBehaviour
     public string MainUrl, StageUnlockApi;
     public int Stage1Score, Stage2Score;
     public Button Stage2Btn, Stage3Btn;
+    public SimpleSQLManager dbmanager;
     void Start()
     {
-        StartCoroutine(CheckStage2Unlock());
+        StartCoroutine(GetUnlockStage());
     }
 
     private void OnEnable()
     {
         
+        StartCoroutine(GetUnlockStage());
+
     }
 
-    IEnumerator CheckStage2Unlock()
-    {
-        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={1}&id_org_game={1}";
-        WWW StageData = new WWW(Hitting_url);
-        yield return StageData;
-        if(StageData.text != null)
-        {
-            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
-            Stage2Btn.interactable =int.Parse(StageModel.ConsolidatedScore) > Stage1Score;
-        }
-        StartCoroutine(checkstage3Unlock());
-    }
+  
 
-    IEnumerator checkstage3Unlock()
+    IEnumerator GetUnlockStage()
     {
-        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
-        WWW StageData = new WWW(Hitting_url);
-        yield return StageData;
-        if (StageData.text != null)
+        yield return new WaitForSeconds(0.1f);
+        var Log = dbmanager.Table<StageClearness>().ToList();
+        Log.ForEach(x =>
         {
-            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
-            Stage3Btn.interactable = int.Parse(StageModel.ConsolidatedScore) > Stage2Score;
-        }
+            if (x.LevelId == 1)
+            {
+                Stage2Btn.interactable = x.IsClear == 1 ? true : false;
+            }
+            if (x.LevelId == 2)
+            {
+                Stage3Btn.interactable = x.IsClear == 1 ? true : false;
+            }
+        });
     }
 }

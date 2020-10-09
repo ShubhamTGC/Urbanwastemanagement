@@ -55,6 +55,7 @@ public class Stage2ZoneHandler : MonoBehaviour
     public List<ThrowWasteHandler> ZonesLevelHolder;
     public SimpleSQLManager dbmanager;
     [HideInInspector] public int GameBonusPoint;
+    public GameObject MenuButton;
     void Start()
     {
         
@@ -72,6 +73,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         StartCoroutine(getGameContentid());
         StartCoroutine(GetGameAttemptNoTask());
         level1.SetActive(true);
+        //MenuButton.SetActive(false);
         level1Mainpage.SetActive(true);
         Level1Controller.level1 = true;
         skip.onClick.RemoveAllListeners();
@@ -248,6 +250,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         Level1Controller.ResetTask();
         Level2Controller.ResetTask();
         yield return new WaitForSeconds(1f);
+        //MenuButton.SetActive(true);
         Dashboard.SetActive(false);
         Gamecanvas.SetActive(false);
 
@@ -266,6 +269,7 @@ public class Stage2ZoneHandler : MonoBehaviour
         ZonePag.SetActive(true);
         ZoneselectionPage.SetActive(true);
         Startpage.SetActive(true);
+       // MenuButton.SetActive(true);
         Startpage.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
         MainZone.SetActive(false);
 
@@ -422,6 +426,23 @@ public class Stage2ZoneHandler : MonoBehaviour
         {
             StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
             Stage2unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
+            var tableLog = dbmanager.Table<StageClearness>().FirstOrDefault(x => x.LevelId == 2);
+            int clear = int.Parse(StageModel.ConsolidatedScore) > Stage2UnlockScore ? 1 : 0;
+            if (tableLog == null)
+            {
+                StageClearness log = new StageClearness
+                {
+                    LevelId = 2,
+                    IsClear = clear
+                };
+                dbmanager.Insert(log);
+            }
+            else
+            {
+                tableLog.LevelId = 2;
+                tableLog.IsClear = clear;
+                dbmanager.UpdateTable(tableLog);
+            }
         }
 
         if (Stage2unlocked)

@@ -209,7 +209,7 @@ public class DiyPostingHandler : MonoBehaviour
             formData.Clear();
             post_image_byte.Clear();
             Msgpanel.SetActive(false);
-            string msg = "Your Achivements Shared successfully to Game Feed Page!!";
+            string msg = "Your Diy Activity shared successfully to Game Feed Page!!";
             StartCoroutine(ShowPopupTask(msg));
             clearFields();
 

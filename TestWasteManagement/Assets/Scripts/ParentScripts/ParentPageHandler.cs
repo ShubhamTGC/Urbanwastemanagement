@@ -7,6 +7,7 @@ using SimpleSQL;
 using System.Linq;
 using UnityEngine.Networking;
 using System;
+using UnityEngine.EventSystems;
 
 public class ParentPageHandler : MonoBehaviour
 {
@@ -42,6 +43,7 @@ public class ParentPageHandler : MonoBehaviour
     public Image OngoingDiy, UpcomingDiy;
     public Text CurrentDiy, ComingDiy;
     [HideInInspector] public string baseUrl;
+    private List<GameObject> Childbtn = new List<GameObject>();
     void Start()
     {
         HomepageInstance = StartpageController.Home_instane;
@@ -49,6 +51,7 @@ public class ParentPageHandler : MonoBehaviour
 
     private void OnEnable()
     {
+        Childbtn.Clear();
         ChildBtnName.Clear();
         Parentsname.text = PlayerPrefs.GetString("parentname");
         StartCoroutine(GetParentdetails());
@@ -61,7 +64,8 @@ public class ParentPageHandler : MonoBehaviour
         yield return request;
         if(request.text != null)
         {
-            if(request.text != "[]")
+            Debug.Log("Parent complete log " + request.text);
+            if (request.text != "[]" && request.text != "")
             {
                 ParentLogModel Log = Newtonsoft.Json.JsonConvert.DeserializeObject<ParentLogModel>(request.text);
                 Debug.Log("Parent complete log " + request.text);
@@ -77,6 +81,7 @@ public class ParentPageHandler : MonoBehaviour
                     gb.GetComponent<Button>().onClick.RemoveAllListeners();
                     gb.GetComponent<Button>().onClick.AddListener(delegate { GetChildStoredData(y.id_user); });
                     ChildBtnName.Add(gb.name);
+                    Childbtn.Add(gb);
 
                     //PARENT CHILD DETAILS LOCAL DB CONNECTION
                     var LocalLog = dbmanager.Table<ParentChildLog>().FirstOrDefault(a => a.IdChild == y.id_user);
@@ -206,14 +211,31 @@ public class ParentPageHandler : MonoBehaviour
 
                     ChildCounter++;
                 });
+                Childbtn[0].GetComponent<Button>().image.sprite = Clicked;
                 GetChildStoredData(int.Parse(ChildBtnName[0]));
-
+                Debug.Log("child id " + ChildBtnName[0]);
             }
         }   
     }
 
     void GetChildStoredData(int UserId)
     {
+        GameObject clickedobj = EventSystem.current.currentSelectedGameObject;
+        if(clickedobj != null)
+        {
+            for (int a = 0; a < Childbtn.Count; a++)
+            {
+                if (clickedobj.name == Childbtn[a].name)
+                {
+                    Childbtn[a].GetComponent<Button>().image.sprite = Clicked;
+                }
+                else
+                {
+                    Childbtn[a].GetComponent<Button>().image.sprite = NotCliked;
+                }
+            }
+        }
+   
         UpdateAchiveMentdata(UserId);
         var Log = dbmanager.Table<ChildDetailLog>().FirstOrDefault(x => x.IdChild == UserId);
         ChildNameTxt.text = Log.ChildName;
@@ -249,13 +271,22 @@ public class ParentPageHandler : MonoBehaviour
                 ActiveBadge.sprite = int.Parse(AchivementLog.MostactiveplayerBadge_count) > 0 ? MostActiveplayer : FadeMostActiveplayer;
                 EagleBadge.sprite = int.Parse(AchivementLog.MostObserventBadge_count) > 0 ? EagleEyeBadge : FadeEagleBadge;
                 string currentBadge = AchivementLog.Current_badge;
-                for(int a=0;a< Badgename.Count; a++)
+                if(currentBadge != null)
                 {
-                    if (Badgename[a].Equals(currentBadge, System.StringComparison.OrdinalIgnoreCase))
+                    for (int a = 0; a < Badgename.Count; a++)
                     {
-                        GameBadge.sprite = Badges[a];
+                        if (Badgename[a].Equals(currentBadge, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            GameBadge.sprite = Badges[a];
+                        }
+
                     }
                 }
+                else
+                {
+                    GameBadge.sprite = Badges[0];
+                }
+                
             }
         }
     }
