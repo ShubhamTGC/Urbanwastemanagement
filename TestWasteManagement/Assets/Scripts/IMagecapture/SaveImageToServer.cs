@@ -248,11 +248,37 @@ public class SaveImageToServer : MonoBehaviour
             if (actionModelRes.STATUS.Equals("success", System.StringComparison.OrdinalIgnoreCase))
             {
                 id_tag_photo = actionModelRes.id_tag_photo;
-                StartCoroutine(PostThisToGameFeed());
-                yield return new WaitForSeconds(0.5f);
-                string msg = "Plan Successfully Generated!";
+                if(id_tag_photo > 0)
+                {
+                    StartCoroutine(PostThisToGameFeed());
+                    yield return new WaitForSeconds(0.5f);
+                    string msg = "Plan Successfully Generated!";
+                    StartCoroutine(statusmsgshow(msg));
+                    yield return new WaitForSeconds(2.5f);
+                    CaptureButton.interactable = true;
+                    user_text.text = "";
+                    plan_title.text = "";
+                    post_image_byte.Clear();
+                    capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
+                    formData.Clear();
+                }
+                else
+                {
+                    string msg = "Something went wrong, Please try again later!";
+                    StartCoroutine(statusmsgshow(msg));
+                    yield return new WaitForSeconds(2.5f);
+                    CaptureButton.interactable = true;
+                    user_text.text = "";
+                    plan_title.text = "";
+                    post_image_byte.Clear();
+                    capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
+                    formData.Clear();
+                }
+            }
+            else
+            {
+                string msg = "Something went wrong, Please try again later!";
                 StartCoroutine(statusmsgshow(msg));
-                yield return new WaitForSeconds(2.5f);
                 CaptureButton.interactable = true;
                 user_text.text = "";
                 plan_title.text = "";
@@ -260,17 +286,9 @@ public class SaveImageToServer : MonoBehaviour
                 capturebtn1.gameObject.GetComponent<Image>().sprite = default_sprite;
                 formData.Clear();
             }
-            else
-            {
-                string msg = "Something went wrong, Please try again later!";
-                StartCoroutine(statusmsgshow(msg));
-            }
-      
-               
         }
-        
-    
     }
+
     IEnumerator PostThisToGameFeed()
     {
         string HittingUrl = Mainurl + PostGamefeedApi;

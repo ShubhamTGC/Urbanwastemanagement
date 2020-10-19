@@ -155,7 +155,7 @@ public class TeacherRegistration : MonoBehaviour
     public void teacherregister()
     {
         if (Username.text == "" || Grade.text == "" || Userid.text == "" || school_dropdown.value == 0 || TeacherList.value == 0 
-            || CountryList.value == 0 || Gender.value ==0 ||Emailid.text == "")
+            || CountryList.value == 0 ||Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));

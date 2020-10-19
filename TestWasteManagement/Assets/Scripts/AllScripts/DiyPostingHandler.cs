@@ -200,18 +200,31 @@ public class DiyPostingHandler : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
             DiyModel GenericModel = Newtonsoft.Json.JsonConvert.DeserializeObject<DiyModel>(www.downloadHandler.text);
             id_post_image = GenericModel.id_DIY;
-            if (GenericModel.STATUS.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+            if(id_post_image > 0)
             {
-                StartCoroutine(PostThisToGameFeed());
-                DateTime Todate = DateTime.Today;
-                PlayerPrefs.SetInt("Todaysdate", Todate.Day);
+                if (GenericModel.STATUS.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    StartCoroutine(PostThisToGameFeed());
+                    DateTime Todate = DateTime.Today;
+                    PlayerPrefs.SetInt("Todaysdate", Todate.Day);
+                }
+                formData.Clear();
+                post_image_byte.Clear();
+                Msgpanel.SetActive(false);
+                string msg = "Your Diy Activity shared successfully to Game Feed Page!!";
+                StartCoroutine(ShowPopupTask(msg));
+                clearFields();
             }
-            formData.Clear();
-            post_image_byte.Clear();
-            Msgpanel.SetActive(false);
-            string msg = "Your Diy Activity shared successfully to Game Feed Page!!";
-            StartCoroutine(ShowPopupTask(msg));
-            clearFields();
+            else
+            {
+                formData.Clear();
+                post_image_byte.Clear();
+                Msgpanel.SetActive(false);
+                string msg = "Something went wrong Please try later!";
+                StartCoroutine(ShowPopupTask(msg));
+                clearFields();
+            }
+          
 
         }
     }

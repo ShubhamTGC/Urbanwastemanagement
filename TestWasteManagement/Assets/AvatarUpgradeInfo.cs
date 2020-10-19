@@ -16,7 +16,7 @@ public class AvatarUpgradeInfo : MonoBehaviour
     void Start()
     {
         stars.SetActive(true);
-        if (PlayerPrefs.GetString("gender").ToLower() == "m")
+        if (PlayerPrefs.GetString("gender").Equals("m",System.StringComparison.OrdinalIgnoreCase))
         {
             BoyObejct.SetActive(true);
             GirlObject.SetActive(false);
@@ -51,6 +51,7 @@ public class AvatarUpgradeInfo : MonoBehaviour
 
     IEnumerator PostUserData()
     {
+        string gender = PlayerPrefs.GetString("gender");
         int avatar_updated = stage3AvatarType + PlayerPrefs.GetInt("characterType");
         yield return new WaitForSeconds(1f);
         string avatar_url = Mainurl + Userdata_API;
@@ -60,18 +61,20 @@ public class AvatarUpgradeInfo : MonoBehaviour
         userdata_form.AddField("OID", PlayerPrefs.GetInt("OID"));
         userdata_form.AddField("avatar_type", avatar_updated);
         userdata_form.AddField("body_type", BodyType);
+        userdata_form.AddField("Gender", gender);
         Debug.Log("avatra data " + avatar_updated);
         WWW avatar_www = new WWW(avatar_url, userdata_form);
         yield return avatar_www;
         if (avatar_www.text != null)
         {
             Debug.Log(avatar_www.text);
-            // intro_panel.SetActive(true);
             PlayerPrefs.SetString("Stage2Avatar", "done");
             PlayerPrefs.SetString("Stage3Avatar", "done");
             PlayerPrefs.SetInt("characterType", avatar_updated);
             PlayerPrefs.SetInt("avatar_type", avatar_updated);
             PlayerPrefs.SetInt("PlayerBody", BodyType);
+            PlayerPrefs.SetString("gender", gender);
+
 
         }
 

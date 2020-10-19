@@ -196,22 +196,41 @@ public class GameFeedPage : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
             GenericPostModel GenericModel = Newtonsoft.Json.JsonConvert.DeserializeObject<GenericPostModel>(www.downloadHandler.text);
             id_post_image = GenericModel.id_general_feed;
-            if (GenericModel.status.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+            if(id_post_image > 0)
             {
-                StartCoroutine(PostThisToGameFeed());
+                if (GenericModel.status.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    StartCoroutine(PostThisToGameFeed());
+                }
+                ShareImageStatus.text = "Your Diy Shared successfully to Game Feed Page!!";
+                MsgPanel.SetActive(true);
+                formData.Clear();
+                post_image_byte.Clear();
+                imageBytes = null;
+                tex = null;
+                yield return new WaitForSeconds(3f);
+                iTween.ScaleTo(MsgPanel, Vector3.zero, 0.3f);
+                yield return new WaitForSeconds(0.4f);
+                MsgPanel.SetActive(false);
+                SelectImgPreview.sprite = null;
+                PreviewPage.SetActive(false);
             }
-            ShareImageStatus.text = "Your Diy Shared successfully to Game Feed Page!!";
-            MsgPanel.SetActive(true);
-            formData.Clear();
-            post_image_byte.Clear();
-            imageBytes = null;
-            tex = null;
-            yield return new WaitForSeconds(3f);
-            iTween.ScaleTo(MsgPanel, Vector3.zero, 0.3f);
-            yield return new WaitForSeconds(0.4f);
-            MsgPanel.SetActive(false);
-            SelectImgPreview.sprite = null;
-            PreviewPage.SetActive(false);
+            else
+            {
+                ShareImageStatus.text = "Something went wrong, Please try later!!";
+                MsgPanel.SetActive(true);
+                formData.Clear();
+                post_image_byte.Clear();
+                imageBytes = null;
+                tex = null;
+                yield return new WaitForSeconds(3f);
+                iTween.ScaleTo(MsgPanel, Vector3.zero, 0.3f);
+                yield return new WaitForSeconds(0.4f);
+                MsgPanel.SetActive(false);
+                SelectImgPreview.sprite = null;
+                PreviewPage.SetActive(false);
+            }
+          
 
         }
     }

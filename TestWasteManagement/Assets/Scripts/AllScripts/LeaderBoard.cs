@@ -153,7 +153,7 @@ public class LeaderBoard : MonoBehaviour
 
                     if(leader_res[a]["Gender"] != null)
                     {
-                        if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                        if (leader_res[a]["Gender"].ToString().Equals("m",System.StringComparison.OrdinalIgnoreCase))
                         {
                             for (int c = 0; c < BoyFace.Count; c++)
                             {
@@ -334,7 +334,7 @@ public class LeaderBoard : MonoBehaviour
                 {
                     gb.transform.GetChild(6).gameObject.transform.GetChild(0).GetComponent<Text>().text = "0";
                 }
-                if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                if (leader_res[a]["Gender"].ToString().Equals("m",System.StringComparison.OrdinalIgnoreCase))
                 {
                     for (int c = 0; c < BoyFace.Count; c++)
                     {
@@ -467,7 +467,7 @@ public class LeaderBoard : MonoBehaviour
                     {
                         gb.transform.GetChild(6).gameObject.transform.GetChild(0).GetComponent<Text>().text = "0";
                     }
-                    if (leader_res[a]["Gender"].ToString().ToLower() == "m")
+                    if (leader_res[a]["Gender"].ToString().Equals("m", System.StringComparison.OrdinalIgnoreCase))
                     {
                         for (int c = 0; c < BoyFace.Count; c++)
                         {

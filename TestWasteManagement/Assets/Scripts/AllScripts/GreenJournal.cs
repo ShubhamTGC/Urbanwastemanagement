@@ -34,7 +34,7 @@ public class GreenJournal : MonoBehaviour
     private void OnEnable()
     {
 
-        if(PlayerPrefs.GetString("gender") == "M")
+        if(PlayerPrefs.GetString("gender").Equals("m",System.StringComparison.OrdinalIgnoreCase))
         {
             BoyProfile.SetActive(true);
             GirlProfile.SetActive(false);

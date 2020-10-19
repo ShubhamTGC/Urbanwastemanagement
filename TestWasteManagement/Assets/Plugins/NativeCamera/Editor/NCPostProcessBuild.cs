@@ -8,7 +8,7 @@ using UnityEditor.iOS.Xcode;
 
 public class NCPostProcessBuild
 {
-	private const bool ENABLED = true;
+	private const bool ENABLED = false;
 
 	private const string CAMERA_USAGE_DESCRIPTION = "Capture media with camera";
 	private const string MICROPHONE_USAGE_DESCRIPTION = "Capture microphone input in videos";

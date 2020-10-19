@@ -101,7 +101,7 @@ public class StartpageController : MonoBehaviour
         homebuttonpos = homebuttonpage.GetComponent<RectTransform>().localPosition;
 
         // METHOD FOR FORCE FULLY UPDATE FOR USER
-        //StartCoroutine(CheckUpdatedApk());
+        StartCoroutine(CheckUpdatedApk());
         StartCoroutine(GetCmsVideoLinks());
     }
 
@@ -578,7 +578,6 @@ public class StartpageController : MonoBehaviour
         }
         else
         {
-           
             if (remeber_data == "true")
             {
                 if (PlayerPrefs.GetString("Role").Equals("Parent", System.StringComparison.OrdinalIgnoreCase))
@@ -595,15 +594,12 @@ public class StartpageController : MonoBehaviour
                     settingpanelbtn.gameObject.SetActive(true);
                     StartCoroutine(game_play());
                 }
-           
             }
             else
             {
                 StartCoroutine(play_action());
             }
         }
-    
-      
     }
 
     public void SignUp_page()

@@ -112,7 +112,6 @@ public class Stage3handler : MonoBehaviour
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         videoPlayed = checkforEnd = false;
         int avatar_data = PlayerPrefs.GetInt("characterType");
-   
         if (avatar_data > 4)
         {
             StartCoroutine(ClosingTask());

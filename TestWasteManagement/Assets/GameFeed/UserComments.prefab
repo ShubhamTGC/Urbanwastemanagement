@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7119067342397891556}
   - component: {fileID: 4094692987050025551}
   m_Layer: 5
-  m_Name: CommentBox 1
+  m_Name: UserComments
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 701f820be6c8b4f47b3e1368884b9d7b, type: 3}
+    m_Font: {fileID: 12800000, guid: 95ec74cbeeee4d544b20dfb8eeeaec7b, type: 3}
     m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 1

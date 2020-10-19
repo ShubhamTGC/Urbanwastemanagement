@@ -1096,7 +1096,7 @@ public class GameBoard : MonoBehaviour
         TruckGamePage.SetActive(false);
         startPage.SetActive(true);
         LandingPage.SetActive(true);
-        deberifingpage.SetActive(Stage3unlocked);
+        deberifingpage.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         TruckGamePage.GetComponent<AudioSource>().enabled = false;
         //this.gameObject.SetActive(false);

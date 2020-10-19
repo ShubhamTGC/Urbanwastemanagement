@@ -32,7 +32,7 @@ public class AchiveMentShelf : MonoBehaviour
     private void OnEnable()
     {
 
-        if (PlayerPrefs.GetString("gender").ToLower() == "m")
+        if (PlayerPrefs.GetString("gender").Equals("m",System.StringComparison.OrdinalIgnoreCase))
         {
             PlayerFace.gameObject.SetActive(true);
             GirlPlayerFace.gameObject.SetActive(false);
@@ -45,7 +45,6 @@ public class AchiveMentShelf : MonoBehaviour
             PlayerSetup(GirlFace, GirlPlayerFace);
         }
         StartCoroutine(GetAchivementdata());
-        
     }
    
     void Update()
@@ -190,19 +189,35 @@ public class AchiveMentShelf : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
             GenericPostModel GenericModel = Newtonsoft.Json.JsonConvert.DeserializeObject<GenericPostModel>(www.downloadHandler.text);
             id_post_image = GenericModel.id_general_feed;
-            if (GenericModel.status.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+            if(id_post_image > 0)
             {
-                StartCoroutine(PostThisToGameFeed());
+                if (GenericModel.status.Equals("success", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    StartCoroutine(PostThisToGameFeed());
+                }
+                ShareImageStatus.text = "Your Achivements Shared successfully to Game Feed Page!!";
+                Msgpanel.SetActive(true);
+                formData.Clear();
+                post_image_byte.Clear();
+                yield return new WaitForSeconds(3f);
+                iTween.ScaleTo(Msgpanel, Vector3.zero, 0.3f);
+                yield return new WaitForSeconds(0.4f);
+                ShareImageStatus.text = "";
+                Msgpanel.SetActive(false);
             }
-            ShareImageStatus.text = "Your Achivements Shared successfully to Game Feed Page!!";
-            Msgpanel.SetActive(true);
-            formData.Clear();
-            post_image_byte.Clear();
-            yield return new WaitForSeconds(3f);
-            iTween.ScaleTo(Msgpanel, Vector3.zero, 0.3f);
-            yield return new WaitForSeconds(0.4f);
-            ShareImageStatus.text = "";
-            Msgpanel.SetActive(false);
+            else
+            {
+                ShareImageStatus.text = "Something went wrong Please try later!";
+                Msgpanel.SetActive(true);
+                formData.Clear();
+                post_image_byte.Clear();
+                yield return new WaitForSeconds(3f);
+                iTween.ScaleTo(Msgpanel, Vector3.zero, 0.3f);
+                yield return new WaitForSeconds(0.4f);
+                ShareImageStatus.text = "";
+                Msgpanel.SetActive(false);
+            }
+       
         }
     }
 

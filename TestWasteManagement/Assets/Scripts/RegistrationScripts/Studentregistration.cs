@@ -117,7 +117,7 @@ public class Studentregistration : MonoBehaviour
     public void RegisterUser()
     {
         if (Username.text == ""  || Grade.text == "" || UserId.text == ""  || school_dropdown.value == 0 || TeacherName.value == 0  || Countrynames.value == 0 
-            || Gender.value ==0 || Emailid.text == "")
+           || Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));

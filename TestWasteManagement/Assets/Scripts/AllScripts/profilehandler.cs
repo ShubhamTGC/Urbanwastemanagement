@@ -38,7 +38,7 @@ public class profilehandler : MonoBehaviour
     public List<Sprite> GirlFaceSprite, GirlBodySprite;
     public Image GirlFaceIMage, GirlBodyImage;
     public string FaceType, BodyType;
-
+    private string GenderValue;
     void Start()
     {
 
@@ -355,7 +355,6 @@ public class profilehandler : MonoBehaviour
             Debug.Log(avatar_www.text);
             StartCoroutine(PostUserData());
         }
-
     }
 
     IEnumerator PostUserData()
@@ -368,6 +367,7 @@ public class profilehandler : MonoBehaviour
         userdata_form.AddField("OID", PlayerPrefs.GetInt("OID"));
         userdata_form.AddField("avatar_type", FaceType);
         userdata_form.AddField("body_type", BodyType);
+        userdata_form.AddField("Gender", Gender);
 
         WWW avatar_www = new WWW(avatar_url, userdata_form);
         yield return avatar_www;
@@ -385,6 +385,7 @@ public class profilehandler : MonoBehaviour
             PlayerPrefs.SetString("User_grade", grade_value);
             PlayerPrefs.SetInt("characterType",int.Parse(FaceType));
             PlayerPrefs.SetInt("PlayerBody", int.Parse(BodyType));
+            PlayerPrefs.SetString("gender", Gender);
             this.gameObject.SetActive(false);
          
         }

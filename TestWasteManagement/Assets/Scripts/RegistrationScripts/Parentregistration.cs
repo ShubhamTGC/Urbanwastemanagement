@@ -56,7 +56,7 @@ public class Parentregistration : MonoBehaviour
 
     public void ParentRegister()
     {
-        if (parentName.text == "" || studentid.text == "" || Userid.text == ""  || Gender.value == 0 || Emailid.text == "")
+        if (parentName.text == "" || studentid.text == "" || Userid.text == ""   || Emailid.text == "")
         {
             string msg = "Please fill the required information.";
             StartCoroutine(showtext(msg));

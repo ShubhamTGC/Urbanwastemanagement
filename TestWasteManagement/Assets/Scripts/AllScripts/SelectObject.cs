@@ -29,8 +29,8 @@ public class SelectObject : MonoBehaviour
             string Buttonname = EventSystem.current.currentSelectedGameObject.name;
             Debug.Log(Buttonname);
             ObjectIndex++;
-
         }
+
 
         if (Input.GetKeyDown(HitKey))
         {
@@ -41,14 +41,20 @@ public class SelectObject : MonoBehaviour
             }
           
         }
-       
-
     }
 
 
 
     public void openAppInPlaystore()
     {
-        Application.OpenURL("market://details?q=pname:com.Beeah.uwm/");
+        if(Application.platform == RuntimePlatform.Android)
+        {
+            Application.OpenURL("market://details?q=pname:com.Beeah.uwm/");
+        }
+        else
+        {
+            Application.OpenURL("itms-apps://itunes.apple.com/app/com.Beeah.uwm");
+        }
+      
     }
 }

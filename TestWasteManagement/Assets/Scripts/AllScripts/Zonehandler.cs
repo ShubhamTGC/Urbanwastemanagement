@@ -79,7 +79,7 @@ public class Zonehandler : MonoBehaviour
     private List<GameObject> tab1_object, tab2_object, tab3_object;
     private string room1name, room2name, room3name;
     public List<GameObject> tab_obj;
-    public Button next_Zone, kitch_btn, bedrom_btn, livingbtn;
+    public Button next_Zone;
     private bool is_win = false;
     private GameObject tabs_obj;
     public GameObject collected_text;
@@ -1084,9 +1084,7 @@ public class Zonehandler : MonoBehaviour
         room1_data_collected.Clear();
         room2_data_collected.Clear();
         room3_data_collected.Clear();
-        livingbtn.transform.localScale = Vector3.one;
-        kitch_btn.transform.localScale = Vector3.one;
-        bedrom_btn.transform.localScale = Vector3.one;
+
         dashboard_panel.SetActive(false);
         bonus_page.SetActive(false);
         level1score = 0;
