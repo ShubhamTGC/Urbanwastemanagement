@@ -28,9 +28,10 @@ namespace YoutubePlayer
 
         void OnEnable()
         {
-            System.Random ran = new System.Random();
-            int randomnum = ran.Next(0, TriviaMsg.Count-1);
-            ShowMSg.text = TriviaMsg[randomnum];
+            int index = UnityEngine.Random.Range(0, TriviaMsg.Count);
+            //System.Random ran = new System.Random();
+            //int randomnum = ran.Next(0, TriviaMsg.Count);
+            ShowMSg.text = TriviaMsg[index];
             Laodingstart = true;
             StartCoroutine(CustomLoader());
         }
@@ -56,6 +57,12 @@ namespace YoutubePlayer
                 yield return new WaitForSeconds(0.5f);
                 currentTime += 2f;
                 LoadingBar.fillAmount = currentTime / totaltime;
+
+                if (youtube.videoplayed)
+                {
+                    Laodingstart = false;
+                    this.gameObject.SetActive(false);
+                }
             }
             else
             {

@@ -25,6 +25,7 @@ public class TruckSelectionPageHandler : MonoBehaviour
     public GameObject TruckMainPage;
     public List<GameObject> TrucksBtn;
     public AudioClip GameSoundTrack;
+    public GameObject TruckInformation;
     void Start()
     {
         
@@ -148,6 +149,25 @@ public class TruckSelectionPageHandler : MonoBehaviour
         iTween.ScaleTo(ConfirmationOPage, Vector3.zero, 0.4f);
         yield return new WaitForSeconds(0.5f);
         ConfirmationOPage.SetActive(false);
+        TruckInformation.SetActive(true);
+        //StartGamePage.SetActive(false);
+        //Monster.SetActive(true);
+        //monster2.SetActive(true);
+        //monster3.SetActive(true);
+        //TruckMainPage.SetActive(true);
+        //truckGameUi.SetActive(true);
+        //TimerPanel.SetActive(true);
+        //Gamemanager.getGamedata();
+        //Gamemanager.PlayGame();
+        //Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
+        //this.gameObject.SetActive(false);
+
+
+    }
+
+    public void GameStat()
+    {
+        TruckInformation.SetActive(false);
         StartGamePage.SetActive(false);
         Monster.SetActive(true);
         monster2.SetActive(true);
@@ -159,8 +179,6 @@ public class TruckSelectionPageHandler : MonoBehaviour
         Gamemanager.PlayGame();
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = false;
         this.gameObject.SetActive(false);
-
-
     }
 
     public void ResetTrucks()

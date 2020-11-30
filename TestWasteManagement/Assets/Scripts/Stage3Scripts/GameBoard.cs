@@ -146,7 +146,7 @@ public class GameBoard : MonoBehaviour
     [HideInInspector] public List<int> CenterCorrectPoint = new List<int>();
     [HideInInspector] public List<int> CenterWrongPoint = new List<int>();
     [HideInInspector]  public int monsterAttackScore;
-
+    public GameObject Blasteffect;
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
@@ -652,6 +652,7 @@ public class GameBoard : MonoBehaviour
 
     IEnumerator ShowCenterResult(string Truckname)
     {
+        yield return new WaitForSeconds(2f);
         PlayGame();
         yield return new WaitForSeconds(0.5f);
         monsters.ForEach(x =>
@@ -984,7 +985,7 @@ public class GameBoard : MonoBehaviour
             l = l+ 1;
         });
         string Log_data = Newtonsoft.Json.JsonConvert.SerializeObject(TruckModel);
-        Debug.Log("Priority Game data " + Log_data);
+       // Debug.Log("Priority Game data " + Log_data);
         using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, Log_data))
         {
             Request.method = UnityWebRequest.kHttpVerbPOST;
@@ -994,7 +995,7 @@ public class GameBoard : MonoBehaviour
             if (!Request.isNetworkError && !Request.isHttpError)
             {
                 Debug.Log("Response of Priority post " + Request.downloadHandler.text);
-              
+
             }
 
         }
@@ -1028,7 +1029,7 @@ public class GameBoard : MonoBehaviour
 
 
         string data_log = Newtonsoft.Json.JsonConvert.SerializeObject(TruckDriveLog);
-        Debug.Log(" drive game data " + data_log);
+        //Debug.Log(" drive game data " + data_log);
         using (UnityWebRequest Request = UnityWebRequest.Put(HittingUrl, data_log))
         {
             Request.method = UnityWebRequest.kHttpVerbPOST;
@@ -1038,7 +1039,7 @@ public class GameBoard : MonoBehaviour
             if (!Request.isNetworkError && !Request.isHttpError)
             {
                 Debug.Log("Reponse for Driving game " + Request.downloadHandler.text);
-              
+
             }
 
         }

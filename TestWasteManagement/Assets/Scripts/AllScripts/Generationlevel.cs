@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using SimpleSQL;
+using UnityEngine.EventSystems;
 
 public class Generationlevel : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class Generationlevel : MonoBehaviour
     public int Gamelevel,BadgeType;
     public List<GameObject> ZonesButtons;
     public Text Zoneinfo;
+    private int counter = 0;
+    [SerializeField] private float clicktime;
     void Start()
     {
         Backbutton.SetActive(true);
@@ -139,13 +142,27 @@ public class Generationlevel : MonoBehaviour
     //======================== stage selection methos ==============================
     public void sublevelmethod(GameObject selectedbtn)
     {
-        //midlayer.SetActive(false);
-        string buttonname = selectedbtn.name;
-        selectedbtn.transform.GetChild(0).gameObject.SetActive(false);
-        zoneinfo.text = "";
-        sublevelactions(buttonname);
+        counter++;
+        if(counter == 1)
+        {
+            StartCoroutine(GetDoubleclick(selectedbtn));
+        }
+       
     }
 
+    IEnumerator GetDoubleclick(GameObject selectedbtn)
+    {
+        yield return new WaitForSeconds(clicktime);
+        if(counter > 1)
+        {
+            string buttonname = selectedbtn.name;
+            selectedbtn.transform.GetChild(0).gameObject.SetActive(false);
+            zoneinfo.text = "";
+            sublevelactions(buttonname);
+        }
+        yield return new WaitForSeconds(0.05f);
+        counter = 0;
+    }
     void sublevelactions(string name)
     {
         switch (name.ToLower())
@@ -235,4 +252,5 @@ public class Generationlevel : MonoBehaviour
 
     }
 
+ 
 }

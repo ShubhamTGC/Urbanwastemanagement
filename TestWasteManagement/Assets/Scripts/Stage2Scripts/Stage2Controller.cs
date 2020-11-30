@@ -21,6 +21,10 @@ public class Stage2Controller : MonoBehaviour
     public Stage2ZoneGame Stage2Parent;
     public List<Stage2ZoneHandler> stage2zones;
     public YoutubePlayer.YoutubePlayer YoutubeVideoPage;
+    public string StageUnlockApi;
+    public bool Stage3unlocked;
+    public int scoretest;
+
     void Start()
     {
         StartCoroutine(getCmsdata());
@@ -105,8 +109,8 @@ public class Stage2Controller : MonoBehaviour
     public void SkipVideo()
     {
         SkipButton.SetActive(false);
+        videoPlayed = false;
         OnboradingVideo.SetActive(false);
-        TriviaPage.SetActive(false);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         if (PlayerPrefs.GetInt("PlayerBody") < 5)
         {
@@ -131,6 +135,22 @@ public class Stage2Controller : MonoBehaviour
         iTween.ScaleTo(stars, Vector3.zero, 0.3f);
         yield return new WaitForSeconds(0.5f);
         Zones.SetActive(true);
+
+    }
+
+    IEnumerator CheckForStage3(int score)
+    {
+
+        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
+        WWW StageData = new WWW(Hitting_url);
+        yield return StageData;
+        if (StageData.text != null)
+        {
+            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+            Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= score;
+        }
+        Stage2Parent.StageClearChecked = Stage3unlocked;
+       
 
     }
 
@@ -186,7 +206,7 @@ public class Stage2Controller : MonoBehaviour
                     x.Stage2UnlockScore = FinalLevelScore;
                 });
                 Stage2Parent.Stage2UnlockScore = FinalLevelScore;
-
+                StartCoroutine(CheckForStage3(FinalLevelScore));
                 var scoreconfig = dbmanager.Table<ScoreConfiguration>().FirstOrDefault(a => a.levelId == 2);
 
                 if (scoreconfig == null)

@@ -203,7 +203,8 @@ public class GameFrameHandler : MonoBehaviour
 
     public void quit()
     {
-        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.OSXPlayer)
+        if(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.WindowsPlayer 
+            || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.IPhonePlayer)
         {
             Application.Quit();
         }

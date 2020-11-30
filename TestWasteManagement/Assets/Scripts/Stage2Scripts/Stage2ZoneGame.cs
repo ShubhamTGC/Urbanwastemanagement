@@ -36,6 +36,9 @@ public class Stage2ZoneGame : MonoBehaviour
     private GameObject selectedZone;
     public List<GameObject> PopupinGameGuide;
     public GameObject ZoneTextinfo;
+    private int counter=0;
+    [SerializeField] private float clicktime;
+    public bool StageClearChecked;
     void Start()
     {
         Debug.Log("checking");
@@ -66,7 +69,22 @@ public class Stage2ZoneGame : MonoBehaviour
 
     public void Selectzone(GameObject SelectZonepage)
     {
-        StartCoroutine(Zoneselected(SelectZonepage));
+        counter++;
+        if (counter == 1)
+        {
+            StartCoroutine(GetDoubleclick(SelectZonepage));
+        }
+        
+    }
+    IEnumerator GetDoubleclick(GameObject selectedbtn)
+    {
+        yield return new WaitForSeconds(clicktime);
+        if (counter > 1)
+        {
+            StartCoroutine(Zoneselected(selectedbtn));
+        }
+        yield return new WaitForSeconds(0.05f);
+        counter = 0;
     }
 
     IEnumerator Zoneselected(GameObject SelectedZone)
@@ -167,22 +185,23 @@ public class Stage2ZoneGame : MonoBehaviour
 
     IEnumerator CheckForStage3()
     {
-        TriviaPage.SetActive(true);
-        string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
-        WWW StageData = new WWW(Hitting_url);
-        yield return StageData;
-        if (StageData.text != null)
-        {
-            StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
-            Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
-        }
-        yield return new WaitForSeconds(0.5f);
-        TriviaPage.SetActive(false);
-        GameClearedPopup.SetActive(Stage3unlocked);
-        if (Stage3unlocked)
-        {
-            DeberifingBtn.SetActive(true);
-        }
+        yield return new WaitForSeconds(0.1f);
+        GameClearedPopup.SetActive(StageClearChecked);
+        DeberifingBtn.SetActive(StageClearChecked);
+        //string Hitting_url = $"{MainUrl}{StageUnlockApi}?UID={PlayerPrefs.GetInt("UID")}&id_level={2}&id_org_game={1}";
+        //WWW StageData = new WWW(Hitting_url);
+        //yield return StageData;
+        //if (StageData.text != null)
+        //{
+        //    StageUnlockModel StageModel = Newtonsoft.Json.JsonConvert.DeserializeObject<StageUnlockModel>(StageData.text);
+        //    Stage3unlocked = int.Parse(StageModel.ConsolidatedScore) >= Stage2UnlockScore;
+        //}
+        //yield return new WaitForSeconds(0.5f);
+        //GameClearedPopup.SetActive(Stage3unlocked);
+        //if (Stage3unlocked)
+        //{
+        //    DeberifingBtn.SetActive(true);
+        //}
      
     }
 

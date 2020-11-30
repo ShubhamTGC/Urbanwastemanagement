@@ -2571,8 +2571,9 @@ public class Zonehandler : MonoBehaviour
         int totalscore = room1_score + room2_score + room3_score;
         PlayerPrefs.SetInt("ZoneScore", totalscore);
         string data = JsonMapper.ToJson(logs);
+        Debug.Log("log data " + data);
         StartCoroutine(Post_data(data));
-        if(totalBonusScore > 0)
+        if (totalBonusScore > 0)
         {
             StartCoroutine(PostBonusScore());
         }

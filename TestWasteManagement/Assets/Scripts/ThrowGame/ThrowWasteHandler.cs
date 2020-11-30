@@ -224,9 +224,9 @@ public class ThrowWasteHandler : MonoBehaviour
         correctGoal = 0;
         SCore = 0;
         Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = false;
-        Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = true;
-        Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = true;
-        Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = true;
+       // Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = true;
+       // Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = true;
+       // Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = true;
         Previewimage1.gameObject.SetActive(true);
         Previewimage2.gameObject.SetActive(true);
         Previewimage3.gameObject.SetActive(true);
@@ -395,7 +395,7 @@ public class ThrowWasteHandler : MonoBehaviour
                         }
                         else
                         {
-                            Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
+                           // Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
                             Previewimage2.gameObject.SetActive(false);
                         }
                         if (Objectlive < GeneratedObj.Count - 2)
@@ -406,7 +406,7 @@ public class ThrowWasteHandler : MonoBehaviour
                         }
                         else
                         {
-                            Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
+                           // Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
                             Previewimage3.gameObject.SetActive(false);
                         }
 
@@ -417,7 +417,7 @@ public class ThrowWasteHandler : MonoBehaviour
                         }
                         else
                         {
-                            Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
+                           // Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
                             Previewimage4.gameObject.SetActive(false);
                         }
 
@@ -432,9 +432,9 @@ public class ThrowWasteHandler : MonoBehaviour
             string Showmsg = "";
             closeGame = true;
             Previewimage1.GetComponentInParent<BoxCollider2D>().enabled = false;
-            Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
-            Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
-            Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
+            //Previewimage2.GetComponentInParent<BoxCollider2D>().enabled = false;
+            //Previewimage3.GetComponentInParent<BoxCollider2D>().enabled = false;
+            //Previewimage4.GetComponentInParent<BoxCollider2D>().enabled = false;
             FirstObjectName.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
             FirstObjectName.SetActive(false);
             Previewimage3.gameObject.SetActive(false);

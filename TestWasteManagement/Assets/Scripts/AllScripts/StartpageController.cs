@@ -94,6 +94,9 @@ public class StartpageController : MonoBehaviour
     public YoutubePlayer.YoutubePlayer youtubePage;
     public Button ShoePasswordBtn;
     public Sprite OpenEye, CloseEye;
+    public GameObject SceneLoading;
+    public Slider sliderbar;
+    public Text Progressvalue;
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
@@ -107,7 +110,6 @@ public class StartpageController : MonoBehaviour
 
     IEnumerator CheckUpdatedApk()
     {
-
         string HittingUrl = $"{Mainurl}{UpdateApkApi}?vid={Application.version}";
         WWW checkApkwww = new WWW(HittingUrl);
         yield return checkApkwww;
@@ -206,12 +208,7 @@ public class StartpageController : MonoBehaviour
             StartCoroutine(sceneappear());
         }
         DontDestroyOnLoad(Home_instane);
-       
-
     }
-
-
-
 
 
     void ComeFromStages()
@@ -423,9 +420,23 @@ public class StartpageController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         toplayer.SetActive(false);
-        StartCoroutine(scenechanges(HomepageObject, sky));
-        yield return new WaitForSeconds(1.4f);
-        SceneManager.LoadScene(Sceneno);
+        HomepageObject.GetComponent<Image>().sprite = sky;
+        SceneLoading.SetActive(true);
+        yield return new WaitForSeconds(0.2f);
+        StartCoroutine(SceneChangingLoader(Sceneno));
+
+    }
+
+    IEnumerator SceneChangingLoader(int index)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(index);
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            Progressvalue.text = (progress * 100f).ToString("0") + "%";
+            sliderbar.value = progress;
+            yield return null;
+        }
 
     }
     //-------------------end of method----------------------//
@@ -636,8 +647,6 @@ public class StartpageController : MonoBehaviour
         StartCoroutine(LevelpercentageScore());
         StartCoroutine(getScoreConfigdata());
         StartCoroutine(CheckStage2Unlock());
-
-
     }
     IEnumerator play_action()
     {
@@ -868,14 +877,10 @@ public class StartpageController : MonoBehaviour
     {
         skipVideo.SetActive(false);
         YoutubeVideopage.SetActive(false);
-        TriviaPage.SetActive(false);
-        if (remeberme.isOn == true)
-        {
-            PlayerPrefs.SetString("logged", "true");
-        }
-        remeberme.isOn = false;
+       // TriviaPage.SetActive(false);
+    
         StartCoroutine(scenechanges(HomepageObject, toplayer_sprite));
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.4f);
         superhero.SetActive(true);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
     }

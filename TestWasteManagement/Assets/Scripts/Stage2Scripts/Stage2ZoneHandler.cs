@@ -323,7 +323,7 @@ public class Stage2ZoneHandler : MonoBehaviour
     }
     IEnumerator MAsterTablePosting()
     {
-
+        yield return new WaitForSeconds(0.1f);
         int totalscore = Level1Controller.SCore + Level2Controller.SCore;
         ScorePostModel PostModel = new ScorePostModel();
         string HittingUrl = MainUrl + PostMasterScoreApi;
@@ -346,7 +346,8 @@ public class Stage2ZoneHandler : MonoBehaviour
         PostModel.game_type = 1;
 
         string Postdata = Newtonsoft.Json.JsonConvert.SerializeObject(PostModel);
-        using(UnityWebRequest Master_request = UnityWebRequest.Put(HittingUrl, Postdata))
+        //Debug.Log("mater log " + Postdata);
+        using (UnityWebRequest Master_request = UnityWebRequest.Put(HittingUrl, Postdata))
         {
             Master_request.method = UnityWebRequest.kHttpVerbPOST;
             Master_request.SetRequestHeader("Content-Type", "application/json");
@@ -358,8 +359,8 @@ public class Stage2ZoneHandler : MonoBehaviour
                 MasterTabelResponse masterRes = Newtonsoft.Json.JsonConvert.DeserializeObject<MasterTabelResponse>(Master_request.downloadHandler.text);
                 if (masterRes.STATUS.ToLower() == "success")
                 {
-                     
-                   StartCoroutine(CheckForGameBadge());
+
+                    StartCoroutine(CheckForGameBadge());
                 }
                 else
                 {
@@ -372,6 +373,7 @@ public class Stage2ZoneHandler : MonoBehaviour
 
     public void PostZoneData(string jsondata)
     {
+        //Debug.Log("data log " + jsondata);
         StartCoroutine(PostzoneTask(jsondata));
     }
     IEnumerator PostzoneTask(string JsonValue)
@@ -398,10 +400,6 @@ public class Stage2ZoneHandler : MonoBehaviour
     }
 
  
-  
-
-   
-
     IEnumerator CheckForGameBadge()
     {
         string HittingUrl = MainUrl + GetBadgeConfigApi + "?id_level=" + 2;

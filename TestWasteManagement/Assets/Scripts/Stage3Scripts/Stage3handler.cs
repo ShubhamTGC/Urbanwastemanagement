@@ -105,9 +105,7 @@ public class Stage3handler : MonoBehaviour
     }
     public void SkipVideo()
     {
-        
         SkipButton.SetActive(false);
-        TriviaPage.SetActive(false);
         OnbordingVideoPage.SetActive(false);
         Camera.main.gameObject.GetComponent<AudioSource>().enabled = true;
         videoPlayed = checkforEnd = false;
@@ -121,7 +119,6 @@ public class Stage3handler : MonoBehaviour
             username.text = PlayerPrefs.GetString("username");
             AvatarPage.SetActive(true);
         }
-
 
     }
 

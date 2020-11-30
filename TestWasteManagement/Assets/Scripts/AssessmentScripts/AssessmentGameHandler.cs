@@ -320,8 +320,8 @@ public class AssessmentGameHandler : MonoBehaviour
         }
         GenerateDashBoard();
         Stage3Variables.BonusGameBool = false;
-        // StartCoroutine(PostAssessmentLog());
-        //StartCoroutine(PostinginMastertable());
+        StartCoroutine(PostAssessmentLog());
+        StartCoroutine(PostinginMastertable());
 
     }
 
@@ -500,7 +500,7 @@ public class AssessmentGameHandler : MonoBehaviour
 
 
         string Datalog = Newtonsoft.Json.JsonConvert.SerializeObject(Logs);
-        Debug.Log("data log for final assessment " + Datalog);
+        //Debug.Log("data log for final assessment " + Datalog);
         using (UnityWebRequest request = UnityWebRequest.Put(HittingUrl, Datalog))
         {
             Debug.Log(request);

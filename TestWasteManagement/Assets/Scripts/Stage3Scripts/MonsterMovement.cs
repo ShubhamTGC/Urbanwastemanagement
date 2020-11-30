@@ -202,7 +202,6 @@ public class MonsterMovement : MonoBehaviour
                     ChangeMode(Mode.Chase);
                     ModeChangetimer = 0;
                 }
-               
             }
 
         }else if(currentmode == Mode.Frightened)

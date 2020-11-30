@@ -15,6 +15,8 @@ public class Stage3PageHandler : MonoBehaviour
     public Stage3handler Stage3MainPage;
     public GameObject ClearStage3, FinalAssessmentpage;
     public GameObject Backbtn;
+    private int counter = 0;
+    [SerializeField] private float clicktime;
     void Start()
     {
        
@@ -45,8 +47,23 @@ public class Stage3PageHandler : MonoBehaviour
 
     public void AlignTruck()
     {
-        PriorityBtn.GetComponent<BoxCollider2D>().enabled = alignBtn.GetComponent<BoxCollider2D>().enabled = false;
-        StartCoroutine(AlignButtonTask());
+        counter++;
+        if (counter == 1)
+        {
+            StartCoroutine(AlignDoubleclick());
+        }
+      
+    }
+    IEnumerator AlignDoubleclick()
+    {
+        yield return new WaitForSeconds(clicktime);
+        if (counter > 1)
+        {
+            PriorityBtn.GetComponent<BoxCollider2D>().enabled = alignBtn.GetComponent<BoxCollider2D>().enabled = false;
+            StartCoroutine(AlignButtonTask());
+        }
+        yield return new WaitForSeconds(0.05f);
+        counter = 0;
     }
 
     IEnumerator AlignButtonTask()
@@ -72,7 +89,22 @@ public class Stage3PageHandler : MonoBehaviour
 
     public void ShowGameGuide()
     {
-        StartCoroutine(shwogaemguideTask());
+        counter++;
+        if (counter == 1)
+        {
+            StartCoroutine(GetDoubleclick());
+        }
+    }
+
+    IEnumerator GetDoubleclick()
+    {
+        yield return new WaitForSeconds(clicktime);
+        if (counter > 1)
+        {
+            StartCoroutine(shwogaemguideTask());
+        }
+        yield return new WaitForSeconds(0.05f);
+        counter = 0;
     }
 
     IEnumerator shwogaemguideTask()

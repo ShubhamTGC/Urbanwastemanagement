@@ -450,7 +450,7 @@ public class AnagrameController : MonoBehaviour
             });
         }
         string PostLog = Newtonsoft.Json.JsonConvert.SerializeObject(logs);
-        Debug.Log("Getting log" + Newtonsoft.Json.JsonConvert.SerializeObject(logs));
+        Debug.Log("Getting log" + PostLog);
         string HIttingUrl = MainUrl + PostDataApi;
         yield return new WaitForSeconds(0.1f);
         using (UnityWebRequest request = UnityWebRequest.Put(HIttingUrl, PostLog))

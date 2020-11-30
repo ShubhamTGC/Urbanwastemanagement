@@ -199,7 +199,6 @@ public class Zonenarrations : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         Camera.main.GetComponent<AudioSource>().enabled = true;
         backbtn.SetActive(true);
-        videomsg.SetActive(false);
         YoutubePlayer.SetActive(false);
         skipbutton.SetActive(false);
         popupobject.SetActive(true);
